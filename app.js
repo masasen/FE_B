@@ -1,5 +1,5 @@
-/* questions.js が定義する QUESTIONS を使う */
-const Q = (typeof QUESTIONS !== "undefined") ? QUESTIONS : [];
+/* questions.js が定義する QUESTIONS を使う。最新版取得時に差し替えるため let。 */
+let Q = (typeof QUESTIONS !== "undefined") ? QUESTIONS : [];
 
 /* ============ 状態 ============ */
 const S = {view:"list", filter:"すべて", qi:0, picked:null, graded:false,
@@ -11,6 +11,84 @@ const KEY = ["ア","イ","ウ","エ"];
 /* ---- 保存 ---- */
 async function load(k){ try{ const r = localStorage.getItem(k); return r ? JSON.parse(r) : null; }catch(e){ return null; } }
 async function save(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+
+function setDataStatus(msg, kind=""){
+  const el = $("dataStatus");
+  if(!el) return;
+  el.textContent = msg;
+  el.className = `data-status ${kind}`.trim();
+  clearTimeout(setDataStatus.t);
+  if(msg) setDataStatus.t = setTimeout(()=>{ el.textContent=""; el.className="data-status"; }, 5000);
+}
+
+/* ---- 問題データ更新 ----
+   静的に読み込んだ questions.js をフォールバックとして残しつつ、
+   GitHub Pages 上では cache-busting 付き fetch で最新版だけ取得する。
+   localStorage の回答履歴・メモは触らない。 */
+async function fetchLatestQuestions(){
+  const url = new URL("questions.js", location.href);
+  url.searchParams.set("_", Date.now().toString());
+  const r = await fetch(url.toString(), {cache:"no-store"});
+  if(!r.ok) throw new Error(`HTTP ${r.status}`);
+  const src = await r.text();
+  const fresh = new Function(`${src}\n;return (typeof QUESTIONS !== "undefined") ? QUESTIONS : [];`)();
+  if(!Array.isArray(fresh) || fresh.length === 0) throw new Error("問題データが空です");
+  const ids = fresh.map(q=>q && q.id);
+  if(ids.some(id=>!id) || new Set(ids).size !== ids.length) throw new Error("問題IDが不正です");
+  return fresh;
+}
+
+function backToList(){
+  clearInterval(S.timerId); stopPlay();
+  S.view="list";
+  $("viewQ").classList.add("hide");
+  $("viewList").classList.remove("hide");
+  renderFilters(); renderList();
+  window.scrollTo(0,0);
+}
+
+async function updateQuestionData({silent=false}={}){
+  const btn = $("btnUpdateQuestions");
+  if(btn) btn.disabled = true;
+  if(!silent) setDataStatus("問題データを確認中…");
+  try{
+    /* 更新直前のメモも確実に保存 */
+    if(S.view==="q" && Q[S.qi]){
+      await save("feb:memo:"+Q[S.qi].id, $("memo").value);
+    }
+    const before = Q.length;
+    Q = await fetchLatestQuestions();
+    if(S.view==="q") backToList();
+    else { renderFilters(); renderList(); }
+    if(!silent || Q.length !== before) setDataStatus(`問題データ更新完了：${Q.length}問`, "ok");
+    return true;
+  }catch(e){
+    if(!silent) setDataStatus("更新できませんでした。通信状態を確認してください。", "ng");
+    return false;
+  }finally{
+    if(btn) btn.disabled = false;
+  }
+}
+
+function reloadApp(){
+  /* URLを毎回変えてホーム画面版でもHTML自体を再取得させる。localStorageは維持される。 */
+  const url = new URL(location.href);
+  url.searchParams.set("_reload", Date.now().toString());
+  location.replace(url.toString());
+}
+
+function resetLearningData(){
+  const ok = window.confirm("回答履歴と各問題のメモをすべて削除します。問題データは削除されません。よろしいですか？");
+  if(!ok) return;
+  for(let i=localStorage.length-1;i>=0;i--){
+    const k = localStorage.key(i);
+    if(k === "feb:results" || (k && k.startsWith("feb:memo:"))) localStorage.removeItem(k);
+  }
+  S.results = {};
+  if($("memo")) $("memo").value = "";
+  backToList();
+  setDataStatus("学習データをリセットしました。", "ok");
+}
 
 /* ============ 一覧 ============ */
 function renderFilters(){
@@ -33,7 +111,8 @@ function renderList(){
       <div class="card-d">${esc(q.prompt).slice(0,58)}…</div></button>`;
   }).join("");
   $("cards").querySelectorAll(".card").forEach(b => b.onclick = () => openQ(Q.findIndex(x=>x.id===b.dataset.id)));
-  const done = Object.keys(S.results).length, ok = Object.values(S.results).filter(r=>r.ok).length;
+  const currentResults = Q.map(q=>S.results[q.id]).filter(Boolean);
+  const done = currentResults.length, ok = currentResults.filter(r=>r.ok).length;
   $("stScore").textContent = `${ok}/${done||0}`;
 }
 
@@ -184,8 +263,10 @@ $("btnClear").onclick = ()=>{ $("memo").value=""; $("memo").focus(); $("memo").d
 /* ============ イベント ============ */
 $("btnSolve").onclick  = ()=> grade(false);
 $("btnReveal").onclick = ()=> grade(true);
-$("back").onclick = ()=>{ clearInterval(S.timerId); stopPlay();
-  $("viewQ").classList.add("hide"); $("viewList").classList.remove("hide"); renderList(); window.scrollTo(0,0); };
+$("back").onclick = backToList;
+$("btnUpdateQuestions").onclick = ()=> updateQuestionData();
+$("btnReloadApp").onclick = reloadApp;
+$("btnResetData").onclick = resetLearningData;
 $("btnNext").onclick = ()=> openQ((S.qi+1) % Q.length);
 $("pNext").onclick  = ()=>{ stopPlay(); go(S.step+1); };
 $("pPrev").onclick  = ()=>{ stopPlay(); go(S.step-1); };
@@ -201,5 +282,7 @@ document.addEventListener("keydown", e=>{
 /* ============ 起動 ============ */
 (async ()=>{
   S.results = (await load("feb:results")) || {};
+  /* まず同梱データで即表示できる状態を作り、続いて最新版を取得する。 */
   renderFilters(); renderList();
+  await updateQuestionData({silent:true});
 })();
