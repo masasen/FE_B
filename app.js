@@ -1,4 +1,3 @@
-/opt/homebrew/Library/Homebrew/cmd/shellenv.sh: line 18: /bin/ps: Operation not permitted
 /* questions.js が定義する QUESTIONS を使う。最新版取得時に差し替えるため let。 */
 let Q = (typeof QUESTIONS !== "undefined") ? QUESTIONS : [];
 

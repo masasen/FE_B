@@ -1,4 +1,3 @@
-/opt/homebrew/Library/Homebrew/cmd/shellenv.sh: line 18: /bin/ps: Operation not permitted
 /* IPAが公開した科目B問題を、画面表示向けに改行・表記を整えて収録する。
    問題の著作権はIPAに帰属する。各問の source に原典PDFを保持する。 */
 
