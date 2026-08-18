@@ -3,6 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="科目B 道場">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>科目B トレース道場 — 基本情報技術者試験</title>
 <link rel="stylesheet" href="style.css">
 </head>
@@ -11,7 +17,13 @@
 <header class="top">
   <div class="top-in">
     <div class="brand">科目B トレース道場<small>FE / 擬似言語 ＆ セキュリティ</small></div>
+    <div class="top-actions">
+      <button class="headbtn" id="btnUpdateQuestions" type="button">問題更新</button>
+      <button class="headbtn" id="btnReloadApp" type="button">再読込</button>
+      <button class="headbtn danger" id="btnResetData" type="button">学習データ削除</button>
+    </div>
     <div class="top-stat"><b id="stScore">0/0</b><br>解答済み</div>
+    <div class="data-status" id="dataStatus" aria-live="polite"></div>
   </div>
   <nav class="bar" id="filters"></nav>
 </header>
