@@ -1,3 +1,4 @@
+/opt/homebrew/Library/Homebrew/cmd/shellenv.sh: line 18: /bin/ps: Operation not permitted
 :root{
   --paper:#EFEEE6;
   --sheet:#FAF9F4;
@@ -102,6 +103,8 @@ button{font-family:inherit;font-size:inherit;color:inherit;cursor:pointer}
 .cl.on .n{color:var(--red);font-weight:700}
 .given{font-family:var(--mono);font-size:12.5px;background:#fff;border:1px dashed var(--rule);
   padding:8px 12px;margin-top:12px;white-space:pre-wrap;word-break:break-all}
+.source{font-size:12px;color:var(--ink-soft);margin:12px 0 0;line-height:1.6}
+.source a{color:var(--blue);text-underline-offset:2px}
 
 /* choices */
 .chs{display:grid;gap:7px;margin:0 0 4px}

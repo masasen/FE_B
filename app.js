@@ -1,3 +1,4 @@
+/opt/homebrew/Library/Homebrew/cmd/shellenv.sh: line 18: /bin/ps: Operation not permitted
 /* questions.js が定義する QUESTIONS を使う。最新版取得時に差し替えるため let。 */
 let Q = (typeof QUESTIONS !== "undefined") ? QUESTIONS : [];
 
@@ -5,8 +6,10 @@ let Q = (typeof QUESTIONS !== "undefined") ? QUESTIONS : [];
 const S = {view:"list", filter:"すべて", qi:0, picked:null, graded:false,
            step:0, timerId:null, sec:0, playId:null, results:{}};
 const $ = id => document.getElementById(id);
-const esc = s => String(s).replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
-const KEY = ["ア","イ","ウ","エ"];
+const esc = s => String(s).replace(/[&<>"']/g, c => ({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+}[c]));
+const KEY = ["ア","イ","ウ","エ","オ","カ","キ","ク","ケ","コ"];
 
 /* ---- 保存 ---- */
 async function load(k){ try{ const r = localStorage.getItem(k); return r ? JSON.parse(r) : null; }catch(e){ return null; } }
@@ -26,12 +29,17 @@ function setDataStatus(msg, kind=""){
    GitHub Pages 上では cache-busting 付き fetch で最新版だけ取得する。
    localStorage の回答履歴・メモは触らない。 */
 async function fetchLatestQuestions(){
-  const url = new URL("questions.js", location.href);
-  url.searchParams.set("_", Date.now().toString());
-  const r = await fetch(url.toString(), {cache:"no-store"});
-  if(!r.ok) throw new Error(`HTTP ${r.status}`);
-  const src = await r.text();
-  const fresh = new Function(`${src}\n;return (typeof QUESTIONS !== "undefined") ? QUESTIONS : [];`)();
+  const stamp = Date.now().toString();
+  const urls = ["questions.js", "official_questions.js"].map(name => {
+    const url = new URL(name, location.href);
+    url.searchParams.set("_", stamp);
+    return url;
+  });
+  const responses = await Promise.all(urls.map(url => fetch(url.toString(), {cache:"no-store"})));
+  const failed = responses.find(r => !r.ok);
+  if(failed) throw new Error(`HTTP ${failed.status}`);
+  const sources = await Promise.all(responses.map(r => r.text()));
+  const fresh = new Function(`${sources.join("\n")}\n;return (typeof QUESTIONS !== "undefined") ? QUESTIONS : [];`)();
   if(!Array.isArray(fresh) || fresh.length === 0) throw new Error("問題データが空です");
   const ids = fresh.map(q=>q && q.id);
   if(ids.some(id=>!id) || new Set(ids).size !== ids.length) throw new Error("問題IDが不正です");
@@ -136,6 +144,15 @@ async function openQ(i){
 
   if(q.given){ $("qGiven").textContent = q.given; $("qGiven").classList.remove("hide"); }
   else $("qGiven").classList.add("hide");
+
+  const source = $("qSource");
+  if(q.source && q.source.url){
+    source.innerHTML = `出典：<a href="${esc(q.source.url)}" target="_blank" rel="noopener noreferrer">${esc(q.source.label || q.source.url)}</a>`;
+    source.classList.remove("hide");
+  } else {
+    source.innerHTML = "";
+    source.classList.add("hide");
+  }
 
   $("qChoices").innerHTML = q.choices.map((c,n) =>
     `<button class="ch" data-n="${n}" aria-pressed="false"><span class="k">${KEY[n]}</span><span>${esc(c)}</span></button>`).join("");

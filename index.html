@@ -1,3 +1,4 @@
+/opt/homebrew/Library/Homebrew/cmd/shellenv.sh: line 18: /bin/ps: Operation not permitted
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -54,6 +55,7 @@
           <p class="prompt" id="qPrompt"></p>
           <div class="code" id="qCode"></div>
           <div class="given" id="qGiven"></div>
+          <p class="source hide" id="qSource"></p>
         </div>
       </div>
 
@@ -118,7 +120,8 @@
 </main>
 
 <!-- 問題データ → アプリ本体 の順で読み込む -->
-<script src="questions.js"></script>
-<script src="app.js"></script>
+<script src="questions.js?v=2"></script>
+<script src="official_questions.js?v=2"></script>
+<script src="app.js?v=2"></script>
 </body>
 </html>
