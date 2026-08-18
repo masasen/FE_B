@@ -601,5 +601,42 @@ const QUESTIONS = [
  ],
  explain:"<p>タイムアウト判定の基準は<b>最後に受理した要求</b>です。時刻7の要求はCSRF不正で拒否されるため、lastActivityは3のままです。</p><p>時刻8は経過5分で、条件の「5分を超える」には該当しないので受理されます。その後の時刻14では経過6分となりセッションが無効化されます。最終状態は<b>無効、8分、2件</b>で、正解はアです。</p>",
  automation:{kind:"scheduled",dateJst:"2026-08-19",addedAtJst:"2026-08-19T01:00:03+09:00"}
+},
+{
+ id:"auto-20260819-0300-maxsubarray", cat:"アルゴリズム",
+ title:"最大連続部分和の更新",
+ prompt:"次の関数 maxSubarray は、整数型配列の連続する一部分を選んだときの最大の合計値を返す。maxSubarray({-2, 3, -1, 4, -5, 2}) の戻り値はどれか。配列の要素番号は1から始まる。",
+ code:[
+  "○整数型: maxSubarray(整数型の配列: data)",
+  "  整数型: i, current, best",
+  "  current ← data[1]",
+  "  best ← data[1]",
+  "  for (i を 2 から dataの要素数 まで 1 ずつ増やす)",
+  "    if (current + data[i] ＞ data[i])",
+  "      current ← current + data[i]",
+  "    else",
+  "      current ← data[i]",
+  "    endif",
+  "    if (current ＞ best)",
+  "      best ← current",
+  "    endif",
+  "  endfor",
+  "  return best"
+ ],
+ given:"data = {-2, 3, -1, 4, -5, 2}",
+ vars:["i","data[i]","current","best"],
+ choices:["3","4","5","6","7","8"],
+ answer:3,
+ steps:[
+  {line:4,note:"先頭要素でcurrentとbestを初期化する。",v:["1","-2","-2","-2"]},
+  {line:12,note:"i=2では-2+3=1より3単独の方が大きいのでcurrent=3。bestも3へ更新する。",v:["2","3","3","3"]},
+  {line:7,note:"i=3では3+(-1)=2の方が-1単独より大きい。bestは3のまま。",v:["3","-1","2","3"]},
+  {line:12,note:"i=4では2+4=6として、bestを6へ更新する。",v:["4","4","6","6"]},
+  {line:7,note:"i=5では6+(-5)=1の方が-5単独より大きい。bestは6を維持する。",v:["5","-5","1","6"]},
+  {line:7,note:"i=6では1+2=3の方が2単独より大きい。bestは6を維持する。",v:["6","2","3","6"]},
+  {line:15,note:"全要素の処理後、最大値best=6を返す。",v:["6","—","3","6"]}
+ ],
+ explain:"<p>currentは<b>現在の要素で終わる連続部分</b>の最大和、bestはそこまでに見つかった全体の最大和です。途中までの和が不利なら、現在の要素から新しく始めます。</p><p>i=4で連続部分 {3, -1, 4} の和が6となりbestが更新されます。その後は6を超えないため、戻り値は<b>6</b>で正解はエです。</p>",
+ automation:{kind:"scheduled",dateJst:"2026-08-19",addedAtJst:"2026-08-19T03:00:04+09:00"}
 }
 ];
