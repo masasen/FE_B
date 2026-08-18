@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>科目B トレース道場 — 基本情報技術者試験</title>
+<style>
+:root{
+  --paper:#EFEEE6;
+  --sheet:#FAF9F4;
+  --ink:#1C242C;
+  --ink-soft:#5D6A73;
+  --rule:#C7D2D4;
+  --red:#C4372E;
+  --blue:#26506E;
+  --marker:rgba(247,208,74,.55);
+  --line:#DCDCD2;
+  --mono:"SFMono-Regular",Menlo,Consolas,"BIZ UDGothic","Noto Sans Mono CJK JP",monospace;
+  --gothic:"Hiragino Kaku Gothic ProN","Yu Gothic",YuGothic,Meiryo,sans-serif;
+  --mincho:"Hiragino Mincho ProN","Yu Mincho",YuMincho,"Noto Serif JP",serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--gothic);
+  font-size:15px;
+  line-height:1.75;
+  -webkit-text-size-adjust:100%;
+}
+button{font-family:inherit;font-size:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+
+/* ---------- header ---------- */
+.top{
+  border-bottom:1px solid var(--ink);
+  background:var(--paper);
+  position:sticky;top:0;z-index:20;
+}
+.top-in{max-width:1180px;margin:0 auto;padding:14px 20px 0;
+  display:flex;align-items:flex-end;gap:18px;flex-wrap:wrap}
+.brand{font-family:var(--mincho);font-size:23px;letter-spacing:.14em;font-weight:600;line-height:1.2}
+.brand small{display:block;font-family:var(--gothic);font-size:11px;letter-spacing:.28em;
+  color:var(--ink-soft);font-weight:400;margin-top:4px}
+.top-stat{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--ink-soft);text-align:right;line-height:1.5}
+.top-stat b{font-size:20px;color:var(--ink);font-weight:600}
+.bar{max-width:1180px;margin:10px auto 0;padding:0 20px 12px;display:flex;gap:6px;flex-wrap:wrap}
+.chip{
+  border:1px solid var(--rule);background:transparent;border-radius:999px;
+  padding:3px 13px;font-size:12.5px;letter-spacing:.04em;color:var(--ink-soft);
+  transition:background .15s,color .15s,border-color .15s;
+}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--sheet)}
+
+/* ---------- layout ---------- */
+.wrap{max-width:1180px;margin:0 auto;padding:26px 20px 90px}
+.hide{display:none !important}
+
+/* ---------- list ---------- */
+.lead{font-family:var(--mincho);font-size:17px;margin:2px 0 22px;color:var(--ink-soft);max-width:46em}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:14px}
+.card{
+  background:var(--sheet);border:1px solid var(--line);border-left:3px solid var(--rule);
+  padding:15px 16px 14px;text-align:left;width:100%;display:block;
+  transition:transform .14s ease,border-left-color .14s;
+}
+.card:hover{transform:translateY(-2px);border-left-color:var(--blue)}
+.card.done{border-left-color:var(--blue)}
+.card.miss{border-left-color:var(--red)}
+.card-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.qno{font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:var(--ink-soft)}
+.cat{font-size:11px;letter-spacing:.08em;color:var(--ink-soft);border:1px solid var(--rule);padding:0 7px;border-radius:2px;white-space:nowrap}
+.card-t{font-family:var(--mincho);font-size:16.5px;margin:7px 0 4px;line-height:1.5}
+.card-d{font-size:12.5px;color:var(--ink-soft);line-height:1.6}
+.mark{font-family:var(--mincho);font-size:19px;color:var(--red);margin-left:6px}
+
+/* ---------- detail ---------- */
+.back{background:none;border:0;padding:0;font-size:13px;color:var(--ink-soft);margin-bottom:14px}
+.back:hover{color:var(--ink)}
+.qhead{border-bottom:1px solid var(--ink);padding-bottom:12px;margin-bottom:20px;
+  display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
+.qhead h2{font-family:var(--mincho);font-size:21px;margin:4px 0 0;font-weight:600;line-height:1.4}
+.timer{margin-left:auto;font-family:var(--mono);font-size:19px;letter-spacing:.06em;color:var(--ink-soft)}
+.timer.over{color:var(--red)}
+
+.split{display:grid;grid-template-columns:1.06fr .94fr;gap:22px;align-items:start}
+.panel{background:var(--sheet);border:1px solid var(--line);padding:16px 18px}
+.plabel{font-size:11px;letter-spacing:.22em;color:var(--ink-soft);margin:0 0 10px;
+  border-bottom:1px solid var(--line);padding-bottom:6px}
+.prompt{font-size:14.5px;margin:0 0 14px;white-space:pre-wrap}
+
+/* pseudo code */
+.code{font-family:var(--mono);font-size:13px;line-height:1.95;background:#fff;
+  border:1px solid var(--line);padding:9px 0;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.cl{display:flex;gap:12px;padding:0 12px;white-space:pre;min-width:max-content}
+.cl .n{color:#A8B2B6;user-select:none;text-align:right;width:1.6em;flex:none}
+.cl.on{background:var(--marker)}
+.cl.on .n{color:var(--red);font-weight:700}
+.given{font-family:var(--mono);font-size:12.5px;background:#fff;border:1px dashed var(--rule);
+  padding:8px 12px;margin-top:12px;white-space:pre-wrap;word-break:break-all}
+
+/* choices */
+.chs{display:grid;gap:7px;margin:0 0 4px}
+.ch{display:flex;gap:11px;align-items:flex-start;text-align:left;background:#fff;
+  border:1px solid var(--line);padding:9px 12px;transition:border-color .13s,background .13s}
+.ch:hover{border-color:var(--blue)}
+.ch .k{font-family:var(--mincho);font-size:15px;flex:none;width:1.3em}
+.ch[aria-pressed="true"]{border-color:var(--blue);background:#EEF3F7;box-shadow:inset 3px 0 0 var(--blue)}
+.ch.ok{border-color:var(--red);box-shadow:inset 3px 0 0 var(--red);background:#FCF1F0}
+.ch.ng{opacity:.5}
+.ch .k::after{content:"";display:block}
+
+/* memo — 方眼 */
+.memo-tools{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.tbtn{background:#fff;border:1px solid var(--rule);padding:3px 11px;font-size:12px;color:var(--ink-soft)}
+.tbtn:hover{border-color:var(--ink);color:var(--ink)}
+textarea.memo{
+  width:100%;min-height:290px;resize:vertical;padding:9px 11px;
+  font-family:var(--mono);font-size:13px;line-height:24px;color:var(--blue);
+  border:1px solid var(--line);
+  background-color:#fff;
+  background-image:linear-gradient(var(--rule) 1px,transparent 1px),
+                   linear-gradient(90deg,var(--rule) 1px,transparent 1px);
+  background-size:100% 24px,24px 100%;
+  background-position:0 9px,10px 0;
+  background-attachment:local;
+  tab-size:2;
+}
+textarea.memo:focus{outline:none;border-color:var(--blue)}
+.hint{font-size:11.5px;color:var(--ink-soft);margin:6px 0 0}
+
+.actions{display:flex;gap:10px;align-items:center;margin-top:16px;flex-wrap:wrap}
+.solve{background:var(--ink);color:var(--sheet);border:1px solid var(--ink);
+  padding:9px 26px;letter-spacing:.16em;font-size:13.5px}
+.solve:disabled{opacity:.35;cursor:not-allowed}
+.ghost{background:none;border:1px solid var(--rule);padding:8px 18px;font-size:13px;color:var(--ink-soft)}
+
+/* ---------- result ---------- */
+.result{margin-top:26px;border-top:1px solid var(--ink);padding-top:22px}
+.verdict{display:flex;align-items:center;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+.stamp{font-family:var(--mincho);font-size:40px;line-height:1;color:var(--red);
+  border:2px solid var(--red);border-radius:50%;width:70px;height:70px;
+  display:flex;align-items:center;justify-content:center;flex:none;
+  transform:rotate(-7deg)}
+.stamp.x{border-style:solid}
+.verdict-t{font-family:var(--mincho);font-size:18px}
+.verdict-t span{display:block;font-family:var(--gothic);font-size:12.5px;color:var(--ink-soft);margin-top:3px}
+
+.player{display:flex;align-items:center;gap:9px;margin:0 0 14px;flex-wrap:wrap}
+.pbtn{background:#fff;border:1px solid var(--rule);width:38px;height:34px;font-size:13px;
+  display:flex;align-items:center;justify-content:center}
+.pbtn:hover{border-color:var(--ink)}
+.pbtn.wide{width:auto;padding:0 14px;font-size:12.5px;letter-spacing:.08em}
+.pcount{font-family:var(--mono);font-size:12px;color:var(--ink-soft);margin-left:auto}
+input[type=range]{flex:1 1 160px;min-width:120px;accent-color:var(--red)}
+
+.stepnote{font-family:var(--mono);font-size:13px;color:var(--red);background:#fff;
+  border:1px solid var(--line);border-left:3px solid var(--red);padding:10px 13px;margin-bottom:14px;
+  min-height:2.6em;white-space:pre-wrap;word-break:break-word}
+
+.ttable{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12.5px;background:#fff}
+.ttable th,.ttable td{border:1px solid var(--rule);padding:5px 9px;text-align:left;white-space:nowrap}
+.ttable th{background:#F1F0EA;font-weight:600;letter-spacing:.06em;font-size:11.5px}
+.ttable td.ln{color:#A8B2B6;text-align:right;width:2.4em}
+.ttable tr:last-child td{color:var(--red);font-weight:600}
+.tscroll{overflow-x:auto;border:1px solid var(--line);-webkit-overflow-scrolling:touch}
+
+.explain{background:var(--sheet);border:1px solid var(--line);padding:16px 18px;margin-top:20px}
+.explain p{margin:0 0 10px;font-size:14px}
+.explain p:last-child{margin-bottom:0}
+.explain b{color:var(--red)}
+.mynote{white-space:pre-wrap;font-family:var(--mono);font-size:12.5px;color:var(--blue);
+  background:#fff;border:1px dashed var(--rule);padding:10px 12px;margin-top:10px}
+
+.nav-next{display:flex;justify-content:flex-end;margin-top:24px}
+
+@media (max-width:900px){
+  .split{grid-template-columns:1fr;gap:16px}
+  .wrap{padding:20px 14px 70px}
+  .top-in{padding:12px 14px 0}
+  .bar{padding:0 14px 10px}
+  .brand{font-size:20px}
+  textarea.memo{min-height:220px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand">科目B トレース道場<small>FE / 擬似言語 ＆ セキュリティ</small></div>
+    <div class="top-stat"><b id="stScore">0/0</b><br>解答済み</div>
+  </div>
+  <nav class="bar" id="filters"></nav>
+</header>
+
+<main class="wrap">
+  <!-- 一覧 -->
+  <section id="viewList">
+    <p class="lead">頭の中で追わず、手で書く。左に擬似言語、右は方眼のメモ欄です。<br>
+    答え合わせすると、模範のトレース表が1行ずつ埋まっていきます。自分のメモと突き合わせてください。</p>
+    <div class="cards" id="cards"></div>
+  </section>
+
+  <!-- 問題 -->
+  <section id="viewQ" class="hide">
+    <button class="back" id="back">← 一覧にもどる</button>
+    <div class="qhead">
+      <div>
+        <div class="qno" id="qNo"></div>
+        <h2 id="qTitle"></h2>
+      </div>
+      <div class="timer" id="timer">0:00</div>
+    </div>
+
+    <div class="split">
+      <div>
+        <div class="panel">
+          <p class="plabel">問題</p>
+          <p class="prompt" id="qPrompt"></p>
+          <div class="code" id="qCode"></div>
+          <div class="given" id="qGiven"></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="panel" style="margin-bottom:16px">
+          <p class="plabel">解答群</p>
+          <div class="chs" id="qChoices"></div>
+        </div>
+        <div class="panel">
+          <p class="plabel">思考メモ（平打ち・方眼）</p>
+          <div class="memo-tools">
+            <button class="tbtn" id="btnTable">トレース表のひな形</button>
+            <button class="tbtn" id="btnClear">消す</button>
+          </div>
+          <textarea class="memo" id="memo" spellcheck="false"
+            placeholder="変数の値を1行ずつ書き出す。&#10;例）i=1 のとき tmp=2, array={8,4,6,8}"></textarea>
+          <p class="hint">Tabで字下げ。入力内容はこの端末に保存されます。</p>
+        </div>
+        <div class="actions">
+          <button class="solve" id="btnSolve" disabled>答え合わせ</button>
+          <button class="ghost" id="btnReveal">わからない・答えを見る</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 結果 -->
+    <div class="result hide" id="result">
+      <div class="verdict">
+        <div class="stamp" id="stamp">○</div>
+        <div class="verdict-t" id="verdictT"></div>
+      </div>
+
+      <div class="split">
+        <div class="panel">
+          <p class="plabel">実行の過程</p>
+          <div class="player">
+            <button class="pbtn" id="pFirst" title="最初へ">|◀</button>
+            <button class="pbtn" id="pPrev" title="前へ">◀</button>
+            <button class="pbtn wide" id="pPlay">自動再生</button>
+            <button class="pbtn" id="pNext" title="次へ">▶</button>
+            <input type="range" id="pRange" min="0" max="1" value="0" aria-label="ステップ">
+            <span class="pcount" id="pCount"></span>
+          </div>
+          <div class="stepnote" id="stepNote"></div>
+          <div class="tscroll"><table class="ttable" id="ttable"></table></div>
+        </div>
+
+        <div>
+          <div class="explain">
+            <p class="plabel" style="border:0;padding:0;margin-bottom:10px">解説</p>
+            <div id="explain"></div>
+            <div class="mynote hide" id="myNote"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-next">
+        <button class="solve" id="btnNext">次の問題 →</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+/* ============ 問題データ ============ */
+const Q = [
+{
+ id:"b01", cat:"セキュリティ",
+ title:"SQLインジェクション対策",
+ prompt:"Webアプリケーションが、利用者の入力値を用いてデータベースへの問合せを行う。SQLインジェクション攻撃を防ぐ対策として、最も適切なものはどれか。",
+ code:null, given:null,
+ vars:["選択肢","判定","理由"],
+ choices:[
+  "利用者の入力値からタグを表す文字を取り除いてから画面に出力する。",
+  "SQL文を組み立てる際にプレースホルダを用い、入力値を値としてバインドする。",
+  "Webサーバのアクセスログを暗号化して保管する。",
+  "セッションIDに推測困難な乱数を用いる。"],
+ answer:1,
+ steps:[
+  {v:["ア","×","タグ文字の除去はクロスサイトスクリプティング（XSS）への対策。SQL文の構造は守れない。"]},
+  {v:["イ","○","値をSQL文の一部ではなく「データ」として渡すので、入力に引用符やセミコロンが混ざっても構文が変わらない。"]},
+  {v:["ウ","×","ログの暗号化は事後の情報漏えい対策。攻撃そのものは成立してしまう。"]},
+  {v:["エ","×","セッションハイジャック対策であり、問合せ文の改ざんは防げない。"]}],
+ explain:"<p>SQLインジェクションは、入力値が<b>SQL文の構造そのもの</b>として解釈されることで成立します。したがって対策は「入力を無害な文字列に直す」ではなく「入力を構造から切り離す」方向で考えます。</p><p>プレースホルダ（バインド機構）を使うと、SQL文の骨格をあらかじめ確定させたうえで値だけを差し込むため、値の中身が何であっても構文が変化しません。エスケープ処理も対策になり得ますが、実装漏れが起きやすく、試験では<b>プレースホルダが第一の解</b>と覚えて構いません。</p><p>選択肢の切り分けは「その対策は<b>どの攻撃</b>に対応するものか」を1つずつラベル付けするのが速いです。</p>"
+},
+{
+ id:"b02", cat:"セキュリティ",
+ title:"ディジタル署名の検証に使う鍵",
+ prompt:"送信者Aは、メッセージにディジタル署名を付けて受信者Bに送る。Bが署名を検証するときに使用する鍵はどれか。",
+ code:null, given:null,
+ vars:["選択肢","判定","理由"],
+ choices:["Aの公開鍵","Aの秘密鍵","Bの公開鍵","Bの秘密鍵"],
+ answer:0,
+ steps:[
+  {v:["前提","—","署名は「本人しか作れず、誰でも確かめられる」必要がある。"]},
+  {v:["作成","Aの秘密鍵","Aだけが持つ鍵で作るから、なりすましができない。"]},
+  {v:["検証","Aの公開鍵","公開されているので誰でも検証できる ＝ 選択肢ア。"]},
+  {v:["比較","暗号化","秘密にしたいのは中身なので、暗号化では逆にBの公開鍵で暗号化しBの秘密鍵で復号する。"]}],
+ explain:"<p>公開鍵暗号の鍵の使い分けは、目的で反転します。<b>秘匿（暗号化）は受信者の鍵ペア、認証（署名）は送信者の鍵ペア</b>を使う、と対で覚えると迷いません。</p><p>署名は「Aの秘密鍵で作り、Aの公開鍵で検証」。実際にはメッセージのハッシュ値に対して署名するため、改ざん検知と本人確認の両方が同時に得られます。ただし<b>盗聴は防げません</b>（中身は平文のまま）。</p>"
+},
+{
+ id:"b03", cat:"セキュリティ",
+ title:"送信ドメイン認証",
+ prompt:"送信元ドメインの管理者がDNSに登録した情報と、受信側メールサーバが把握した接続元IPアドレスとを照合することで、送信元ドメインの詐称を検知する仕組みはどれか。",
+ code:null, given:null,
+ vars:["選択肢","判定","理由"],
+ choices:["DKIM","DMARC","S/MIME","SPF"],
+ answer:3,
+ steps:[
+  {v:["ア DKIM","×","電子署名をメールヘッダに付け、DNS上の公開鍵で検証する方式。照合するのはIPアドレスではない。"]},
+  {v:["イ DMARC","×","SPFとDKIMの検証結果を受けて、失敗時の扱い（拒否・隔離）と報告を定めるポリシの枠組み。"]},
+  {v:["ウ S/MIME","×","メール本文の暗号化とディジタル署名。ドメイン認証の仕組みではない。"]},
+  {v:["エ SPF","○","送信を許可したサーバのIPアドレスをDNSのTXTレコードに公開し、受信側が接続元と突き合わせる ＝ 正解。"]}],
+ explain:"<p>三つの区別は<b>「何を照合するか」</b>で決まります。SPFは<b>IPアドレス</b>、DKIMは<b>電子署名</b>、DMARCはその<b>結果をどう扱うかの方針</b>です。</p><p>SPFは転送されたメールで失敗しやすい弱点があり、それを署名で補うのがDKIM、両者を束ねて運用ポリシと集計レポートを与えるのがDMARC、という積み上げの関係で覚えると出題パターンにほぼ対応できます。</p>"
+},
+{
+ id:"b04", cat:"アルゴリズム",
+ title:"配列を逆順にする",
+ prompt:"次の関数 reverse は、引数で受け取った整数型の配列の並びを逆順にして返す。reverse({2, 4, 6, 8}) の戻り値はどれか。ここで、配列の要素番号は1から始まる。",
+ code:[
+  "○整数型の配列: reverse(整数型の配列: array)",
+  "  整数型: i, tmp",
+  "  for (i を 1 から (arrayの要素数 ÷ 2 の商) まで 1 ずつ増やす)",
+  "    tmp ← array[i]",
+  "    array[i] ← array[arrayの要素数 - i + 1]",
+  "    array[arrayの要素数 - i + 1] ← tmp",
+  "  endfor",
+  "  return array"],
+ given:"array = {2, 4, 6, 8} ／ arrayの要素数 = 4 ／ 4 ÷ 2 の商 = 2",
+ vars:["i","tmp","array"],
+ choices:["{2, 4, 6, 8}","{8, 4, 6, 2}","{8, 6, 4, 2}","{6, 8, 2, 4}"],
+ answer:2,
+ steps:[
+  {line:3,note:"ループの上限は 4÷2の商 = 2。i は 1 と 2 の2回だけ回る。",v:["1","—","{2,4,6,8}"]},
+  {line:4,note:"tmp ← array[1] = 2",v:["1","2","{2,4,6,8}"]},
+  {line:5,note:"array[1] ← array[4-1+1] = array[4] = 8",v:["1","2","{8,4,6,8}"]},
+  {line:6,note:"array[4] ← tmp = 2 （1番目と4番目の交換が完了）",v:["1","2","{8,4,6,2}"]},
+  {line:3,note:"i を 2 に更新。2 ≦ 2 なのでループ継続。",v:["2","2","{8,4,6,2}"]},
+  {line:4,note:"tmp ← array[2] = 4",v:["2","4","{8,4,6,2}"]},
+  {line:5,note:"array[2] ← array[4-2+1] = array[3] = 6",v:["2","4","{8,6,6,2}"]},
+  {line:6,note:"array[3] ← tmp = 4 （2番目と3番目の交換が完了）",v:["2","4","{8,6,4,2}"]},
+  {line:3,note:"i を 3 に更新。3 > 2 なのでループを抜ける。",v:["3","4","{8,6,4,2}"]},
+  {line:8,note:"return {8, 6, 4, 2} → 正解はウ",v:["3","4","{8,6,4,2}"]}],
+ explain:"<p>交換は必ず<b>3行1セット</b>（退避→上書き→書き戻し）です。tmp の行を飛ばして読むと、2行目で元の値が消えることに気付けません。</p><p>最大の罠はループの上限です。<b>要素数の半分まで</b>で止めないと、後半でもう一度同じ組を交換してしまい、元の並びに戻ります（選択肢ア）。イは1回目の交換だけで止めた場合の値です。</p><p>手で追うときは、array の行に毎回<b>4要素すべてを書き写す</b>のがコツ。変わった要素だけをメモすると、要素番号の対応を見失います。</p>"
+},
+{
+ id:"b05", cat:"データ構造",
+ title:"二次元配列と間接的な添字",
+ prompt:"次の関数 pick は、二次元配列 table の各行から、配列 idx が指す列の値を取り出して合計する。pick(table, idx) の戻り値を答えよ。ここで、要素番号は1から始まり、table[i, j] は第i行第j列の要素を表す。",
+ code:[
+  "○整数型: pick(整数型の二次元配列: table, 整数型の配列: idx)",
+  "  整数型: i, sum",
+  "  sum ← 0",
+  "  for (i を 1 から idxの要素数 まで 1 ずつ増やす)",
+  "    sum ← sum + table[i, idx[i]]",
+  "  endfor",
+  "  return sum"],
+ given:"table = {{1, 2, 3},\n         {4, 5, 6},\n         {7, 8, 9}}\nidx   = {3, 1, 2}",
+ vars:["i","idx[i]","table[i,idx[i]]","sum"],
+ choices:["12","15","18","21"],
+ answer:1,
+ steps:[
+  {line:3,note:"sum ← 0 で初期化。",v:["—","—","—","0"]},
+  {line:5,note:"i=1：まず idx[1] = 3 を求め、その後 table[1, 3] = 3 を読む。",v:["1","3","3","3"]},
+  {line:5,note:"i=2：idx[2] = 1 → table[2, 1] = 4。sum = 3 + 4 = 7",v:["2","1","4","7"]},
+  {line:5,note:"i=3：idx[3] = 2 → table[3, 2] = 8。sum = 7 + 8 = 15",v:["3","2","8","15"]},
+  {line:7,note:"return 15 → 正解はイ",v:["3","2","8","15"]}],
+ explain:"<p>table[i, idx[i]] のような<b>入れ子の添字</b>は、必ず<b>内側から</b>1段ずつ紙に落とします。i=1 なら「idx[1]は3」「だから table[1,3]」「その値は3」の3段階。1行で処理しようとすると、行と列を取り違えます。</p><p>選択肢アの12は対角成分 1+5+9 の値で、idx を無視して table[i,i] を読んだときの誤答です。<b>行番号は i、列番号は idx[i]</b> と、トレース表に列を分けて書けば防げます。</p><p>二次元配列の問題では、答案用紙に3×3のマス目を実際に描いて値を書き込み、読んだ位置に印を付けると確実です。</p>"
+},
+{
+ id:"b06", cat:"アルゴリズム",
+ title:"再帰関数の戻り値",
+ prompt:"次の関数 f について、f(7) の戻り値はどれか。",
+ code:[
+  "○整数型: f(整数型: n)",
+  "  if (n ≦ 1)",
+  "    return 1",
+  "  endif",
+  "  return n × f(n - 2)"],
+ given:"呼び出し：f(7)",
+ vars:["呼出し","n","評価される式","戻り値"],
+ choices:["21","35","105","5040"],
+ answer:2,
+ steps:[
+  {line:2,note:"f(7)：7 ≦ 1 は偽。まだ戻れない。",v:["f(7)","7","—","未確定"]},
+  {line:5,note:"戻り値は 7 × f(5)。f(5) を求めに行く（7は保留）。",v:["f(7)","7","7 × f(5)","未確定"]},
+  {line:5,note:"f(5) → 5 × f(3)。さらに深く潜る。",v:["f(5)","5","5 × f(3)","未確定"]},
+  {line:5,note:"f(3) → 3 × f(1)。",v:["f(3)","3","3 × f(1)","未確定"]},
+  {line:2,note:"f(1)：1 ≦ 1 が真。ここが再帰の底。",v:["f(1)","1","1 ≦ 1 → 真","1"]},
+  {line:3,note:"f(1) が 1 を返す。ここから折り返して計算が確定していく。",v:["f(1)","1","return 1","1"]},
+  {line:5,note:"f(3) = 3 × 1 = 3",v:["f(3)","3","3 × 1","3"]},
+  {line:5,note:"f(5) = 5 × 3 = 15",v:["f(5)","5","5 × 3","15"]},
+  {line:5,note:"f(7) = 7 × 15 = 105 → 正解はウ",v:["f(7)","7","7 × 15","105"]}],
+ explain:"<p>再帰は<b>「潜る」と「戻る」を2列に分けて</b>書くと崩れません。上から下へ f(7)→f(5)→f(3)→f(1) を並べ、底に着いたら下から上へ値を書き戻します。</p><p>この関数は n を2ずつ減らすので、7・5・3・1 の積すなわち<b>二重階乗</b>で 105 です。選択肢エの5040は 7! で、n-2 を n-1 と読み違えたときの値。分岐の中の数値は指でなぞって確認してください。</p><p>底（終了条件）に必ず到達するかの確認も出題されます。ここでは奇数から始まるので n=1 で止まりますが、偶数を渡すと n=0 を素通りして負に進み、止まりません。</p>"
+},
+{
+ id:"b07", cat:"プログラミング",
+ title:"整数の各桁の和",
+ prompt:"次の関数 digitSum の、digitSum(2896) の戻り値はどれか。ここで、「÷ の商」は小数点以下を切り捨てた整数を表す。",
+ code:[
+  "○整数型: digitSum(整数型: num)",
+  "  整数型: s ← 0",
+  "  while (num > 0)",
+  "    s ← s + (num ÷ 10 の余り)",
+  "    num ← num ÷ 10 の商",
+  "  endwhile",
+  "  return s"],
+ given:"num = 2896",
+ vars:["num（判定前）","余り","s","num（更新後）"],
+ choices:["16","23","25","28"],
+ answer:2,
+ steps:[
+  {line:2,note:"s ← 0",v:["2896","—","0","2896"]},
+  {line:4,note:"2896 ÷ 10 の余り = 6 → s = 0 + 6 = 6",v:["2896","6","6","2896"]},
+  {line:5,note:"num ← 2896 ÷ 10 の商 = 289（1桁削れた）",v:["2896","6","6","289"]},
+  {line:4,note:"余り 9 → s = 6 + 9 = 15",v:["289","9","15","289"]},
+  {line:5,note:"num ← 28",v:["289","9","15","28"]},
+  {line:4,note:"余り 8 → s = 15 + 8 = 23",v:["28","8","23","28"]},
+  {line:5,note:"num ← 2",v:["28","8","23","2"]},
+  {line:4,note:"余り 2 → s = 23 + 2 = 25",v:["2","2","25","2"]},
+  {line:5,note:"num ← 0",v:["2","2","25","0"]},
+  {line:3,note:"num > 0 が偽になりループ終了。",v:["0","—","25","0"]},
+  {line:7,note:"return 25 → 正解はウ",v:["0","—","25","0"]}],
+ explain:"<p>「10で割った余りで<b>1の位を取り出し</b>、10で割った商で<b>1桁削る</b>」は頻出の型です。この2行がセットで1桁分の処理だと分かれば、桁数だけループが回ることも見えます。</p><p>誤答が出るのは、num の更新前後を同じ列に書いてしまったときです。トレース表では<b>判定に使った値と更新後の値を別の列</b>に置くと、次の周回の入口が一目で分かります。</p><p>最後の周回（num=2）で商が0になり、そこで初めて条件が偽になる点も確認してください。while型は<b>抜ける瞬間の1行</b>まで書くのが習慣です。</p>"
+},
+{
+ id:"b08", cat:"データ構造",
+ title:"スタックの操作結果",
+ prompt:"次の手続き proc の戻り値はどれか。push(x) はスタックに x を積み、pop() はスタックから値を取り出して返す。「+」は文字列の連結を表す。",
+ code:[
+  "○文字列型: proc()",
+  "  文字列型: out ← \"\"",
+  "  push(\"A\")",
+  "  push(\"B\")",
+  "  out ← out + pop()",
+  "  push(\"C\")",
+  "  out ← out + pop()",
+  "  out ← out + pop()",
+  "  return out"],
+ given:"スタックは空の状態から始まる（左が底、右が先頭）",
+ vars:["操作","スタック","out"],
+ choices:["\"ABC\"","\"BCA\"","\"BAC\"","\"CBA\""],
+ answer:1,
+ steps:[
+  {line:2,note:"out は空文字列。",v:["初期化","（空）","\"\""]},
+  {line:3,note:"push(\"A\")",v:["push A","A","\"\""]},
+  {line:4,note:"push(\"B\") — Bが先頭に乗る。",v:["push B","A B","\"\""]},
+  {line:5,note:"pop() は先頭の B を返す。out = \"B\"",v:["pop → B","A","\"B\""]},
+  {line:6,note:"push(\"C\") — 底のAは残ったまま、Cが上に乗る。",v:["push C","A C","\"B\""]},
+  {line:7,note:"pop() → C。out = \"BC\"",v:["pop → C","A","\"BC\""]},
+  {line:8,note:"pop() → A。out = \"BCA\"",v:["pop → A","（空）","\"BCA\""]},
+  {line:9,note:"return \"BCA\" → 正解はイ",v:["return","（空）","\"BCA\""]}],
+ explain:"<p>スタックは<b>後入れ先出し（LIFO）</b>。取り出されるのは常に直前に積んだ値です。紙の上では、<b>横1列に書いて右端を先頭</b>と決め、push で右に足し、pop で右端を消すと視覚的に安定します。</p><p>この問題の要点は、途中の push(\"C\") で<b>底のAが取り残される</b>こと。最後に出てくるのが最初に積んだAなので、末尾がAになります。選択肢エはキュー（先入れ先出し）と混同した場合の並びです。</p>"
+},
+{
+ id:"b09", cat:"プログラミング",
+ title:"ビットが1である個数",
+ prompt:"次の関数 bitCount は、引数 x を2進表現したときの1の個数を返す。bitCount(13) の戻り値はどれか。AND はビットごとの論理積を表す。",
+ code:[
+  "○整数型: bitCount(整数型: x)",
+  "  整数型: c ← 0",
+  "  while (x ≠ 0)",
+  "    if ((x AND 1) = 1)",
+  "      c ← c + 1",
+  "    endif",
+  "    x ← x を右に 1 ビット論理シフトした値",
+  "  endwhile",
+  "  return c"],
+ given:"x = 13 （2進表現 1101）",
+ vars:["x","xの2進表現","x AND 1","c"],
+ choices:["2","3","4","13"],
+ answer:1,
+ steps:[
+  {line:2,note:"c ← 0",v:["13","1101","—","0"]},
+  {line:4,note:"13 AND 1 = 1（最下位ビットが1）→ c = 1",v:["13","1101","1","1"]},
+  {line:7,note:"右に1ビットシフト：1101 → 110（＝6）",v:["6","110","1","1"]},
+  {line:4,note:"6 AND 1 = 0 → c は増えない。",v:["6","110","0","1"]},
+  {line:7,note:"右シフト：110 → 11（＝3）",v:["3","11","0","1"]},
+  {line:4,note:"3 AND 1 = 1 → c = 2",v:["3","11","1","2"]},
+  {line:7,note:"右シフト：11 → 1",v:["1","1","1","2"]},
+  {line:4,note:"1 AND 1 = 1 → c = 3",v:["1","1","1","3"]},
+  {line:7,note:"右シフト：1 → 0",v:["0","0","1","3"]},
+  {line:3,note:"x ≠ 0 が偽。ループ終了。",v:["0","0","—","3"]},
+  {line:9,note:"return 3 → 正解はイ",v:["0","0","—","3"]}],
+ explain:"<p>「x AND 1 で<b>最下位ビットを調べ</b>、右シフトで<b>1ビット捨てる</b>」は、10進の「10で割った余り／商」とまったく同じ発想です。両方を同じ型として覚えると応用が利きます。</p><p>13 = 1101 なので1の個数は3。トレース表には必ず<b>2進表現の列</b>を作ってください。10進のまま追うと、シフト後の6や3が何ビット目まで残っているのか分からなくなります。</p><p>論理シフトは空いた上位ビットに0を詰めるため、正の数では値が0に向かって単調に減り、ループは必ず終了します。</p>"
+}
+];
+
+/* ============ 状態 ============ */
+const S = {view:"list", filter:"すべて", qi:0, picked:null, graded:false,
+           step:0, timerId:null, sec:0, playId:null, results:{}};
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+const KEY = ["ア","イ","ウ","エ"];
+
+/* ---- 保存 ---- */
+async function load(k){ try{ const r = localStorage.getItem(k); return r ? JSON.parse(r) : null; }catch(e){ return null; } }
+async function save(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+
+/* ============ 一覧 ============ */
+function renderFilters(){
+  const cats = ["すべて", ...new Set(Q.map(q=>q.cat))];
+  $("filters").innerHTML = cats.map(c =>
+    `<button class="chip" data-cat="${c}" aria-pressed="${c===S.filter}">${c}</button>`).join("");
+  $("filters").querySelectorAll(".chip").forEach(b => b.onclick = () => {
+    S.filter = b.dataset.cat; renderFilters(); renderList();
+  });
+}
+function renderList(){
+  const list = Q.filter(q => S.filter==="すべて" || q.cat===S.filter);
+  $("cards").innerHTML = list.map(q => {
+    const r = S.results[q.id];
+    const cls = r ? (r.ok ? "done" : "miss") : "";
+    const mk  = r ? `<span class="mark">${r.ok ? "○" : "×"}</span>` : "";
+    return `<button class="card ${cls}" data-id="${q.id}">
+      <div class="card-h"><span class="qno">問 ${String(Q.indexOf(q)+1).padStart(2,"0")}</span><span class="cat">${q.cat}</span></div>
+      <div class="card-t">${esc(q.title)}${mk}</div>
+      <div class="card-d">${esc(q.prompt).slice(0,58)}…</div></button>`;
+  }).join("");
+  $("cards").querySelectorAll(".card").forEach(b => b.onclick = () => openQ(Q.findIndex(x=>x.id===b.dataset.id)));
+  const done = Object.keys(S.results).length, ok = Object.values(S.results).filter(r=>r.ok).length;
+  $("stScore").textContent = `${ok}/${done||0}`;
+}
+
+/* ============ 問題表示 ============ */
+async function openQ(i){
+  S.qi=i; S.picked=null; S.graded=false; S.step=0; S.sec=0;
+  stopPlay();
+  const q = Q[i];
+  S.view="q"; $("viewList").classList.add("hide"); $("viewQ").classList.remove("hide");
+  window.scrollTo(0,0);
+
+  $("qNo").textContent = `問 ${String(i+1).padStart(2,"0")} ／ ${q.cat}`;
+  $("qTitle").textContent = q.title;
+  $("qPrompt").textContent = q.prompt;
+
+  if(q.code){
+    $("qCode").innerHTML = q.code.map((l,n) =>
+      `<div class="cl" data-line="${n+1}"><span class="n">${n+1}</span><span>${esc(l)}</span></div>`).join("");
+    $("qCode").classList.remove("hide");
+  } else { $("qCode").innerHTML=""; $("qCode").classList.add("hide"); }
+
+  if(q.given){ $("qGiven").textContent = q.given; $("qGiven").classList.remove("hide"); }
+  else $("qGiven").classList.add("hide");
+
+  $("qChoices").innerHTML = q.choices.map((c,n) =>
+    `<button class="ch" data-n="${n}" aria-pressed="false"><span class="k">${KEY[n]}</span><span>${esc(c)}</span></button>`).join("");
+  $("qChoices").querySelectorAll(".ch").forEach(b => b.onclick = () => {
+    if(S.graded) return;
+    S.picked = +b.dataset.n;
+    $("qChoices").querySelectorAll(".ch").forEach(x => x.setAttribute("aria-pressed", x===b));
+    $("btnSolve").disabled = false;
+  });
+
+  $("result").classList.add("hide");
+  $("btnSolve").disabled = true;
+  $("btnReveal").classList.remove("hide");
+  $("memo").value = (await load("feb:memo:"+q.id)) || "";
+  startTimer();
+}
+
+/* ---- タイマー ---- */
+function startTimer(){
+  clearInterval(S.timerId);
+  const t = $("timer"); t.classList.remove("over");
+  S.timerId = setInterval(()=>{
+    S.sec++;
+    t.textContent = `${Math.floor(S.sec/60)}:${String(S.sec%60).padStart(2,"0")}`;
+    if(S.sec >= 300) t.classList.add("over");
+  },1000);
+}
+
+/* ============ 採点 ============ */
+function grade(revealed){
+  const q = Q[S.qi];
+  clearInterval(S.timerId);
+  S.graded = true;
+  const ok = !revealed && S.picked === q.answer;
+
+  $("qChoices").querySelectorAll(".ch").forEach((b,n) => {
+    if(n===q.answer) b.classList.add("ok");
+    else if(n===S.picked) b.classList.add("ng");
+  });
+
+  $("stamp").textContent = ok ? "○" : "×";
+  $("verdictT").innerHTML = ok
+    ? `正解 ${KEY[q.answer]}<span>所要 ${Math.floor(S.sec/60)}分${S.sec%60}秒。この解き方を再現できるか、下の過程と突き合わせてください。</span>`
+    : `正解は ${KEY[q.answer]}<span>${revealed ? "解答を表示しました。" : "選んだのは "+KEY[S.picked]+"。"}どの1行で値がずれたのかを、下の表で特定してください。</span>`;
+
+  const memo = $("memo").value.trim();
+  if(memo){ $("myNote").textContent = "自分のメモ：\n"+memo; $("myNote").classList.remove("hide"); }
+  else $("myNote").classList.add("hide");
+
+  $("explain").innerHTML = q.explain;
+  $("pRange").max = q.steps.length - 1;
+  $("pRange").value = 0;
+  S.step = 0; drawStep();
+
+  $("result").classList.remove("hide");
+  $("btnSolve").disabled = true;
+  $("btnReveal").classList.add("hide");
+
+  if(!revealed || !S.results[q.id]){
+    S.results[q.id] = {ok, sec:S.sec};
+    save("feb:results", S.results);
+  }
+  $("result").scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+/* ============ ステップ再生 ============ */
+function drawStep(){
+  const q = Q[S.qi], st = q.steps[S.step];
+  document.querySelectorAll(".cl").forEach(el => el.classList.remove("on"));
+  if(st.line){
+    const el = document.querySelector(`.cl[data-line="${st.line}"]`);
+    if(el) el.classList.add("on");
+  }
+  $("stepNote").textContent = st.note ? (st.line ? `${st.line}行目 ／ ${st.note}` : st.note) : (st.v ? st.v[2] || "" : "");
+
+  let html = `<thead><tr><th class="ln">#</th>${q.vars.map(v=>`<th>${esc(v)}</th>`).join("")}</tr></thead><tbody>`;
+  for(let i=0;i<=S.step;i++){
+    const s = q.steps[i];
+    html += `<tr><td class="ln">${s.line ?? i+1}</td>${s.v.map(x=>`<td>${esc(x)}</td>`).join("")}</tr>`;
+  }
+  $("ttable").innerHTML = html + "</tbody>";
+  $("pCount").textContent = `${S.step+1} / ${q.steps.length}`;
+  $("pRange").value = S.step;
+}
+function go(n){
+  const max = Q[S.qi].steps.length - 1;
+  S.step = Math.max(0, Math.min(max, n));
+  drawStep();
+  return S.step < max;
+}
+function stopPlay(){ clearInterval(S.playId); S.playId=null; $("pPlay").textContent="自動再生"; }
+function togglePlay(){
+  if(S.playId){ stopPlay(); return; }
+  $("pPlay").textContent = "停止";
+  if(S.step === Q[S.qi].steps.length-1) go(0);
+  S.playId = setInterval(()=>{ if(!go(S.step+1)) stopPlay(); }, 1400);
+}
+
+/* ============ メモ欄 ============ */
+$("memo").addEventListener("keydown", e => {
+  if(e.key === "Tab"){ e.preventDefault();
+    const t=e.target, p=t.selectionStart;
+    t.value = t.value.slice(0,p) + "  " + t.value.slice(t.selectionEnd);
+    t.selectionStart = t.selectionEnd = p+2;
+  }
+});
+let saveT;
+$("memo").addEventListener("input", ()=>{
+  clearTimeout(saveT);
+  saveT = setTimeout(()=> save("feb:memo:"+Q[S.qi].id, $("memo").value), 500);
+});
+$("btnTable").onclick = ()=>{
+  const q = Q[S.qi];
+  const cols = q.vars.map(v => v.padEnd(9," ").slice(0,9));
+  const head = " 回 | " + cols.join(" | ");
+  const rule = "-".repeat(head.length);
+  let t = "\n" + head + "\n" + rule + "\n";
+  for(let i=1;i<=6;i++) t += ` ${String(i).padStart(2," ")} | ` + cols.map(c=>" ".repeat(9)).join(" | ") + "\n";
+  const m = $("memo");
+  m.value += t; m.focus(); m.scrollTop = m.scrollHeight;
+  m.dispatchEvent(new Event("input"));
+};
+$("btnClear").onclick = ()=>{ $("memo").value=""; $("memo").focus(); $("memo").dispatchEvent(new Event("input")); };
+
+/* ============ イベント ============ */
+$("btnSolve").onclick  = ()=> grade(false);
+$("btnReveal").onclick = ()=> grade(true);
+$("back").onclick = ()=>{ clearInterval(S.timerId); stopPlay();
+  $("viewQ").classList.add("hide"); $("viewList").classList.remove("hide"); renderList(); window.scrollTo(0,0); };
+$("btnNext").onclick = ()=> openQ((S.qi+1) % Q.length);
+$("pNext").onclick  = ()=>{ stopPlay(); go(S.step+1); };
+$("pPrev").onclick  = ()=>{ stopPlay(); go(S.step-1); };
+$("pFirst").onclick = ()=>{ stopPlay(); go(0); };
+$("pPlay").onclick  = togglePlay;
+$("pRange").oninput = e =>{ stopPlay(); go(+e.target.value); };
+document.addEventListener("keydown", e=>{
+  if(S.view!=="q" || !S.graded || e.target.tagName==="TEXTAREA") return;
+  if(e.key==="ArrowRight"){ stopPlay(); go(S.step+1); }
+  if(e.key==="ArrowLeft"){ stopPlay(); go(S.step-1); }
+});
+
+/* ============ 起動 ============ */
+(async ()=>{
+  S.results = (await load("feb:results")) || {};
+  renderFilters(); renderList();
+})();
+</script>
+</body>
+</html>
