@@ -508,5 +508,54 @@ const QUESTIONS = [
  ],
  explain:"<p>挿入ソートでは、未整列部分の先頭を<b>keyとして退避</b>し、keyより大きい要素を右へずらして空いた位置へkeyを挿入します。</p><p>i=4では5と4を右へ移動しますが、先頭の2はkeyと等しく、while条件が「＞」なので移動しません。したがって処理直後は<b>{2, 2, 4, 5, 3}</b>となり、正解はアです。</p>",
  automation:{kind:"scheduled",dateJst:"2026-08-18",addedAtJst:"2026-08-18T21:00:03+09:00"}
+},
+{
+ id:"auto-20260818-2300-runlength", cat:"プログラミング",
+ title:"連長圧縮で作られる文字列",
+ prompt:"次の関数 compress は、同じ文字が連続する区間ごとに「文字」と「連続回数」を出力文字列へ追加する。compress(\"AABCCCAA\") の戻り値はどれか。文字列の要素番号は1から始まり、toString(n) は整数nを数字列へ変換する。",
+ code:[
+  "○文字列型: compress(文字列型: s)",
+  "  整数型: i, count",
+  "  文字列型: current, out",
+  "  out ← \"\"",
+  "  current ← s[1]",
+  "  count ← 1",
+  "  for (i を 2 から sの文字数 まで 1 ずつ増やす)",
+  "    if (s[i] = current)",
+  "      count ← count + 1",
+  "    else",
+  "      out ← out + current + toString(count)",
+  "      current ← s[i]",
+  "      count ← 1",
+  "    endif",
+  "  endfor",
+  "  out ← out + current + toString(count)",
+  "  return out"
+ ],
+ given:"s = \"AABCCCAA\" ／ sの文字数 = 8",
+ vars:["i","s[i]","current","count","out"],
+ choices:[
+  "A2B1C3A2",
+  "A2B1C2A2",
+  "A2B1C3A1",
+  "AAB1CCC2A",
+  "A2B1C3",
+  "A1B1C1A1"
+ ],
+ answer:0,
+ steps:[
+  {line:6,note:"先頭文字Aをcurrentにし、countを1、outを空文字列で初期化する。",v:["1","A","A","1","\"\""]},
+  {line:9,note:"i=2もAなので、同じ区間のcountを2に増やす。",v:["2","A","A","2","\"\""]},
+  {line:13,note:"i=3はB。Aの区間A2をoutへ追加し、currentをB、countを1にする。",v:["3","B","B","1","A2"]},
+  {line:13,note:"i=4はC。Bの区間B1を追加して、Cの区間を開始する。",v:["4","C","C","1","A2B1"]},
+  {line:9,note:"i=5はC。countを2に増やす。",v:["5","C","C","2","A2B1"]},
+  {line:9,note:"i=6もC。countを3に増やす。",v:["6","C","C","3","A2B1"]},
+  {line:13,note:"i=7はA。Cの区間C3を追加し、Aの区間を開始する。",v:["7","A","A","1","A2B1C3"]},
+  {line:9,note:"i=8もAなので、最後の区間のcountを2に増やす。",v:["8","A","A","2","A2B1C3"]},
+  {line:16,note:"ループ後に最後の区間A2を忘れず追加する。",v:["8","—","A","2","A2B1C3A2"]},
+  {line:17,note:"完成した文字列A2B1C3A2を返す。",v:["8","—","A","2","A2B1C3A2"]}
+ ],
+ explain:"<p>文字が変わった時点で、それまでの区間を<b>current + count</b>としてoutへ追加します。Aの区間はA2、BはB1、CはC3です。</p><p>最後のA2は、後続に異なる文字がないのでelse節では追加されません。そのため、ループ終了後の16行目で追加する必要があります。戻り値は<b>A2B1C3A2</b>で、正解はアです。</p>",
+ automation:{kind:"scheduled",dateJst:"2026-08-18",addedAtJst:"2026-08-18T23:00:03+09:00"}
 }
 ];
