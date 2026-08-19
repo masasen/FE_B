@@ -895,5 +895,40 @@ const QUESTIONS = [
  ],
  explain:"<p>最短距離が未確定の頂点のうち、distが最小の頂点から順に確定します。頂点3を経由すると頂点2までが4から3へ短縮されます。</p><p>さらに頂点2を経由すると頂点4までが6から4へ短縮されます。最終結果は<b>{0,3,1,4}</b>で、正解はアです。</p>",
  automation:{kind:"scheduled",dateJst:"2026-08-19",addedAtJst:"2026-08-19T15:00:34+09:00"}
+},
+{
+ id:"auto-20260819-1700-binaryadd", cat:"プログラミング",
+ title:"2進文字列の桁ごとの加算",
+ prompt:"次の関数 addBinary は、同じ長さの2進文字列aとbを右端から1桁ずつ加算する。addBinary(\"1011\", \"0110\") の戻り値はどれか。charToIntは文字0又は1を整数へ変換し、toStringは整数を文字へ変換する。",
+ code:[
+  "○文字列型: addBinary(文字列型: a, 文字列型: b)",
+  "  整数型: i, sum, digit, carry ← 0",
+  "  文字列型: result ← \"\"",
+  "  for (i を aの文字数 から 1 まで 1 ずつ減らす)",
+  "    sum ← charToInt(a[i]) + charToInt(b[i]) + carry",
+  "    digit ← sum mod 2",
+  "    carry ← sum ÷ 2 の商",
+  "    result ← toString(digit) + result",
+  "  endfor",
+  "  if (carry = 1)",
+  "    result ← \"1\" + result",
+  "  endif",
+  "  return result"
+ ],
+ given:"a = \"1011\" ／ b = \"0110\" ／ 初期carry = 0",
+ vars:["i","a[i]","b[i]","sum","digit","carry","result"],
+ choices:["10001","1001","11101","11001","10000","10101"],
+ answer:0,
+ steps:[
+  {line:3,note:"carryを0、resultを空文字列で初期化する。",v:["—","—","—","—","—","0","\"\""]},
+  {line:8,note:"i=4は1+0+0=1。digit=1、carry=0としてresultの先頭へ1を付ける。",v:["4","1","0","1","1","0","1"]},
+  {line:8,note:"i=3は1+1+0=2。digit=0、carry=1となる。",v:["3","1","1","2","0","1","01"]},
+  {line:8,note:"i=2は0+1+1=2。digit=0、carry=1を維持する。",v:["2","0","1","2","0","1","001"]},
+  {line:8,note:"i=1は1+0+1=2。digit=0、carry=1となる。",v:["1","1","0","2","0","1","0001"]},
+  {line:11,note:"全桁処理後もcarry=1なので、先頭へ1を追加する。",v:["終了","—","—","—","—","1","10001"]},
+  {line:13,note:"完成した2進文字列10001を返す。",v:["終了","—","—","—","—","1","10001"]}
+ ],
+ explain:"<p>各桁では2進数の加算なので、digitはsum mod 2、次の桁へのcarryはsum÷2の商です。結果の文字は右端から求まるため、resultの<b>先頭</b>へ追加します。</p><p>4桁を処理した後にcarry=1が残るので、さらに先頭へ1を付けます。戻り値は<b>10001</b>で、正解はアです。</p>",
+ automation:{kind:"scheduled",dateJst:"2026-08-19",addedAtJst:"2026-08-19T17:00:35+09:00"}
 }
 ];
