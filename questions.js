@@ -1690,5 +1690,138 @@ const QUESTIONS = [
   "dateJst": "2026-08-20",
   "addedAtJst": "2026-08-20T05:01:36+09:00"
  }
+},
+{
+ "id": "auto-20260820-0701-trie",
+ "cat": "データ構造",
+ "title": "トライ木の共有接頭辞",
+ "prompt": "次の処理は、文字列集合をトライ木へ順に挿入する。各節点のpassは、その節点までの接頭辞をもつ挿入済み文字列の個数を表す。根を除いて新しく作った節点の総数newNodesと、三つの接頭辞の個数を順に並べた戻り値はどれか。",
+ "code": [
+  "○insert(文字列型: word)",
+  "  node ← root",
+  "  wordの各文字chについて",
+  "    if (node.child[ch] = null)",
+  "      node.child[ch] ← 新しい節点",
+  "      newNodes ← newNodes + 1",
+  "    endif",
+  "    node ← node.child[ch]",
+  "    node.pass ← node.pass + 1",
+  "  endfor",
+  "○整数型: countPrefix(文字列型: prefix)",
+  "  node ← root",
+  "  prefixの各文字chについて",
+  "    if (node.child[ch] = null) return 0",
+  "    node ← node.child[ch]",
+  "  endfor",
+  "  return node.pass",
+  "newNodes ← 0",
+  "\"CAT\", \"CAR\", \"DOG\", \"CART\"の順にinsertする",
+  "return {newNodes, countPrefix(\"CA\"), countPrefix(\"CAR\"), countPrefix(\"DO\")}"
+ ],
+ "given": "初期状態ではrootだけがあり、全てのchildはnull、全てのpassは0である。newNodesにはrootを含めない。",
+ "vars": [
+  "挿入語",
+  "新規節点",
+  "newNodes",
+  "pass(C)",
+  "pass(CA)",
+  "pass(CAR)",
+  "pass(DO)"
+ ],
+ "choices": [
+  "{8, 3, 2, 1}",
+  "{9, 3, 2, 1}",
+  "{8, 4, 2, 1}",
+  "{10, 3, 2, 1}",
+  "{8, 3, 1, 1}",
+  "{8, 3, 2, 0}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 18,
+   "note": "開始時はrootだけがあり、根はnewNodesに数えない。",
+   "v": [
+    "初期状態",
+    "—",
+    "0",
+    "0",
+    "0",
+    "0",
+    "0"
+   ]
+  },
+  {
+   "line": 9,
+   "note": "CATではC、A、Tの3節点を新規作成し、CとCAを通る文字列数は1になる。",
+   "v": [
+    "CAT",
+    "C,A,T",
+    "3",
+    "1",
+    "1",
+    "0",
+    "0"
+   ]
+  },
+  {
+   "line": 9,
+   "note": "CARはCとAを共有し、Rだけを新規作成する。C、CAのpassは2、CARのpassは1になる。",
+   "v": [
+    "CAR",
+    "R",
+    "4",
+    "2",
+    "2",
+    "1",
+    "0"
+   ]
+  },
+  {
+   "line": 9,
+   "note": "DOGは既存の先頭と共有しないのでD、O、Gの3節点を作る。DOのpassは1になる。",
+   "v": [
+    "DOG",
+    "D,O,G",
+    "7",
+    "2",
+    "2",
+    "1",
+    "1"
+   ]
+  },
+  {
+   "line": 9,
+   "note": "CARTはC、A、Rを共有し、Rの下のTだけを作る。CAは3語、CARは2語が通る。",
+   "v": [
+    "CART",
+    "T",
+    "8",
+    "3",
+    "3",
+    "2",
+    "1"
+   ]
+  },
+  {
+   "line": 20,
+   "note": "各接頭辞の末尾節点のpassを読み、newNodesとともに返す。",
+   "v": [
+    "照会",
+    "—",
+    "8",
+    "3",
+    "3",
+    "2",
+    "1"
+   ]
+  }
+ ],
+ "explain": "<p>CATとCARは接頭辞CAを共有し、CARTはさらにCARまで共有します。新規節点はCATで3、CARで1、DOGで3、CARTで1なので合計<b>8</b>です。</p><p>接頭辞CAをもつ語は3個、CARは2個、DOは1個です。したがって戻り値は<b>{8,3,2,1}</b>となり、正解はアです。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-20",
+  "addedAtJst": "2026-08-20T07:01:36+09:00"
+ }
 }
 ];
