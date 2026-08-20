@@ -2537,5 +2537,143 @@ const QUESTIONS = [
   "dateJst": "2026-08-20",
   "addedAtJst": "2026-08-20T19:05:37+09:00"
  }
+},
+{
+ "id": "auto-20260820-2106-avlrotation",
+ "cat": "データ構造",
+ "title": "AVL木の二重回転",
+ "prompt": "空のAVL木へキー30,20,40,10,25,22を順に挿入する。次の insert は各挿入後に高さを更新し、平衡係数が±1を超えたときに回転する。全キーを挿入した後、木を幅優先で走査したキー列はどれか。",
+ "code": [
+  "○節点型: insert(節点型: node, 整数型: key)",
+  "  if (node = null) return keyをもつ新しい節点",
+  "  if (key ＜ node.key) node.left ← insert(node.left, key)",
+  "  else node.right ← insert(node.right, key)",
+  "  node.height ← 1 + max(height(node.left), height(node.right))",
+  "  balance ← height(node.left) - height(node.right)",
+  "  if (balance ＞ 1 and key ＜ node.left.key) return rotateRight(node)",
+  "  if (balance ＜ -1 and key ＞ node.right.key) return rotateLeft(node)",
+  "  if (balance ＞ 1 and key ＞ node.left.key)",
+  "    node.left ← rotateLeft(node.left)",
+  "    return rotateRight(node)",
+  "  endif",
+  "  if (balance ＜ -1 and key ＜ node.right.key)",
+  "    node.right ← rotateRight(node.right)",
+  "    return rotateLeft(node)",
+  "  endif",
+  "  return node"
+ ],
+ "given": "height(null)=0、葉のheight=1とする。rotateLeftとrotateRightは二分探索木の大小関係を保って回転する。全キーは異なる。",
+ "vars": [
+  "挿入又は回転",
+  "平衡係数",
+  "回転対象",
+  "木の幅優先キー列",
+  "状態"
+ ],
+ "choices": [
+  "{25, 20, 30, 10, 22, 40}",
+  "{30, 20, 40, 10, 25, 22}",
+  "{20, 10, 30, 25, 40, 22}",
+  "{25, 20, 40, 10, 22, 30}",
+  "{30, 25, 40, 20, 22, 10}",
+  "{22, 20, 30, 10, 25, 40}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 2,
+   "note": "30を挿入して根にする。左右の高さが等しいので平衡係数は0である。",
+   "v": [
+    "insert 30",
+    "0",
+    "—",
+    "{30}",
+    "平衡"
+   ]
+  },
+  {
+   "line": 3,
+   "note": "20は30より小さいので左の子になる。根30の平衡係数は1で許容範囲内である。",
+   "v": [
+    "insert 20",
+    "1",
+    "—",
+    "{30,20}",
+    "平衡"
+   ]
+  },
+  {
+   "line": 4,
+   "note": "40は30より大きいので右の子になる。根30の平衡係数は0へ戻る。",
+   "v": [
+    "insert 40",
+    "0",
+    "—",
+    "{30,20,40}",
+    "平衡"
+   ]
+  },
+  {
+   "line": 3,
+   "note": "10は30、20の左側へ入る。根30の平衡係数は1で回転不要である。",
+   "v": [
+    "insert 10",
+    "1",
+    "—",
+    "{30,20,40,10}",
+    "平衡"
+   ]
+  },
+  {
+   "line": 4,
+   "note": "25は20の右の子になる。根30の平衡係数は1のままである。",
+   "v": [
+    "insert 25",
+    "1",
+    "—",
+    "{30,20,40,10,25}",
+    "平衡"
+   ]
+  },
+  {
+   "line": 9,
+   "note": "22は25の左へ入る。根30の平衡係数が2となり、キー22は左の子20より大きいので左–右型である。",
+   "v": [
+    "insert 22",
+    "2",
+    "node=30",
+    "{30,20,40,10,25,22}",
+    "不平衡"
+   ]
+  },
+  {
+   "line": 10,
+   "note": "まずnode.left=20を左回転し、25を左部分木の根にする。",
+   "v": [
+    "rotateLeft",
+    "2",
+    "node=20",
+    "{30,25,40,20,10,22}",
+    "中間"
+   ]
+  },
+  {
+   "line": 11,
+   "note": "続いてnode=30を右回転する。25が全体の根となり、左右の高さがそろう。",
+   "v": [
+    "rotateRight",
+    "0",
+    "node=30",
+    "{25,20,30,10,22,40}",
+    "平衡"
+   ]
+  }
+ ],
+ "explain": "<p>22の挿入後、根30は左に2高くなります。一方、挿入位置は左の子20から見て右側なので<b>左–右型</b>の不均衡です。</p><p>20を左回転してから30を右回転すると、根は25、左部分木は20の下に10と22、右部分木は30の下に40となります。幅優先キー列は<b>{25,20,30,10,22,40}</b>で、正解はアです。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-20",
+  "addedAtJst": "2026-08-20T21:06:07+09:00"
+ }
 }
 ];
