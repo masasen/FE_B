@@ -2438,5 +2438,104 @@ const QUESTIONS = [
   "dateJst": "2026-08-20",
   "addedAtJst": "2026-08-20T17:05:07+09:00"
  }
+},
+{
+ "id": "auto-20260820-1905-shiftreg",
+ "cat": "プログラミング",
+ "title": "フィードバック付き4ビットシフト",
+ "prompt": "次の shiftRegister は、4ビット整数regへ入力ビットを順に与える。regの最上位ビットと入力bitの排他的論理和をfeedbackとし、左シフト後にfeedbackが1なら3との排他的論理和を取る。全入力処理後のregはどれか。",
+ "code": [
+  "○整数型: shiftRegister(整数型の配列: bits)",
+  "  reg ← 0",
+  "  bitsの各bitについて",
+  "    msb ← (reg ÷ 8 の商) mod 2",
+  "    feedback ← msb xor bit",
+  "    reg ← (reg × 2) mod 16",
+  "    if (feedback = 1)",
+  "      reg ← reg xor 3",
+  "    endif",
+  "  endfor",
+  "  return reg"
+ ],
+ "given": "bits = {1, 0, 1, 1, 0}\nxorはビットごとの排他的論理和を表す。regは常に0～15の4ビット整数である。",
+ "vars": [
+  "入力bit",
+  "シフト前msb",
+  "feedback",
+  "シフト直後reg",
+  "処理後reg"
+ ],
+ "choices": [
+  "15",
+  "12",
+  "14",
+  "3",
+  "6",
+  "9"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 8,
+   "note": "初期reg=0のmsbは0。bit=1とのxorでfeedback=1となり、シフト後0と3のxorでreg=3になる。",
+   "v": [
+    "1",
+    "0",
+    "1",
+    "0",
+    "3"
+   ]
+  },
+  {
+   "line": 6,
+   "note": "reg=3のmsbは0。bit=0でfeedback=0なので、左シフトした6をそのまま使う。",
+   "v": [
+    "0",
+    "0",
+    "0",
+    "6",
+    "6"
+   ]
+  },
+  {
+   "line": 8,
+   "note": "reg=6のmsbは0。bit=1でfeedback=1となり、シフト後12 xor 3でreg=15になる。",
+   "v": [
+    "1",
+    "0",
+    "1",
+    "12",
+    "15"
+   ]
+  },
+  {
+   "line": 6,
+   "note": "reg=15のmsbは1。bit=1とのxorは0であり、30 mod 16=14をそのまま使う。",
+   "v": [
+    "1",
+    "1",
+    "0",
+    "14",
+    "14"
+   ]
+  },
+  {
+   "line": 8,
+   "note": "reg=14のmsbは1。bit=0でfeedback=1となり、28 mod 16=12、さらに12 xor 3=15となる。",
+   "v": [
+    "0",
+    "1",
+    "1",
+    "12",
+    "15"
+   ]
+  }
+ ],
+ "explain": "<p>各回で先にシフト前の最上位ビットを取り出し、入力bitとのxorをfeedbackにします。シフトはmod 16によって下位4ビットだけを残します。</p><p>regは<b>0→3→6→15→14→15</b>と変化します。最終値は<b>15</b>なので、正解はアです。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-20",
+  "addedAtJst": "2026-08-20T19:05:37+09:00"
+ }
 }
 ];
