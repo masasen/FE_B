@@ -3091,5 +3091,170 @@ const QUESTIONS = [
   "dateJst": "2026-08-21",
   "addedAtJst": "2026-08-21T05:10:08+09:00"
  }
+},
+{
+ "id": "auto-20260821-0712-programcounter",
+ "cat": "プログラミング",
+ "title": "プログラムカウンタと条件ジャンプ",
+ "prompt": "次の run は、命令列programを解釈する。JNZはaccが0でなければ指定位置へジャンプし、0なら次の命令へ進む。HALTはstepsに数えない。実行後に返される{out,steps,pc}はどれか。命令位置は1から始まる。",
+ "code": [
+  "○組: run(命令の配列: program)",
+  "  pc ← 1, acc ← 0, out ← 0, steps ← 0",
+  "  while (program[pc].op ≠ HALT)",
+  "    steps ← steps + 1",
+  "    if (op = SET) acc ← arg, pc ← pc + 1",
+  "    else if (op = ADD) out ← out + acc, pc ← pc + 1",
+  "    else if (op = DEC) acc ← acc - 1, pc ← pc + 1",
+  "    else if (op = JNZ and acc ≠ 0) pc ← arg",
+  "    else pc ← pc + 1",
+  "  endwhile",
+  "  return {out, steps, pc}"
+ ],
+ "given": "program[1]=(SET,3)\nprogram[2]=(ADD,—)\nprogram[3]=(DEC,—)\nprogram[4]=(JNZ,2)\nprogram[5]=(HALT,—)",
+ "vars": [
+  "step",
+  "実行pc",
+  "命令",
+  "acc",
+  "out",
+  "次のpc"
+ ],
+ "choices": [
+  "{6, 10, 5}",
+  "{6, 9, 5}",
+  "{5, 10, 5}",
+  "{6, 10, 4}",
+  "{9, 10, 5}",
+  "{6, 7, 5}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 5,
+   "note": "SET 3を実行してacc=3とし、pcを2へ進める。",
+   "v": [
+    "1",
+    "1",
+    "SET 3",
+    "3",
+    "0",
+    "2"
+   ]
+  },
+  {
+   "line": 6,
+   "note": "ADDでoutにacc=3を加える。",
+   "v": [
+    "2",
+    "2",
+    "ADD",
+    "3",
+    "3",
+    "3"
+   ]
+  },
+  {
+   "line": 7,
+   "note": "DECでaccを2へ減らす。",
+   "v": [
+    "3",
+    "3",
+    "DEC",
+    "2",
+    "3",
+    "4"
+   ]
+  },
+  {
+   "line": 8,
+   "note": "accは2で0ではないので、JNZでpc=2へ戻る。",
+   "v": [
+    "4",
+    "4",
+    "JNZ 2",
+    "2",
+    "3",
+    "2"
+   ]
+  },
+  {
+   "line": 6,
+   "note": "2回目のADDでoutは3+2=5になる。",
+   "v": [
+    "5",
+    "2",
+    "ADD",
+    "2",
+    "5",
+    "3"
+   ]
+  },
+  {
+   "line": 7,
+   "note": "DECでaccを1へ減らす。",
+   "v": [
+    "6",
+    "3",
+    "DEC",
+    "1",
+    "5",
+    "4"
+   ]
+  },
+  {
+   "line": 8,
+   "note": "accは1なので、再びpc=2へジャンプする。",
+   "v": [
+    "7",
+    "4",
+    "JNZ 2",
+    "1",
+    "5",
+    "2"
+   ]
+  },
+  {
+   "line": 6,
+   "note": "3回目のADDでoutは5+1=6になる。",
+   "v": [
+    "8",
+    "2",
+    "ADD",
+    "1",
+    "6",
+    "3"
+   ]
+  },
+  {
+   "line": 7,
+   "note": "DECでaccを0へ減らす。",
+   "v": [
+    "9",
+    "3",
+    "DEC",
+    "0",
+    "6",
+    "4"
+   ]
+  },
+  {
+   "line": 9,
+   "note": "acc=0なのでJNZの条件は成立せず、pcを5へ進める。次はHALTなので終了する。",
+   "v": [
+    "10",
+    "4",
+    "JNZ 2",
+    "0",
+    "6",
+    "5"
+   ]
+  }
+ ],
+ "explain": "<p>ADDとDECの組をaccが3、2、1のときに繰り返すので、outは3+2+1=<b>6</b>です。JNZは3回実行され、最後だけジャンプしません。</p><p>HALT到達前に実行した命令は10個で、終了時のpcは5です。戻り値は<b>{6,10,5}</b>となり、正解はアです。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-21",
+  "addedAtJst": "2026-08-21T07:12:23+09:00"
+ }
 }
 ];
