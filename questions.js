@@ -1823,5 +1823,151 @@ const QUESTIONS = [
   "dateJst": "2026-08-20",
   "addedAtJst": "2026-08-20T07:01:36+09:00"
  }
+},
+{
+ "id": "auto-20260820-0901-csvparser",
+ "cat": "プログラミング",
+ "title": "引用符付きCSVの分割",
+ "prompt": "次の splitLine は、引用符で囲まれた部分にあるコンマをフィールド区切りと見なさない簡易CSV分割を行う。引用符そのものは結果に含めない。入力lineを処理したとき、返されるfieldsはどれか。",
+ "code": [
+  "○文字列型の配列: splitLine(文字列型: line)",
+  "  fields ← 空の配列, field ← \"\", inQuote ← false",
+  "  lineの各文字chについて",
+  "    if (ch = 引用符)",
+  "      inQuote ← not inQuote",
+  "    else if (ch = \",\" and inQuote = false)",
+  "      fieldsの末尾にfieldを追加する",
+  "      field ← \"\"",
+  "    else",
+  "      field ← field + ch",
+  "    endif",
+  "  endfor",
+  "  fieldsの末尾にfieldを追加する",
+  "  return fields"
+ ],
+ "given": "line の内容: A,\"B,C\",D",
+ "vars": [
+  "ch",
+  "inQuote",
+  "field",
+  "fields"
+ ],
+ "choices": [
+  "{\"A\", \"B,C\", \"D\"}",
+  "{\"A\", \"B\", \"C\", \"D\"}",
+  "{\"A\", \"\\\"B\", \"C\\\"\", \"D\"}",
+  "{\"A,B,C,D\"}",
+  "{\"A\", \"B,C,D\"}",
+  "{\"A,B\", \"C\", \"D\"}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 10,
+   "note": "最初のAは通常文字なのでfieldへ追加する。",
+   "v": [
+    "A",
+    "false",
+    "A",
+    "{}"
+   ]
+  },
+  {
+   "line": 8,
+   "note": "引用符の外側にあるコンマなので、Aをfieldsへ追加しfieldを空にする。",
+   "v": [
+    ",",
+    "false",
+    "\"\"",
+    "{A}"
+   ]
+  },
+  {
+   "line": 5,
+   "note": "引用符を読み、inQuoteをtrueにする。引用符自体はfieldへ入れない。",
+   "v": [
+    "引用符",
+    "true",
+    "\"\"",
+    "{A}"
+   ]
+  },
+  {
+   "line": 10,
+   "note": "Bは通常文字としてfieldへ追加する。",
+   "v": [
+    "B",
+    "true",
+    "B",
+    "{A}"
+   ]
+  },
+  {
+   "line": 10,
+   "note": "inQuoteがtrueなので、このコンマは区切りではなくfieldの一部になる。",
+   "v": [
+    ",",
+    "true",
+    "B,",
+    "{A}"
+   ]
+  },
+  {
+   "line": 10,
+   "note": "Cを追加してfieldはB,Cになる。",
+   "v": [
+    "C",
+    "true",
+    "B,C",
+    "{A}"
+   ]
+  },
+  {
+   "line": 5,
+   "note": "閉じる引用符でinQuoteをfalseへ戻す。",
+   "v": [
+    "引用符",
+    "false",
+    "B,C",
+    "{A}"
+   ]
+  },
+  {
+   "line": 8,
+   "note": "引用符の外側のコンマなので、B,Cを一つのフィールドとして追加する。",
+   "v": [
+    ",",
+    "false",
+    "\"\"",
+    "{A; B,C}"
+   ]
+  },
+  {
+   "line": 10,
+   "note": "末尾のDをfieldへ追加する。",
+   "v": [
+    "D",
+    "false",
+    "D",
+    "{A; B,C}"
+   ]
+  },
+  {
+   "line": 13,
+   "note": "走査後、残ったDを最後のフィールドとして追加する。",
+   "v": [
+    "終端",
+    "false",
+    "D",
+    "{A; B,C; D}"
+   ]
+  }
+ ],
+ "explain": "<p>コンマを区切りとして扱うのは、<b>inQuoteがfalseのときだけ</b>です。引用符内のB,Cに含まれるコンマはfieldへそのまま追加されます。</p><p>引用符の開始と終了ではinQuoteだけを反転し、引用符自体は保存しません。したがってfieldsは<b>{\"A\",\"B,C\",\"D\"}</b>となり、正解はアです。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-20",
+  "addedAtJst": "2026-08-20T09:01:36+09:00"
+ }
 }
 ];
