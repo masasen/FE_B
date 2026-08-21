@@ -3256,5 +3256,92 @@ const QUESTIONS = [
   "dateJst": "2026-08-21",
   "addedAtJst": "2026-08-21T07:12:23+09:00"
  }
+},
+{
+ "id": "auto-20260821-0913-modpow",
+ "cat": "アルゴリズム",
+ "title": "繰返し二乗法によるべき乗剰余",
+ "prompt": "次のmodPowは、baseのexp乗をmで割った余りを、繰返し二乗法で求める。modPow(3, 13, 17)の戻り値はどれか。divは整数除算、modは剰余を表す。",
+ "code": [
+  "○整数型: modPow(整数型: base, 整数型: exp, 整数型: m)",
+  "  result ← 1",
+  "  while (exp > 0)",
+  "    if (exp mod 2 = 1)",
+  "      result ← (result × base) mod m",
+  "    endif",
+  "    base ← (base × base) mod m",
+  "    exp ← exp div 2",
+  "  endwhile",
+  "  return result"
+ ],
+ "given": "base = 3\nexp = 13\nm = 17",
+ "vars": [
+  "回",
+  "更新前exp",
+  "result",
+  "更新後base",
+  "更新後exp"
+ ],
+ "choices": [
+  "12",
+  "5",
+  "13",
+  "16",
+  "15",
+  "3"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 8,
+   "note": "exp=13は奇数なのでresult=(1×3) mod 17=3。baseを9へ更新し、expを6へ半減する。",
+   "v": [
+    "1",
+    "13",
+    "3",
+    "9",
+    "6"
+   ]
+  },
+  {
+   "line": 8,
+   "note": "exp=6は偶数なのでresultは3のまま。base=(9×9) mod 17=13、exp=3とする。",
+   "v": [
+    "2",
+    "6",
+    "3",
+    "13",
+    "3"
+   ]
+  },
+  {
+   "line": 8,
+   "note": "exp=3は奇数なのでresult=(3×13) mod 17=5。base=(13×13) mod 17=16、exp=1とする。",
+   "v": [
+    "3",
+    "3",
+    "5",
+    "16",
+    "1"
+   ]
+  },
+  {
+   "line": 8,
+   "note": "exp=1は奇数なのでresult=(5×16) mod 17=12。baseは1、expは0となり反復を終える。",
+   "v": [
+    "4",
+    "1",
+    "12",
+    "1",
+    "0"
+   ]
+  }
+ ],
+ "explain": "<p>指数を2進数で見ると13は1101です。expが奇数の回だけ、その時点のbaseをresultへ掛けます。一方、baseは毎回2乗し、expは整数除算で半分にします。</p><p>resultは<b>1 → 3 → 3 → 5 → 12</b>と変化するので、戻り値は<b>12</b>です。各演算の直後に17で剰余を取るため、大きな累乗そのものを計算する必要はありません。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-21",
+  "addedAtJst": "2026-08-21T09:13:19+09:00"
+ }
 }
 ];
