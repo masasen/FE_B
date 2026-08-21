@@ -4027,5 +4027,109 @@ const QUESTIONS = [
   "dateJst": "2026-08-21",
   "addedAtJst": "2026-08-21T19:15:50+09:00"
  }
+},
+{
+ "id": "auto-20260821-2115-cycledetect",
+ "cat": "アルゴリズム",
+ "title": "二つのポインタによる循環検出",
+ "prompt": "次のdetectは、nextで表した連結構造に対し、低速ポインタslowと高速ポインタfastを使って循環を検出する。最初の合流点をmeetとし、その後slowをstartへ戻して循環入口を求める。detect(next, 1)が返す{meet, steps, entry, entrySteps}はどれか。",
+ "code": [
+  "○組: detect(整数型の配列: next, 整数型: start)",
+  "  slow ← start, fast ← start, steps ← 0",
+  "  repeat",
+  "    slow ← next[slow]",
+  "    fast ← next[next[fast]]",
+  "    steps ← steps + 1",
+  "  until (slow = fast)",
+  "  meet ← slow",
+  "  slow ← start",
+  "  entrySteps ← 0",
+  "  while (slow ≠ fast)",
+  "    slow ← next[slow]",
+  "    fast ← next[fast]",
+  "    entrySteps ← entrySteps + 1",
+  "  endwhile",
+  "  return {meet, steps, slow, entrySteps}"
+ ],
+ "given": "next[1]=2, next[2]=3, next[3]=4, next[4]=5, next[5]=3\nstart = 1",
+ "vars": [
+  "段階",
+  "slow",
+  "fast",
+  "steps",
+  "entrySteps"
+ ],
+ "choices": [
+  "{4, 3, 3, 2}",
+  "{3, 3, 3, 2}",
+  "{4, 2, 3, 2}",
+  "{4, 3, 4, 0}",
+  "{5, 3, 3, 3}",
+  "{4, 4, 3, 2}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 6,
+   "note": "1回目はslowが1→2、fastが1→2→3と進む。",
+   "v": [
+    "検出1",
+    "2",
+    "3",
+    "1",
+    "—"
+   ]
+  },
+  {
+   "line": 6,
+   "note": "2回目はslowが2→3、fastが3→4→5と進む。",
+   "v": [
+    "検出2",
+    "3",
+    "5",
+    "2",
+    "—"
+   ]
+  },
+  {
+   "line": 6,
+   "note": "3回目はslowが3→4、fastが5→3→4と進み、4で合流する。",
+   "v": [
+    "検出3",
+    "4",
+    "4",
+    "3",
+    "—"
+   ]
+  },
+  {
+   "line": 14,
+   "note": "slowを1へ戻す。入口探索1回目でslowは2、fastは5へ進む。",
+   "v": [
+    "入口1",
+    "2",
+    "5",
+    "3",
+    "1"
+   ]
+  },
+  {
+   "line": 14,
+   "note": "入口探索2回目でslowとfastがともに3となり、循環入口が確定する。",
+   "v": [
+    "入口2",
+    "3",
+    "3",
+    "3",
+    "2"
+   ]
+  }
+ ],
+ "explain": "<p>検出段階ではslowが1本、fastが2本のリンクをたどるため、3回目にノード4で合流します。したがってmeet=4、steps=3です。</p><p>次にslowだけをstart=1へ戻し、両方を1本ずつ進めると2回でノード3にそろいます。循環入口は<b>3</b>、entryStepsは<b>2</b>なので、戻り値は<b>{4,3,3,2}</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-21",
+  "addedAtJst": "2026-08-21T21:15:50+09:00"
+ }
 }
 ];
