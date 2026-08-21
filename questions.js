@@ -4357,5 +4357,106 @@ const QUESTIONS = [
   "dateJst": "2026-08-22",
   "addedAtJst": "2026-08-22T01:17:50+09:00"
  }
+},
+{
+ "id": "auto-20260822-0317-skiplist",
+ "cat": "データ構造",
+ "title": "スキップリストの探索経路",
+ "prompt": "次のsearchPathは、3段のスキップリストでtargetを探索する。各レベルでは次のキーがtargetより小さい間だけ右へ移動し、等しければそのキーをpathへ追加して終了する。searchPath(40)の戻り値はどれか。HEADはpathへ追加しない。",
+ "code": [
+  "○整数型の配列: searchPath(整数型: target)",
+  "  current ← HEAD, path ← 空の配列",
+  "  for (levelを3から1まで1ずつ減らす)",
+  "    while (current.next[level] ≠ null かつ current.next[level].key < target)",
+  "      current ← current.next[level]",
+  "      pathの末尾にcurrent.keyを追加する",
+  "    endwhile",
+  "    if (current.next[level] ≠ null かつ current.next[level].key = target)",
+  "      pathの末尾にcurrent.next[level].keyを追加する",
+  "      return path",
+  "    endif",
+  "  endfor",
+  "  return path"
+ ],
+ "given": "level 3: HEAD → 20 → 50\nlevel 2: HEAD → 10 → 20 → 35 → 50\nlevel 1: HEAD → 5 → 10 → 15 → 20 → 30 → 35 → 40 → 50 → 60\ntarget = 40",
+ "vars": [
+  "level",
+  "比較前current",
+  "next",
+  "判定・動作",
+  "path"
+ ],
+ "choices": [
+  "[20,35,40]",
+  "[20,35,50,40]",
+  "[10,20,35,40]",
+  "[20,30,35,40]",
+  "[20,35,50]",
+  "[5,10,15,20,30,35,40]"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 6,
+   "note": "level 3でHEADの次は20。20<40なので20へ移動してpathへ追加する。",
+   "v": [
+    "3",
+    "HEAD",
+    "20",
+    "20<40、右へ移動",
+    "[20]"
+   ]
+  },
+  {
+   "line": 7,
+   "note": "level 3で20の次は50。50>40なので右へ進まずlevel 2へ降りる。",
+   "v": [
+    "3",
+    "20",
+    "50",
+    "50>40、降下",
+    "[20]"
+   ]
+  },
+  {
+   "line": 6,
+   "note": "level 2で20の次は35。35<40なので35へ移動してpathへ追加する。",
+   "v": [
+    "2",
+    "20",
+    "35",
+    "35<40、右へ移動",
+    "[20,35]"
+   ]
+  },
+  {
+   "line": 7,
+   "note": "level 2で35の次は50。50>40なのでlevel 1へ降りる。",
+   "v": [
+    "2",
+    "35",
+    "50",
+    "50>40、降下",
+    "[20,35]"
+   ]
+  },
+  {
+   "line": 10,
+   "note": "level 1で35の次は40。targetと等しいので40を追加して探索を終了する。",
+   "v": [
+    "1",
+    "35",
+    "40",
+    "40=40、発見",
+    "[20,35,40]"
+   ]
+  }
+ ],
+ "explain": "<p>上位レベルではtargetを越えない直前まで右へ進み、越えそうになった位置で一段下へ降ります。level 3では20まで、level 2では35まで進みます。</p><p>level 1で35の次が40と一致するため、移動先として記録される探索経路は<b>[20,35,40]</b>です。50は比較しますが移動しないのでpathには入りません。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-22",
+  "addedAtJst": "2026-08-22T03:17:21+09:00"
+ }
 }
 ];
