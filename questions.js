@@ -5200,5 +5200,146 @@ const QUESTIONS = [
   "dateJst": "2026-08-22",
   "addedAtJst": "2026-08-22T15:21:52+09:00"
  }
+},
+{
+ "id": "auto-20260822-1721-gapbuffer",
+ "cat": "データ構造",
+ "title": "ギャップバッファによる文字列編集",
+ "prompt": "配列内の連続した空き領域をカーソル位置として使うギャップバッファを考える。gapStartからgapEndまで（両端を含む）が空き領域である。次のeditが返す{text, gapStart, gapEnd}はどれか。配列の添字は1から始まる。",
+ "code": [
+  "○組: edit()",
+  "  buffer ← [A,B,C,空,空,空,D,E], gapStart ← 4, gapEnd ← 6",
+  "  operationsの各opについて繰り返す",
+  "    if (op = INSERT(ch))",
+  "      buffer[gapStart] ← ch",
+  "      gapStart ← gapStart + 1",
+  "    elseif (op = MOVE_LEFT)",
+  "      gapStart ← gapStart - 1",
+  "      buffer[gapEnd] ← buffer[gapStart]",
+  "      buffer[gapStart] ← 空",
+  "      gapEnd ← gapEnd - 1",
+  "    elseif (op = MOVE_RIGHT)",
+  "      gapEnd ← gapEnd + 1",
+  "      buffer[gapStart] ← buffer[gapEnd]",
+  "      buffer[gapEnd] ← 空",
+  "      gapStart ← gapStart + 1",
+  "    else",
+  "      gapEnd ← gapEnd + 1",
+  "      buffer[gapEnd] ← 空",
+  "    endif",
+  "  endfor",
+  "  text ← buffer[1..gapStart-1]の後にbuffer[gapEnd+1..8]を連結した文字列",
+  "  return {text, gapStart, gapEnd}"
+ ],
+ "given": "operations = [INSERT(X), MOVE_LEFT, DELETE_RIGHT, INSERT(Y), MOVE_RIGHT, INSERT(Z)]\nMOVE_LEFTとMOVE_RIGHTはカーソルを1文字分移動し、DELETE_RIGHTはカーソル直後の1文字を削除する。全操作で空き領域は不足せず、移動先と削除対象は存在する。",
+ "vars": [
+  "段階",
+  "移動・挿入・削除文字",
+  "buffer[1..8]",
+  "gapStart",
+  "gapEnd",
+  "論理文字列"
+ ],
+ "choices": [
+  "{ABCYDZE, 7, 7}",
+  "{ABCYZDE, 7, 7}",
+  "{ABCYDEZ, 8, 8}",
+  "{ABCXDZE, 7, 7}",
+  "{ABCYDZE, 6, 7}",
+  "{ABCYZDE, 6, 6}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 2,
+   "note": "初期の空き領域は位置4〜6で、カーソルはCとDの間にある。",
+   "v": [
+    "初期",
+    "—",
+    "[A,B,C,·,·,·,D,E]",
+    "4",
+    "6",
+    "ABCDE"
+   ]
+  },
+  {
+   "line": 6,
+   "note": "Xを空き領域の先頭4へ格納し、gapStartを5へ進める。",
+   "v": [
+    "INSERT(X)",
+    "Xを挿入",
+    "[A,B,C,X,·,·,D,E]",
+    "5",
+    "6",
+    "ABCXDE"
+   ]
+  },
+  {
+   "line": 11,
+   "note": "カーソル左のXを空き領域の右端へ移し、空き領域を位置4〜5へずらす。論理文字列は変わらない。",
+   "v": [
+    "MOVE_LEFT",
+    "Xを右側へ移動",
+    "[A,B,C,·,·,X,D,E]",
+    "4",
+    "5",
+    "ABCXDE"
+   ]
+  },
+  {
+   "line": 19,
+   "note": "カーソル直後のXを空き領域へ取り込んで削除し、gapEndを6へ広げる。",
+   "v": [
+    "DELETE_RIGHT",
+    "Xを削除",
+    "[A,B,C,·,·,·,D,E]",
+    "4",
+    "6",
+    "ABCDE"
+   ]
+  },
+  {
+   "line": 6,
+   "note": "Yを位置4へ格納し、gapStartを5へ進める。",
+   "v": [
+    "INSERT(Y)",
+    "Yを挿入",
+    "[A,B,C,Y,·,·,D,E]",
+    "5",
+    "6",
+    "ABCYDE"
+   ]
+  },
+  {
+   "line": 16,
+   "note": "カーソル右のDを空き領域の左端へ移し、空き領域を位置6〜7へずらす。論理文字列は変わらない。",
+   "v": [
+    "MOVE_RIGHT",
+    "Dを左側へ移動",
+    "[A,B,C,Y,D,·,·,E]",
+    "6",
+    "7",
+    "ABCYDE"
+   ]
+  },
+  {
+   "line": 6,
+   "note": "Zを位置6へ格納する。残る空き領域は位置7だけとなる。",
+   "v": [
+    "INSERT(Z)",
+    "Zを挿入",
+    "[A,B,C,Y,D,Z,·,E]",
+    "7",
+    "7",
+    "ABCYDZE"
+   ]
+  }
+ ],
+ "explain": "<p>MOVE_LEFTではカーソル左のXを空き領域の右側へ移すため文字列自体は変わりません。その直後のDELETE_RIGHTでXを削除します。Yの挿入後にMOVE_RIGHTすると、Dが空き領域の左側へ移り、カーソルはDの後ろになります。</p><p>そこでZを挿入するので、最終文字列は<b>ABCYDZE</b>、空き領域は位置<b>7〜7</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-22",
+  "addedAtJst": "2026-08-22T17:21:52+09:00"
+ }
 }
 ];
