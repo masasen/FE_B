@@ -5443,5 +5443,96 @@ const QUESTIONS = [
   "dateJst": "2026-08-22",
   "addedAtJst": "2026-08-22T19:21:52+09:00"
  }
+},
+{
+ "id": "auto-20260822-2123-maxflow",
+ "cat": "アルゴリズム",
+ "title": "増加路ごとのフロー更新",
+ "prompt": "有向ネットワークの各辺のflowを0で初期化し、指定された増加路を順に使ってフローを増やす。各増加量deltaは、その経路上の残余容量capacity-flowの最小値である。次のmaxFlowTraceが返す{total, flows}はどれか。flowsは[SA,SB,AB,AT,BT]の順とする。",
+ "code": [
+  "○組: maxFlowTrace()",
+  "  全ての辺eについて flow[e] ← 0",
+  "  total ← 0",
+  "  pathsの各pathについて順に繰り返す",
+  "    delta ← path上の各辺eの(capacity[e] - flow[e])の最小値",
+  "    path上の各辺eについて flow[e] ← flow[e] + delta",
+  "    total ← total + delta",
+  "  endfor",
+  "  return {total, [flow[SA],flow[SB],flow[AB],flow[AT],flow[BT]]}"
+ ],
+ "given": "capacity = {SA:4, SB:3, AB:2, AT:2, BT:4}\npaths = [[S,A,T], [S,A,B,T], [S,B,T]]\n各経路は全て順方向の辺だけを通り、経路に含まれない辺のflowは変化しない。",
+ "vars": [
+  "段階",
+  "増加路",
+  "経路上の残余容量",
+  "delta",
+  "flows=[SA,SB,AB,AT,BT]",
+  "total"
+ ],
+ "choices": [
+  "{6, [4,2,2,2,4]}",
+  "{7, [4,3,2,2,5]}",
+  "{6, [4,2,0,2,4]}",
+  "{5, [3,2,1,2,3]}",
+  "{6, [2,4,2,2,4]}",
+  "{4, [4,0,2,2,2]}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 3,
+   "note": "全ての辺のflowとtotalを0で初期化する。",
+   "v": [
+    "初期",
+    "—",
+    "—",
+    "—",
+    "[0,0,0,0,0]",
+    "0"
+   ]
+  },
+  {
+   "line": 7,
+   "note": "経路S-A-Tの残余容量はSAが4、ATが2なのでdelta=2。両辺へ2を加える。",
+   "v": [
+    "1",
+    "S-A-T",
+    "[4,2]",
+    "2",
+    "[2,0,0,2,0]",
+    "2"
+   ]
+  },
+  {
+   "line": 7,
+   "note": "経路S-A-B-TではSAの残余が2、ABが2、BTが4なのでdelta=2。",
+   "v": [
+    "2",
+    "S-A-B-T",
+    "[2,2,4]",
+    "2",
+    "[4,0,2,2,2]",
+    "4"
+   ]
+  },
+  {
+   "line": 7,
+   "note": "経路S-B-TではSBの残余が3、BTの残余が2なのでdelta=2。",
+   "v": [
+    "3",
+    "S-B-T",
+    "[3,2]",
+    "2",
+    "[4,2,2,2,4]",
+    "6"
+   ]
+  }
+ ],
+ "explain": "<p>最初の経路はATの容量2、2番目の経路は残りのSAとABの容量2、最後の経路は残りのBTの容量2がそれぞれボトルネックになります。</p><p>増加量の合計は2+2+2=<b>6</b>で、最終フローは<b>[4,2,2,2,4]</b>です。中間頂点AとBでは流入量と流出量も一致します。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-22",
+  "addedAtJst": "2026-08-22T21:23:22+09:00"
+ }
 }
 ];
