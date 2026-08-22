@@ -5687,5 +5687,110 @@ const QUESTIONS = [
   "dateJst": "2026-08-22",
   "addedAtJst": "2026-08-22T23:24:22+09:00"
  }
+},
+{
+ "id": "auto-20260823-0124-logchain",
+ "cat": "セキュリティ",
+ "title": "連鎖タグによるログ改ざん検出",
+ "prompt": "監査ログの各レコードに、直前の正しいタグと現在のレコード値から計算した連鎖タグを保存する。次のverifyLogで、保存タグが初めて一致しない位置を検出したとき、返される{validCount, badIndex, expected, found}はどれか。modは剰余を表す。",
+ "code": [
+  "○組: verifyLog(整数型の配列: codes, stored)",
+  "  prev ← 0, validCount ← 0",
+  "  for (iを1からcodesの要素数まで1ずつ増やす)",
+  "    expected ← (3 × prev + codes[i]) mod 11",
+  "    if (expected ≠ stored[i])",
+  "      return {validCount, i, expected, stored[i]}",
+  "    endif",
+  "    prev ← stored[i]",
+  "    validCount ← validCount + 1",
+  "  endfor",
+  "  return {validCount, 0, 0, 0}"
+ ],
+ "given": "codes  = [4,7,2,9,5]\nstored = [4,8,4,6,2]\nこの数値式は連鎖検証のトレース用に単純化したものであり、実システムでは安全な暗号学的ハッシュ又はMACを用いる。検証失敗時は直ちに処理を終了し、prevとvalidCountは更新しない。",
+ "vars": [
+  "段階",
+  "codes[i]",
+  "更新前prev",
+  "expected",
+  "stored[i]",
+  "判定・処理後状態"
+ ],
+ "choices": [
+  "{3, 4, 10, 6}",
+  "{4, 4, 10, 6}",
+  "{3, 4, 6, 10}",
+  "{5, 0, 0, 0}",
+  "{2, 3, 4, 4}",
+  "{3, 5, 2, 2}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 2,
+   "note": "連鎖の初期値prev=0、検証済み件数validCount=0で開始する。",
+   "v": [
+    "初期",
+    "—",
+    "0",
+    "—",
+    "—",
+    "validCount=0"
+   ]
+  },
+  {
+   "line": 9,
+   "note": "i=1ではexpected=(3×0+4) mod 11=4で保存タグと一致する。prev=4、validCount=1へ更新する。",
+   "v": [
+    "i=1",
+    "4",
+    "0",
+    "4",
+    "4",
+    "一致 → prev=4, count=1"
+   ]
+  },
+  {
+   "line": 9,
+   "note": "i=2ではexpected=(3×4+7) mod 11=8で一致する。prev=8、validCount=2とする。",
+   "v": [
+    "i=2",
+    "7",
+    "4",
+    "8",
+    "8",
+    "一致 → prev=8, count=2"
+   ]
+  },
+  {
+   "line": 9,
+   "note": "i=3ではexpected=(3×8+2) mod 11=4で一致する。prev=4、validCount=3とする。",
+   "v": [
+    "i=3",
+    "2",
+    "8",
+    "4",
+    "4",
+    "一致 → prev=4, count=3"
+   ]
+  },
+  {
+   "line": 6,
+   "note": "i=4のexpectedは(3×4+9) mod 11=10だが、保存値は6で一致しない。更新せず、この位置を返して終了する。",
+   "v": [
+    "i=4",
+    "9",
+    "4",
+    "10",
+    "6",
+    "不一致 → return"
+   ]
+  }
+ ],
+ "explain": "<p>先頭3件は計算値が4、8、4となり、保存タグと一致します。そのためvalidCountは3、prevは4です。</p><p>4件目の期待値は(3×4+9) mod 11=<b>10</b>ですが、保存値は<b>6</b>です。ここで終了するので戻り値は<b>{3,4,10,6}</b>です。5件目は検証されません。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-23",
+  "addedAtJst": "2026-08-23T01:24:23+09:00"
+ }
 }
 ];
