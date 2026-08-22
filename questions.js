@@ -4992,5 +4992,105 @@ const QUESTIONS = [
   "dateJst": "2026-08-22",
   "addedAtJst": "2026-08-22T11:19:21+09:00"
  }
+},
+{
+ "id": "auto-20260822-1320-pstack",
+ "cat": "データ構造",
+ "title": "永続スタックの版分岐",
+ "prompt": "各版がスタック先頭ノードへの参照を保持する永続スタックを考える。PUSHは新しいノードを1個だけ生成し、POPはノードを生成せず、既存ノードへの参照を共有して新しい版を作る。次のpersistentStackが返す{v2, v3, v5, created}はどれか。各スタックは先頭を左にして表す。",
+ "code": [
+  "○組: persistentStack(操作の配列: operations)",
+  "  version[0] ← null, created ← 0",
+  "  operationsの各opについて繰り返す",
+  "    if (op.kind = PUSH)",
+  "      created ← created + 1",
+  "      node[created] ← {value: op.value, next: version[op.base]}",
+  "      version[op.new] ← created",
+  "    else",
+  "      version[op.new] ← node[version[op.base]].next",
+  "    endif",
+  "  endfor",
+  "  return {contents(version[2]), contents(version[3]), contents(version[5]), created}"
+ ],
+ "given": "operations = [\n  PUSH(base=0, new=1, value=A),\n  PUSH(base=1, new=2, value=B),\n  PUSH(base=1, new=3, value=C),\n  POP(base=2, new=4),\n  PUSH(base=4, new=5, value=D)\n]\ncontentsは先頭ノードからnextをたどり、値を順に並べる。",
+ "vars": [
+  "操作",
+  "基準版の内容",
+  "生成ノード",
+  "新版の内容",
+  "created"
+ ],
+ "choices": [
+  "{[B,A], [C,A], [D,A], 4}",
+  "{[B,A], [C,A], [D,A], 5}",
+  "{[B,A], [C,A], [D,B,A], 4}",
+  "{[C,B,A], [C,A], [D,A], 4}",
+  "{[A], [C,A], [D,A], 4}",
+  "{[B,A], [C,B,A], [D,A], 4}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 7,
+   "note": "版0は空である。Aを持ちnext=nullのノード1を生成し、版1の先頭をノード1にする。",
+   "v": [
+    "PUSH 0→1, A",
+    "[]",
+    "node1=(A,null)",
+    "[A]",
+    "1"
+   ]
+  },
+  {
+   "line": 7,
+   "note": "版1の先頭ノード1をnextに持つノード2を生成する。版2は上からB,Aとなる。",
+   "v": [
+    "PUSH 1→2, B",
+    "[A]",
+    "node2=(B,1)",
+    "[B,A]",
+    "2"
+   ]
+  },
+  {
+   "line": 7,
+   "note": "版2ではなく版1から分岐する。ノード3のnextもノード1なので、版3はC,Aとなる。",
+   "v": [
+    "PUSH 1→3, C",
+    "[A]",
+    "node3=(C,1)",
+    "[C,A]",
+    "3"
+   ]
+  },
+  {
+   "line": 9,
+   "note": "版2の先頭ノード2を取り除いた位置、すなわちnode2.nextであるノード1を版4の先頭にする。ノードは生成しない。",
+   "v": [
+    "POP 2→4",
+    "[B,A]",
+    "なし",
+    "[A]",
+    "3"
+   ]
+  },
+  {
+   "line": 7,
+   "note": "版4の先頭ノード1をnextに持つノード4を生成する。版5はD,Aとなる。",
+   "v": [
+    "PUSH 4→5, D",
+    "[A]",
+    "node4=(D,1)",
+    "[D,A]",
+    "4"
+   ]
+  }
+ ],
+ "explain": "<p>版は更新前の先頭参照を残したまま分岐します。版1から別々にPUSHしたため、版2は<b>[B,A]</b>、版3は<b>[C,A]</b>であり、どちらも末尾のノード1を共有します。</p><p>版2をPOPして作る版4は[A]です。そこへDをPUSHした版5は<b>[D,A]</b>になります。ノード生成は4回のPUSHだけなのでcreatedは<b>4</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-22",
+  "addedAtJst": "2026-08-22T13:20:51+09:00"
+ }
 }
 ];
