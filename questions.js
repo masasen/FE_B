@@ -5341,5 +5341,107 @@ const QUESTIONS = [
   "dateJst": "2026-08-22",
   "addedAtJst": "2026-08-22T17:21:52+09:00"
  }
+},
+{
+ "id": "auto-20260822-1921-horner",
+ "cat": "プログラミング",
+ "title": "拡張Horner法による多項式評価",
+ "prompt": "係数を最高次から定数項の順に並べた配列coeffから、多項式の値と導関数の値を同時に求める。次のevaluateをcoeff=[2,-3,0,5,-4]、x=2で実行したとき、返される{value, derivative}はどれか。配列の添字は1から始まる。",
+ "code": [
+  "○組: evaluate(整数型の配列: coeff, 整数型: x)",
+  "  value ← coeff[1]",
+  "  derivative ← 0",
+  "  for (iを2からcoeffの要素数まで1ずつ増やす)",
+  "    derivative ← derivative × x + value",
+  "    value ← value × x + coeff[i]",
+  "  endfor",
+  "  return {value, derivative}"
+ ],
+ "given": "coeff = [2,-3,0,5,-4], x = 2\ncoeffは多項式 2x^4 - 3x^3 + 0x^2 + 5x - 4 を表す。各反復ではderivativeを先に更新し、その計算には更新前のvalueを使う。",
+ "vars": [
+  "段階",
+  "coeff[i]",
+  "更新前value",
+  "更新前derivative",
+  "更新後value",
+  "更新後derivative"
+ ],
+ "choices": [
+  "{14, 33}",
+  "{14, 24}",
+  "{19, 33}",
+  "{14, 35}",
+  "{-14, 33}",
+  "{33, 14}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 3,
+   "note": "最高次係数2でvalueを初期化し、derivativeは0から始める。",
+   "v": [
+    "初期",
+    "2",
+    "—",
+    "—",
+    "2",
+    "0"
+   ]
+  },
+  {
+   "line": 6,
+   "note": "i=2ではderivative=0×2+2=2を先に求め、value=2×2-3=1とする。",
+   "v": [
+    "i=2",
+    "-3",
+    "2",
+    "0",
+    "1",
+    "2"
+   ]
+  },
+  {
+   "line": 6,
+   "note": "i=3ではderivative=2×2+1=5、value=1×2+0=2となる。",
+   "v": [
+    "i=3",
+    "0",
+    "1",
+    "2",
+    "2",
+    "5"
+   ]
+  },
+  {
+   "line": 6,
+   "note": "i=4ではderivative=5×2+2=12、value=2×2+5=9となる。",
+   "v": [
+    "i=4",
+    "5",
+    "2",
+    "5",
+    "9",
+    "12"
+   ]
+  },
+  {
+   "line": 6,
+   "note": "i=5ではderivative=12×2+9=33、value=9×2-4=14となる。",
+   "v": [
+    "i=5",
+    "-4",
+    "9",
+    "12",
+    "14",
+    "33"
+   ]
+  }
+ ],
+ "explain": "<p>valueはHorner法により2→1→2→9→14と変化します。derivativeは各反復で更新前のvalueを取り込み、0→2→5→12→33となります。</p><p>実際に多項式へx=2を代入すると14、導関数8x^3-9x^2+5へ代入すると33です。したがって戻り値は<b>{14,33}</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-22",
+  "addedAtJst": "2026-08-22T19:21:52+09:00"
+ }
 }
 ];
