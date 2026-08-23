@@ -7447,5 +7447,133 @@ const QUESTIONS = [
   "dateJst": "2026-08-24",
   "addedAtJst": "2026-08-24T03:30:55+09:00"
  }
+},
+{
+ "id": "auto-20260824-0530-pathnormalize",
+ "cat": "プログラミング",
+ "title": "絶対パスの正規化とスタック操作",
+ "prompt": "絶対パスを「/」で分割し、空文字と「.」を無視し、「..」では直前のディレクトリを1個取り除く。次のnormalizeが返す{path, maxDepth, pops}はどれか。入力は必ず「/」から始まり、ルートより上へ移動する「..」は無視する。",
+ "code": [
+  "○レコード: normalize(文字列: input)",
+  "  tokens ← inputを文字「/」で分割した配列",
+  "  stack ← [], maxDepth ← 0, pops ← 0",
+  "  tokensの各tについて順に繰り返す",
+  "    if (t = 空文字 または t = \".\")",
+  "      何もしない",
+  "    elseif (t = \"..\")",
+  "      if (stackが空でない)",
+  "        stackの末尾を取り除く",
+  "        pops ← pops ＋ 1",
+  "      endif",
+  "    else",
+  "      stackの末尾にtを追加する",
+  "      if (stackの要素数 ＞ maxDepth) maxDepth ← stackの要素数",
+  "    endif",
+  "  endfor",
+  "  path ← \"/\" ＋ stackの要素を「/」で連結した文字列",
+  "  return {path, maxDepth, pops}"
+ ],
+ "given": "input = \"/a/b/../c/./../../d/e/../f\"\n分割で得られる先頭の空文字もtokensに含まれるが、処理では無視される。",
+ "vars": [
+  "処理したt",
+  "操作",
+  "操作後のstack",
+  "maxDepth",
+  "pops"
+ ],
+ "choices": [
+  "{path:\"/d/f\", maxDepth:2, pops:4}",
+  "{path:\"/a/d/f\", maxDepth:3, pops:3}",
+  "{path:\"/d/f\", maxDepth:2, pops:3}",
+  "{path:\"/d/e/f\", maxDepth:2, pops:4}",
+  "{path:\"/f\", maxDepth:2, pops:5}",
+  "{path:\"/d/f\", maxDepth:3, pops:4}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 14,
+   "note": "aを追加し、深さ1になる。",
+   "v": [
+    "a",
+    "PUSH",
+    "[a]",
+    "1",
+    "0"
+   ]
+  },
+  {
+   "line": 14,
+   "note": "bを追加して深さ2となり、maxDepthを2へ更新する。",
+   "v": [
+    "b",
+    "PUSH",
+    "[a,b]",
+    "2",
+    "0"
+   ]
+  },
+  {
+   "line": 10,
+   "note": "最初の..でbを取り除く。続くcは追加される。",
+   "v": [
+    ".. → c",
+    "POP → PUSH",
+    "[a,c]",
+    "2",
+    "1"
+   ]
+  },
+  {
+   "line": 6,
+   "note": "「.」は無視するので状態は変わらない。",
+   "v": [
+    ".",
+    "無視",
+    "[a,c]",
+    "2",
+    "1"
+   ]
+  },
+  {
+   "line": 10,
+   "note": "二つの..を順に処理し、c、aを取り除く。stackは空になり、popsは3となる。",
+   "v": [
+    ".. → ..",
+    "POP → POP",
+    "[]",
+    "2",
+    "3"
+   ]
+  },
+  {
+   "line": 14,
+   "note": "d、eを順に追加した後、..でeを取り除く。",
+   "v": [
+    "d → e → ..",
+    "PUSH → PUSH → POP",
+    "[d]",
+    "2",
+    "4"
+   ]
+  },
+  {
+   "line": 14,
+   "note": "最後にfを追加する。stackは[d,f]なので正規化後のpathは/d/fである。",
+   "v": [
+    "f",
+    "PUSH",
+    "[d,f]",
+    "2",
+    "4"
+   ]
+  }
+ ],
+ "explain": "<p>a,bを積んだ後、最初の..でbを除きます。cを積んだ後の二つの..でcとaを除き、stackは空になります。</p><p>その後d,eを積み、..でeを除いてfを積むため、<b>path=\"/d/f\"、maxDepth=2、pops=4</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-24",
+  "addedAtJst": "2026-08-24T05:30:55+09:00"
+ }
 }
 ];
