@@ -6514,5 +6514,113 @@ const QUESTIONS = [
   "dateJst": "2026-08-23",
   "addedAtJst": "2026-08-23T11:27:53+09:00"
  }
+},
+{
+ "id": "auto-20260823-1327-graham",
+ "cat": "アルゴリズム",
+ "title": "Graham走査による凸包構築",
+ "prompt": "基準点P0からの偏角順に並んだ点列をGraham走査し、反時計回りの凸包を求める。次のconvexHullが返すstackはどれか。cross(A,B,C)が正ならA→B→Cは左折、0以下なら一直線又は右折を表す。",
+ "code": [
+  "○点の配列: convexHull(点の配列: points)",
+  "  stack ← [points[1], points[2]]",
+  "  for (iを3からpointsの要素数まで1ずつ増やす)",
+  "    while (stackの要素数 ≧ 2 かつ cross(stackの末尾から2番目, stackの末尾, points[i]) ≦ 0)",
+  "      stackの末尾をPOPする",
+  "    endwhile",
+  "    stackの末尾にpoints[i]をPUSHする",
+  "  endfor",
+  "  return stack"
+ ],
+ "given": "points = [P0,P1,P2,P3,P4,P5,P6]\nP0=(0,0), P1=(4,0), P2=(3,1), P3=(4,3), P4=(2,2), P5=(1,4), P6=(0,3)\ncross(A,B,C)=(B.x-A.x)×(C.y-A.y)-(B.y-A.y)×(C.x-A.x)\npointsはP0を先頭に、P0からの偏角が小さい順に並んでいる。",
+ "vars": [
+  "対象点",
+  "crossの確認順",
+  "POPした点",
+  "処理後stack",
+  "判断"
+ ],
+ "choices": [
+  "[P0,P1,P3,P5,P6]",
+  "[P0,P1,P2,P3,P5,P6]",
+  "[P0,P1,P3,P4,P5,P6]",
+  "[P0,P2,P4,P5,P6]",
+  "[P0,P1,P3,P6]",
+  "[P0,P1,P2,P3,P4,P5,P6]"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 2,
+   "note": "P0とP1を初期スタックへ入れる。",
+   "v": [
+    "初期",
+    "—",
+    "—",
+    "[P0,P1]",
+    "初期化"
+   ]
+  },
+  {
+   "line": 7,
+   "note": "cross(P0,P1,P2)=4で左折なので、P2をそのまま追加する。",
+   "v": [
+    "P2",
+    "[4]",
+    "なし",
+    "[P0,P1,P2]",
+    "PUSH"
+   ]
+  },
+  {
+   "line": 7,
+   "note": "P3ではcross(P1,P2,P3)=-3なのでP2をPOPする。再計算したcross(P0,P1,P3)=12は正なのでP3を追加する。",
+   "v": [
+    "P3",
+    "[-3,12]",
+    "P2",
+    "[P0,P1,P3]",
+    "POP後PUSH"
+   ]
+  },
+  {
+   "line": 7,
+   "note": "cross(P1,P3,P4)=6で左折なのでP4を追加する。",
+   "v": [
+    "P4",
+    "[6]",
+    "なし",
+    "[P0,P1,P3,P4]",
+    "PUSH"
+   ]
+  },
+  {
+   "line": 7,
+   "note": "P5ではcross(P3,P4,P5)=-5なのでP4をPOPする。cross(P1,P3,P5)=9は正なのでP5を追加する。",
+   "v": [
+    "P5",
+    "[-5,9]",
+    "P4",
+    "[P0,P1,P3,P5]",
+    "POP後PUSH"
+   ]
+  },
+  {
+   "line": 7,
+   "note": "cross(P3,P5,P6)=4で左折なのでP6を追加する。",
+   "v": [
+    "P6",
+    "[4]",
+    "なし",
+    "[P0,P1,P3,P5,P6]",
+    "PUSH"
+   ]
+  }
+ ],
+ "explain": "<p>P2はP3を処理するときに右折を作るため除かれます。P4もP5を処理するときに右折を作るため除かれます。</p><p>残る点は全て左折を保ち、反時計回りの凸包は<b>[P0,P1,P3,P5,P6]</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-23",
+  "addedAtJst": "2026-08-23T13:27:24+09:00"
+ }
 }
 ];
