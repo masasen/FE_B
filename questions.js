@@ -6737,5 +6737,124 @@ const QUESTIONS = [
   "dateJst": "2026-08-23",
   "addedAtJst": "2026-08-23T15:27:54+09:00"
  }
+},
+{
+ "id": "auto-20260823-1728-rabinkarp",
+ "cat": "アルゴリズム",
+ "title": "ローリングハッシュによる文字列探索",
+ "prompt": "数字列textからpatternと一致する位置を、ローリングハッシュで探索する。ハッシュ値が一致した位置では、衝突を除くため要素列も直接比較する。次のrollingSearchが返す{hashes, candidates, matches}はどれか。配列の添字は1から始まり、floorMod(x,m)は0以上m未満の剰余を返す。",
+ "code": [
+  "○レコード: rollingSearch(整数の配列: text, 整数の配列: pattern)",
+  "  base ← 10, modulus ← 13, m ← patternの要素数",
+  "  factor ← 1",
+  "  iを2からmまで1ずつ増やしながら factor ← (factor × base) mod modulus",
+  "  patternHash ← 0, windowHash ← 0",
+  "  iを1からmまで1ずつ増やしながら",
+  "    patternHash ← (patternHash × base + pattern[i]) mod modulus",
+  "    windowHash ← (windowHash × base + text[i]) mod modulus",
+  "  hashes ← [], candidates ← [], matches ← []",
+  "  startを1からtextの要素数－m＋1まで1ずつ増やしながら",
+  "    hashesの末尾にwindowHashを追加する",
+  "    if (windowHash = patternHash)",
+  "      candidatesの末尾にstartを追加する",
+  "      if (text[start..start＋m－1] = pattern) matchesの末尾にstartを追加する",
+  "    endif",
+  "    if (start ≦ textの要素数－m)",
+  "      windowHash ← floorMod((windowHash－text[start]×factor)×base＋text[start＋m], modulus)",
+  "    endif",
+  "  endfor",
+  "  return {hashes, candidates, matches}"
+ ],
+ "given": "text = [1,4,6,1,5,9,2]\npattern = [1,5,9]\ntext[a..b]はa番目からb番目までの部分配列を表す。",
+ "vars": [
+  "start",
+  "対象窓",
+  "windowHash",
+  "candidates",
+  "matches"
+ ],
+ "choices": [
+  "{hashes:[3,6,4,3,7], candidates:[1,4], matches:[4]}",
+  "{hashes:[3,6,4,3,7], candidates:[1,4], matches:[1,4]}",
+  "{hashes:[3,6,4,3,7], candidates:[4], matches:[4]}",
+  "{hashes:[3,6,4,3,7], candidates:[1], matches:[]}",
+  "{hashes:[3,7,4,3,6], candidates:[1,4], matches:[4]}",
+  "{hashes:[3,6,4,3], candidates:[1,4], matches:[4]}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 4,
+   "note": "m=3なのでfactorは10を2回掛けて13で割った剰余となり、9になる。patternHashは159 mod 13 = 3、最初の窓146のwindowHashも3である。",
+   "v": [
+    "初期化",
+    "146",
+    "3",
+    "[]",
+    "[]"
+   ]
+  },
+  {
+   "line": 12,
+   "note": "位置1はハッシュ値3がpatternHashと一致するので候補へ追加する。しかし[1,4,6]と[1,5,9]は異なるため一致位置には追加しない。",
+   "v": [
+    "1",
+    "[1,4,6]",
+    "3",
+    "[1]",
+    "[]"
+   ]
+  },
+  {
+   "line": 17,
+   "note": "先頭の1の寄与1×9を除き、次の1を加えて更新するとfloorMod((3－9)×10＋1,13)=6になる。",
+   "v": [
+    "2",
+    "[4,6,1]",
+    "6",
+    "[1]",
+    "[]"
+   ]
+  },
+  {
+   "line": 17,
+   "note": "先頭の4の寄与を除いて5を加えるとfloorMod((6－36)×10＋5,13)=4になる。",
+   "v": [
+    "3",
+    "[6,1,5]",
+    "4",
+    "[1]",
+    "[]"
+   ]
+  },
+  {
+   "line": 12,
+   "note": "次の更新でwindowHashは3になる。位置4の窓[1,5,9]はハッシュ値も要素列もpatternと一致するので、候補と一致位置の両方へ追加する。",
+   "v": [
+    "4",
+    "[1,5,9]",
+    "3",
+    "[1,4]",
+    "[4]"
+   ]
+  },
+  {
+   "line": 17,
+   "note": "最後の窓[5,9,2]のハッシュ値は7であり、候補には追加しない。",
+   "v": [
+    "5",
+    "[5,9,2]",
+    "7",
+    "[1,4]",
+    "[4]"
+   ]
+  }
+ ],
+ "explain": "<p>最初の窓146は159と同じハッシュ値3ですが、直接比較すると異なるのでハッシュ衝突です。したがって位置1はcandidatesだけに残ります。</p><p>位置4の窓159は直接比較でも一致します。よって<b>hashes=[3,6,4,3,7]、candidates=[1,4]、matches=[4]</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-23",
+  "addedAtJst": "2026-08-23T17:28:54+09:00"
+ }
 }
 ];
