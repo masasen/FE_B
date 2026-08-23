@@ -7309,5 +7309,143 @@ const QUESTIONS = [
   "dateJst": "2026-08-24",
   "addedAtJst": "2026-08-24T01:30:55+09:00"
  }
+},
+{
+ "id": "auto-20260824-0330-linearhash",
+ "cat": "データ構造",
+ "title": "墓石を使う線形探索ハッシュ",
+ "prompt": "要素数7のハッシュ表で、衝突時は次の添字へ進む線形探索法を使う。削除位置には墓石DELを残し、探索はDELを越えて続ける。挿入は最初に見つけたDELを記録し、その後に同じキーがないことを確認して再利用する。次のrunが返す{table, probePaths, found}はどれか。添字は0から6までとする。",
+ "code": [
+  "○レコード: run()",
+  "  table ← [EMP,EMP,EMP,EMP,EMP,EMP,EMP]",
+  "  INSERT(10), INSERT(17), INSERT(24), DELETE(17)を順に実行する",
+  "  (f1,p1) ← SEARCH(24)",
+  "  INSERT(31)",
+  "  (f2,p2) ← SEARCH(17)",
+  "  return {table, [p1,p2], [f1,f2]}",
+  "○ INSERT(整数: key)",
+  "  i ← key mod 7, firstDEL ← なし",
+  "  繰り返し",
+  "    if (table[i] = DEL かつ firstDEL = なし) firstDEL ← i",
+  "    elseif (table[i] = EMP)",
+  "      if (firstDEL ≠ なし) table[firstDEL] ← key",
+  "      else table[i] ← key",
+  "      return",
+  "    elseif (table[i] = key) return",
+  "    i ← (i ＋ 1) mod 7",
+  "  endloop",
+  "○レコード: SEARCH(整数: key)",
+  "  i ← key mod 7, path ← []",
+  "  繰り返し",
+  "    pathの末尾にiを追加する",
+  "    if (table[i] = EMP) return (false,path)",
+  "    if (table[i] = key) return (true,path)",
+  "    i ← (i ＋ 1) mod 7",
+  "  endloop",
+  "○ DELETE(整数: key)",
+  "  SEARCHと同じ順でkeyを探し、見つけた要素をDELにする"
+ ],
+ "given": "EMPは一度も使われていない空き、DELは削除済みの位置を表す。ハッシュ関数はh(key)=key mod 7である。probePathsにはrun内で明示的に呼んだ二つのSEARCHのpathだけを格納する。",
+ "vars": [
+  "操作",
+  "調べた添字",
+  "firstDEL",
+  "table[0..6]",
+  "SEARCHの結果"
+ ],
+ "choices": [
+  "{table:[EMP,EMP,EMP,10,31,24,EMP], probePaths:[[3,4,5],[3,4,5,6]], found:[true,false]}",
+  "{table:[EMP,EMP,EMP,10,31,24,EMP], probePaths:[[3,4,5],[3,4]], found:[true,false]}",
+  "{table:[EMP,EMP,EMP,10,DEL,24,31], probePaths:[[3,4,5],[3,4,5,6]], found:[true,false]}",
+  "{table:[EMP,EMP,EMP,10,31,24,EMP], probePaths:[[3,4],[3,4,5,6]], found:[false,false]}",
+  "{table:[EMP,EMP,EMP,10,31,24,EMP], probePaths:[[3,4,5],[3,4,5]], found:[true,true]}",
+  "{table:[EMP,EMP,EMP,31,10,24,EMP], probePaths:[[3,4,5],[3,4,5,6]], found:[true,false]}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 17,
+   "note": "10の開始添字は3で空いているため格納する。",
+   "v": [
+    "INSERT(10)",
+    "[3]",
+    "なし",
+    "[EMP,EMP,EMP,10,EMP,EMP,EMP]",
+    "—"
+   ]
+  },
+  {
+   "line": 17,
+   "note": "17も開始添字3だが10があるので4まで進み、空きへ格納する。",
+   "v": [
+    "INSERT(17)",
+    "[3,4]",
+    "なし",
+    "[EMP,EMP,EMP,10,17,EMP,EMP]",
+    "—"
+   ]
+  },
+  {
+   "line": 17,
+   "note": "24は3と4を越えて5へ格納される。",
+   "v": [
+    "INSERT(24)",
+    "[3,4,5]",
+    "なし",
+    "[EMP,EMP,EMP,10,17,24,EMP]",
+    "—"
+   ]
+  },
+  {
+   "line": 28,
+   "note": "17を3,4の順で探して見つけ、添字4をDELにする。",
+   "v": [
+    "DELETE(17)",
+    "[3,4]",
+    "—",
+    "[EMP,EMP,EMP,10,DEL,24,EMP]",
+    "—"
+   ]
+  },
+  {
+   "line": 24,
+   "note": "SEARCH(24)は添字4のDELで停止せず、5まで進んで24を見つける。",
+   "v": [
+    "SEARCH(24)",
+    "[3,4,5]",
+    "—",
+    "[EMP,EMP,EMP,10,DEL,24,EMP]",
+    "true"
+   ]
+  },
+  {
+   "line": 13,
+   "note": "INSERT(31)は3から進み、最初のDELである4を記録する。6でEMPを見つけた時点で、記録した4へ31を格納する。",
+   "v": [
+    "INSERT(31)",
+    "[3,4,5,6]",
+    "4",
+    "[EMP,EMP,EMP,10,31,24,EMP]",
+    "—"
+   ]
+  },
+  {
+   "line": 23,
+   "note": "SEARCH(17)は3,4,5を調べても見つからず、6のEMPで不存在が確定する。",
+   "v": [
+    "SEARCH(17)",
+    "[3,4,5,6]",
+    "—",
+    "[EMP,EMP,EMP,10,31,24,EMP]",
+    "false"
+   ]
+  }
+ ],
+ "explain": "<p>DELは探索の終端ではないため、SEARCH(24)は添字4を越えて5まで進みます。INSERT(31)はDELの4を候補として覚え、添字6でEMPを確認してから4を再利用します。</p><p>その後のSEARCH(17)は6のEMPで停止するので、<b>table=[EMP,EMP,EMP,10,31,24,EMP]、probePaths=[[3,4,5],[3,4,5,6]]、found=[true,false]</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-24",
+  "addedAtJst": "2026-08-24T03:30:55+09:00"
+ }
 }
 ];
