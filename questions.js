@@ -6256,5 +6256,110 @@ const QUESTIONS = [
   "dateJst": "2026-08-23",
   "addedAtJst": "2026-08-23T07:26:23+09:00"
  }
+},
+{
+ "id": "auto-20260823-0927-welford",
+ "cat": "プログラミング",
+ "title": "Welford法による逐次分散計算",
+ "prompt": "データを1個ずつ読み込み、平均meanと偏差平方和M2を更新して標本分散を求める。次のonlineVarianceをdata=[4,7,13,16]で実行したとき、返される{mean, sampleVariance}はどれか。「/」は実数の除算を表す。",
+ "code": [
+  "○組: onlineVariance(実数型の配列: data)",
+  "  count ← 0, mean ← 0, M2 ← 0",
+  "  dataの各xについて順に繰り返す",
+  "    count ← count + 1",
+  "    delta ← x - mean",
+  "    mean ← mean + delta / count",
+  "    delta2 ← x - mean",
+  "    M2 ← M2 + delta × delta2",
+  "  endfor",
+  "  sampleVariance ← M2 / (count - 1)",
+  "  return {mean, sampleVariance}"
+ ],
+ "given": "data = [4,7,13,16]\nM2は更新後のmeanを用いたdelta2と、更新前のmeanを用いたdeltaの積を加えて更新する。最後はcountではなくcount-1で割る。",
+ "vars": [
+  "count",
+  "x",
+  "delta",
+  "更新後mean",
+  "delta2",
+  "更新後M2"
+ ],
+ "choices": [
+  "{10, 30}",
+  "{10, 22.5}",
+  "{9, 30}",
+  "{10, 90}",
+  "{8, 30}",
+  "{10.5, 30}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 2,
+   "note": "count、mean、M2を全て0で初期化する。",
+   "v": [
+    "0",
+    "—",
+    "—",
+    "0",
+    "—",
+    "0"
+   ]
+  },
+  {
+   "line": 8,
+   "note": "x=4ではdelta=4、mean=4となり、delta2=0なのでM2は0のまま。",
+   "v": [
+    "1",
+    "4",
+    "4",
+    "4",
+    "0",
+    "0"
+   ]
+  },
+  {
+   "line": 8,
+   "note": "x=7ではdelta=3、mean=4+3/2=5.5、delta2=1.5なのでM2=4.5。",
+   "v": [
+    "2",
+    "7",
+    "3",
+    "5.5",
+    "1.5",
+    "4.5"
+   ]
+  },
+  {
+   "line": 8,
+   "note": "x=13ではdelta=7.5、mean=5.5+7.5/3=8、delta2=5なのでM2=4.5+37.5=42。",
+   "v": [
+    "3",
+    "13",
+    "7.5",
+    "8",
+    "5",
+    "42"
+   ]
+  },
+  {
+   "line": 8,
+   "note": "x=16ではdelta=8、mean=8+8/4=10、delta2=6なのでM2=42+48=90。",
+   "v": [
+    "4",
+    "16",
+    "8",
+    "10",
+    "6",
+    "90"
+   ]
+  }
+ ],
+ "explain": "<p>逐次更新後のmeanは10、M2は90です。標本分散ではデータ数4ではなく自由度3で割ります。</p><p>したがってsampleVariance=90/(4-1)=<b>30</b>となり、戻り値は<b>{10,30}</b>です。22.5はcountで割った母分散です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-23",
+  "addedAtJst": "2026-08-23T09:27:53+09:00"
+ }
 }
 ];
