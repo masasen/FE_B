@@ -7187,5 +7187,127 @@ const QUESTIONS = [
   "dateJst": "2026-08-23",
   "addedAtJst": "2026-08-23T23:30:24+09:00"
  }
+},
+{
+ "id": "auto-20260824-0130-keyrotation",
+ "cat": "セキュリティ",
+ "title": "署名鍵ローテーションの猶予期間",
+ "prompt": "APIトークンの署名検証鍵を切り替える。切替え時には旧鍵を一定時間だけpreviousとして受け付ける。次のprocessが返すresultsはどれか。トークンは有効期限、鍵ID、署名検証結果をもち、各事象は時刻順に並んでいる。",
+ "code": [
+  "○文字列の配列: process(事象の配列: events)",
+  "  current ← K1, previous ← なし, previousUntil ← -1",
+  "  results ← []",
+  "  eventsの各eについて順に繰り返す",
+  "    if (eがROTATE(t,newKey,grace))",
+  "      previous ← current",
+  "      previousUntil ← t ＋ grace",
+  "      current ← newKey",
+  "    else",
+  "      if (e.t ＞ e.exp)",
+  "        resultsの末尾にEXPIREDを追加する",
+  "      elseif (e.kid = current)",
+  "        if (e.signatureOK) resultsの末尾にACCEPTを追加する",
+  "        else resultsの末尾にBAD_SIGNATUREを追加する",
+  "      elseif (e.kid = previous かつ e.t ≦ previousUntil)",
+  "        if (e.signatureOK) resultsの末尾にACCEPT_PREVIOUSを追加する",
+  "        else resultsの末尾にBAD_SIGNATUREを追加する",
+  "      else",
+  "        resultsの末尾にUNKNOWN_KEYを追加する",
+  "      endif",
+  "    endif",
+  "  endfor",
+  "  return results"
+ ],
+ "given": "events = [\n  VERIFY(t=2, kid=K1, exp=10, signatureOK=true),\n  ROTATE(t=4, newKey=K2, grace=3),\n  VERIFY(t=6, kid=K1, exp=10, signatureOK=true),\n  VERIFY(t=8, kid=K1, exp=10, signatureOK=true),\n  VERIFY(t=8, kid=K2, exp=7, signatureOK=true),\n  VERIFY(t=9, kid=K2, exp=12, signatureOK=false)\n]\n有効期限はt=expまで有効とする。",
+ "vars": [
+  "事象",
+  "current / previous / previousUntil",
+  "期限判定",
+  "使用する鍵",
+  "results"
+ ],
+ "choices": [
+  "[ACCEPT, ACCEPT_PREVIOUS, UNKNOWN_KEY, EXPIRED, BAD_SIGNATURE]",
+  "[ACCEPT, ACCEPT_PREVIOUS, ACCEPT_PREVIOUS, EXPIRED, BAD_SIGNATURE]",
+  "[ACCEPT, UNKNOWN_KEY, UNKNOWN_KEY, EXPIRED, BAD_SIGNATURE]",
+  "[ACCEPT, ACCEPT_PREVIOUS, UNKNOWN_KEY, ACCEPT, BAD_SIGNATURE]",
+  "[ACCEPT, ACCEPT_PREVIOUS, UNKNOWN_KEY, EXPIRED, ACCEPT]",
+  "[ACCEPT, ACCEPT_PREVIOUS, UNKNOWN_KEY, BAD_SIGNATURE, EXPIRED]"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 13,
+   "note": "時刻2ではcurrentがK1で、有効期限内かつ署名も正しいのでACCEPTになる。",
+   "v": [
+    "VERIFY(2,K1)",
+    "K1 / なし / -1",
+    "有効",
+    "current K1",
+    "[ACCEPT]"
+   ]
+  },
+  {
+   "line": 8,
+   "note": "時刻4のROTATEでK1をpreviousへ移し、previousUntilを4+3=7、currentをK2にする。ROTATE自体はresultsへ追加しない。",
+   "v": [
+    "ROTATE(4,K2,3)",
+    "K2 / K1 / 7",
+    "—",
+    "—",
+    "[ACCEPT]"
+   ]
+  },
+  {
+   "line": 16,
+   "note": "時刻6のK1はcurrentではないが、previousであり時刻6は7以下である。署名も正しいのでACCEPT_PREVIOUSになる。",
+   "v": [
+    "VERIFY(6,K1)",
+    "K2 / K1 / 7",
+    "有効",
+    "previous K1",
+    "[ACCEPT,ACCEPT_PREVIOUS]"
+   ]
+  },
+  {
+   "line": 19,
+   "note": "時刻8のK1は有効期限内だが、旧鍵の猶予期限7を過ぎているのでUNKNOWN_KEYになる。",
+   "v": [
+    "VERIFY(8,K1)",
+    "K2 / K1 / 7",
+    "有効",
+    "なし",
+    "[ACCEPT,ACCEPT_PREVIOUS,UNKNOWN_KEY]"
+   ]
+  },
+  {
+   "line": 11,
+   "note": "時刻8のK2はcurrentだが、トークンのexp=7を過ぎている。鍵や署名より先に期限判定されEXPIREDになる。",
+   "v": [
+    "VERIFY(8,K2,exp=7)",
+    "K2 / K1 / 7",
+    "期限切れ",
+    "判定しない",
+    "[ACCEPT,ACCEPT_PREVIOUS,UNKNOWN_KEY,EXPIRED]"
+   ]
+  },
+  {
+   "line": 14,
+   "note": "時刻9のK2は有効期限内でcurrentを使うが、signatureOK=falseなのでBAD_SIGNATUREになる。",
+   "v": [
+    "VERIFY(9,K2)",
+    "K2 / K1 / 7",
+    "有効",
+    "current K2",
+    "[ACCEPT,ACCEPT_PREVIOUS,UNKNOWN_KEY,EXPIRED,BAD_SIGNATURE]"
+   ]
+  }
+ ],
+ "explain": "<p>切替え後、旧鍵K1を使えるのは時刻7までです。そのため時刻6のK1は受理されますが、時刻8のK1はUNKNOWN_KEYです。</p><p>時刻8のK2トークンは期限切れ、最後のK2トークンは署名不正です。よって<b>[ACCEPT,ACCEPT_PREVIOUS,UNKNOWN_KEY,EXPIRED,BAD_SIGNATURE]</b>になります。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-24",
+  "addedAtJst": "2026-08-24T01:30:55+09:00"
+ }
 }
 ];
