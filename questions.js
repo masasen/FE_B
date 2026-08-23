@@ -6622,5 +6622,120 @@ const QUESTIONS = [
   "dateJst": "2026-08-23",
   "addedAtJst": "2026-08-23T13:27:24+09:00"
  }
+},
+{
+ "id": "auto-20260823-1527-quadtree",
+ "cat": "データ構造",
+ "title": "四分木の分割と点の再配置",
+ "prompt": "一つの葉に点を1個だけ保持する四分木へ、点を順に挿入する。使用中の葉へ別の点を挿入すると、その領域を4分割して既存点を再配置する。次のbuildが返す、各点の最終pathを挿入順に並べた配列はどれか。",
+ "code": [
+  "○文字列の配列: build(点の配列: points)",
+  "  root ← 領域[0,8)×[0,8)を表す空の葉",
+  "  pointsの各pについて順に繰り返す",
+  "    insert(root, p)",
+  "  endfor",
+  "  return pointsの各pについてpathOf(root,p)を並べた配列",
+  "○ insert(節点: node, 点: p)",
+  "  if (nodeが空の葉) nodeへpを格納する",
+  "  elseif (nodeが点oldを持つ葉)",
+  "    nodeをNW,NE,SW,SEの4子を持つ内部節点へ分割する",
+  "    insert(node, old)",
+  "    insert(node, p)",
+  "  else",
+  "    q ← nodeの領域におけるpの象限",
+  "    insert(nodeの子q, p)",
+  "  endif"
+ ],
+ "given": "points = [A(1,1), B(6,6), C(2,6), D(3,2), E(1,3)]\n各領域の中央について、xが中央以上なら東、未満なら西、yが中央以上なら北、未満なら南とする。pathはrootから通る象限名を「/」で連結し、root自身はROOTと表す。",
+ "vars": [
+  "挿入点",
+  "最初の経路",
+  "分割した領域",
+  "既存点の再配置",
+  "挿入後の点:path"
+ ],
+ "choices": [
+  "[SW/SW, NE, NW, SW/NE, SW/NW]",
+  "[SW, NE, NW, SW/NE, SW/NW]",
+  "[SW/SW, NE, NW, SW/SE, SW/NW]",
+  "[SW/SW, SE, NW, SW/NE, SW/NW]",
+  "[SW/SW, NE, SW/NW, SW/NE, NW]",
+  "[SW/SW, NE, NW, SW/NW, SW/NE]"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 2,
+   "note": "rootを空の葉として初期化する。",
+   "v": [
+    "初期",
+    "—",
+    "なし",
+    "なし",
+    "[]"
+   ]
+  },
+  {
+   "line": 4,
+   "note": "Aは空のrootへそのまま格納される。",
+   "v": [
+    "A(1,1)",
+    "ROOT",
+    "なし",
+    "なし",
+    "[A:ROOT]"
+   ]
+  },
+  {
+   "line": 4,
+   "note": "Bを使用中のrootへ挿入するのでrootを分割する。AはSW、BはNEへ入る。",
+   "v": [
+    "B(6,6)",
+    "ROOT",
+    "ROOT",
+    "A→SW",
+    "[A:SW,B:NE]"
+   ]
+  },
+  {
+   "line": 4,
+   "note": "CはrootのNWに入り、その葉は空なので分割しない。",
+   "v": [
+    "C(2,6)",
+    "NW",
+    "なし",
+    "なし",
+    "[A:SW,B:NE,C:NW]"
+   ]
+  },
+  {
+   "line": 4,
+   "note": "Dは使用中のSWへ入るためSW領域を分割する。Aは新しい中央(2,2)の南西、Dは境界を含む北東へ入る。",
+   "v": [
+    "D(3,2)",
+    "SW",
+    "SW",
+    "A→SW/SW",
+    "[A:SW/SW,B:NE,C:NW,D:SW/NE]"
+   ]
+  },
+  {
+   "line": 4,
+   "note": "EはrootのSW、その内部のNWへ進み、空の葉へ格納される。",
+   "v": [
+    "E(1,3)",
+    "SW/NW",
+    "なし",
+    "なし",
+    "[A:SW/SW,B:NE,C:NW,D:SW/NE,E:SW/NW]"
+   ]
+  }
+ ],
+ "explain": "<p>Bの挿入でrootが分割され、AはSW、BはNEへ移ります。Dの挿入時にはSWがさらに分割され、中央(2,2)に対してAはSW、DはNEです。</p><p>EはSW内のNWへ入ります。したがってA〜Eの最終pathは<b>[SW/SW,NE,NW,SW/NE,SW/NW]</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-23",
+  "addedAtJst": "2026-08-23T15:27:54+09:00"
+ }
 }
 ];
