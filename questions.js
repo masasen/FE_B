@@ -6976,5 +6976,114 @@ const QUESTIONS = [
   "dateJst": "2026-08-23",
   "addedAtJst": "2026-08-23T19:29:24+09:00"
  }
+},
+{
+ "id": "auto-20260823-2129-stablematch",
+ "cat": "アルゴリズム",
+ "title": "暫定受入れを更新する安定マッチング",
+ "prompt": "応募者が希望順に企業へ提案し、企業は現在の暫定受入れ相手と新しい応募者のうち、自社の順位が高い方だけを残す。次のstableMatchが返す{proposals, held}はどれか。企業の定員は各1名とし、提案先が残る未採用応募者が複数いるときは応募者名の辞書順で1名を選ぶ。",
+ "code": [
+  "○レコード: stableMatch()",
+  "  applicants ← [A,B,C]",
+  "  held[X] ← なし, held[Y] ← なし, held[Z] ← なし",
+  "  next[A] ← 1, next[B] ← 1, next[C] ← 1",
+  "  proposals ← []",
+  "  while (提案先が残る未採用応募者がいる)",
+  "    a ← 条件を満たす応募者のうち辞書順で最初の者",
+  "    c ← aの希望順[next[a]]",
+  "    next[a] ← next[a] ＋ 1",
+  "    proposalsの末尾にa→cを追加する",
+  "    if (held[c] = なし)",
+  "      held[c] ← a",
+  "    elseif (企業cがaをheld[c]より高く順位付けする)",
+  "      old ← held[c]",
+  "      held[c] ← a",
+  "      oldを未採用にする",
+  "    else",
+  "      aを未採用のままにする",
+  "    endif",
+  "  endwhile",
+  "  return {proposals, [X:held[X],Y:held[Y],Z:held[Z]]}"
+ ],
+ "given": "応募者の希望順\nA: X, Y, Z\nB: X, Z, Y\nC: X, Y, Z\n\n企業の順位（左ほど高い）\nX: C, A, B\nY: A, C, B\nZ: B, A, C",
+ "vars": [
+  "提案",
+  "提案前の受入れ",
+  "企業の比較",
+  "提案後の受入れ",
+  "未採用者"
+ ],
+ "choices": [
+  "{proposals:[A→X,B→X,B→Z,C→X,A→Y], held:[X:C,Y:A,Z:B]}",
+  "{proposals:[A→X,B→X,C→X,A→Y,B→Z], held:[X:C,Y:A,Z:B]}",
+  "{proposals:[A→X,B→X,B→Z,C→X], held:[X:C,Y:なし,Z:B]}",
+  "{proposals:[A→X,B→X,B→Z,C→X,A→Y], held:[X:A,Y:C,Z:B]}",
+  "{proposals:[A→X,B→X,B→Z,C→X,A→Y], held:[X:C,Y:B,Z:A]}",
+  "{proposals:[A→X,B→X,B→Y,C→X,A→Y], held:[X:C,Y:A,Z:なし]}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 12,
+   "note": "最初はAがXへ提案する。Xは空いているのでAを暫定受入れする。",
+   "v": [
+    "A→X",
+    "[X:なし,Y:なし,Z:なし]",
+    "空き",
+    "[X:A,Y:なし,Z:なし]",
+    "[B,C]"
+   ]
+  },
+  {
+   "line": 18,
+   "note": "次の未採用者Bも第一希望Xへ提案する。Xの順位はAがBより高いのでBを拒否する。",
+   "v": [
+    "B→X",
+    "[X:A,Y:なし,Z:なし]",
+    "A ＞ B",
+    "[X:A,Y:なし,Z:なし]",
+    "[B,C]"
+   ]
+  },
+  {
+   "line": 12,
+   "note": "Bは未採用のままで次の提案先があるため、辞書順でCより先に選ばれる。第二希望Zは空いているので受け入れられる。",
+   "v": [
+    "B→Z",
+    "[X:A,Y:なし,Z:なし]",
+    "空き",
+    "[X:A,Y:なし,Z:B]",
+    "[C]"
+   ]
+  },
+  {
+   "line": 15,
+   "note": "Cが第一希望Xへ提案する。XはCをAより高く順位付けするのでCへ更新し、Aが未採用になる。",
+   "v": [
+    "C→X",
+    "[X:A,Y:なし,Z:B]",
+    "C ＞ A",
+    "[X:C,Y:なし,Z:B]",
+    "[A]"
+   ]
+  },
+  {
+   "line": 12,
+   "note": "未採用になったAは次の希望先Yへ提案する。Yは空いているのでAを受け入れ、全員の暫定受入れが決まる。",
+   "v": [
+    "A→Y",
+    "[X:C,Y:なし,Z:B]",
+    "空き",
+    "[X:C,Y:A,Z:B]",
+    "[]"
+   ]
+  }
+ ],
+ "explain": "<p>BはXに拒否された直後も未採用なので、Cより先に再び選ばれてZへ提案します。その後CがXへ提案すると、XはCをAより高く評価するためAを外します。</p><p>Aは次の希望先Yに受け入れられます。したがって提案列は<b>[A→X,B→X,B→Z,C→X,A→Y]</b>、最終結果は<b>[X:C,Y:A,Z:B]</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-23",
+  "addedAtJst": "2026-08-23T21:29:54+09:00"
+ }
 }
 ];
