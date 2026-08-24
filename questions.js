@@ -8065,5 +8065,142 @@ const QUESTIONS = [
   "dateJst": "2026-08-24",
   "addedAtJst": "2026-08-24T13:35:45+09:00"
  }
+},
+{
+ "id": "auto-20260824-1535-twostackqueue",
+ "cat": "データ構造",
+ "title": "二つのスタックで実装するキュー",
+ "prompt": "inStackとoutStackの二つのスタックでFIFOキューを実装する。DEQUEUE時にoutStackが空なら、inStackの全要素を一つずつoutStackへ移してから取り出す。次のrunが返す{outputs, inStack, outStack, transfers}はどれか。各スタックは左が底、右が先頭とし、transfersは全要素の移送を開始した回数を数える。",
+ "code": [
+  "○レコード: run(操作の配列: ops)",
+  "  inStack ← [], outStack ← [], outputs ← [], transfers ← 0",
+  "  opsの各opについて順に繰り返す",
+  "    if (opがENQUEUE(x))",
+  "      inStackへxをpushする",
+  "    else",
+  "      if (outStackが空)",
+  "        transfers ← transfers ＋ 1",
+  "        while (inStackが空でない)",
+  "          outStackへinStackからpopした値をpushする",
+  "        endwhile",
+  "      endif",
+  "      outputsの末尾にoutStackからpopした値を追加する",
+  "    endif",
+  "  endfor",
+  "  return {outputs, inStack, outStack, transfers}"
+ ],
+ "given": "ops = [ENQUEUE(A), ENQUEUE(B), DEQUEUE, ENQUEUE(C), ENQUEUE(D), DEQUEUE, DEQUEUE, ENQUEUE(E), DEQUEUE]\nDEQUEUEはキューが空でないときだけ実行される。",
+ "vars": [
+  "処理したop",
+  "移送",
+  "inStack（底→先頭）",
+  "outStack（底→先頭）",
+  "outputs / transfers"
+ ],
+ "choices": [
+  "{outputs:[A,B,C,D], inStack:[E], outStack:[], transfers:2}",
+  "{outputs:[B,A,D,C], inStack:[E], outStack:[], transfers:2}",
+  "{outputs:[A,B,C,D], inStack:[], outStack:[E], transfers:2}",
+  "{outputs:[A,B,C,D], inStack:[E], outStack:[], transfers:4}",
+  "{outputs:[A,B,D,C], inStack:[E], outStack:[], transfers:2}",
+  "{outputs:[A,B,C,D,E], inStack:[], outStack:[], transfers:3}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 5,
+   "note": "A、Bを順にinStackへpushする。",
+   "v": [
+    "ENQUEUE(A) → ENQUEUE(B)",
+    "なし",
+    "[A,B]",
+    "[]",
+    "[] / 0"
+   ]
+  },
+  {
+   "line": 10,
+   "note": "最初のDEQUEUEではoutStackが空なので、B、Aの順に移してoutStackを[B,A]とする。",
+   "v": [
+    "DEQUEUE",
+    "B→A",
+    "[]",
+    "[B,A]",
+    "[] / 1"
+   ]
+  },
+  {
+   "line": 13,
+   "note": "outStackの先頭Aをpopし、最初の出力とする。",
+   "v": [
+    "DEQUEUE完了",
+    "なし",
+    "[]",
+    "[B]",
+    "[A] / 1"
+   ]
+  },
+  {
+   "line": 5,
+   "note": "C、DはinStackへ積まれ、outStackにはBが残る。",
+   "v": [
+    "ENQUEUE(C) → ENQUEUE(D)",
+    "なし",
+    "[C,D]",
+    "[B]",
+    "[A] / 1"
+   ]
+  },
+  {
+   "line": 13,
+   "note": "次のDEQUEUEではoutStackが空でないため移送せず、Bを取り出す。",
+   "v": [
+    "DEQUEUE",
+    "なし",
+    "[C,D]",
+    "[]",
+    "[A,B] / 1"
+   ]
+  },
+  {
+   "line": 10,
+   "note": "続くDEQUEUEでoutStackが空なので、D、Cを移して[D,C]とする。二回目の移送である。",
+   "v": [
+    "DEQUEUE",
+    "D→C",
+    "[]",
+    "[D,C]",
+    "[A,B] / 2"
+   ]
+  },
+  {
+   "line": 13,
+   "note": "Cを取り出した後、EをinStackへ追加する。",
+   "v": [
+    "DEQUEUE完了 → ENQUEUE(E)",
+    "なし",
+    "[E]",
+    "[D]",
+    "[A,B,C] / 2"
+   ]
+  },
+  {
+   "line": 13,
+   "note": "最後はoutStackにDがあるため移送せず、Dを取り出す。EはinStackに残る。",
+   "v": [
+    "DEQUEUE",
+    "なし",
+    "[E]",
+    "[]",
+    "[A,B,C,D] / 2"
+   ]
+  }
+ ],
+ "explain": "<p>最初のDEQUEUEでA,BをoutStackへ反転移送し、Aを取り出します。Bが残っている間は、後からinStackへ入ったC,Dをまだ移しません。</p><p>Bを取り出した次のDEQUEUEでC,Dを反転移送し、C、続いてDを取り出します。したがって<b>outputs=[A,B,C,D]、inStack=[E]、outStack=[]、transfers=2</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-24",
+  "addedAtJst": "2026-08-24T15:35:45+09:00"
+ }
 }
 ];
