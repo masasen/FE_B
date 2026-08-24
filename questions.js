@@ -7936,5 +7936,134 @@ const QUESTIONS = [
   "dateJst": "2026-08-24",
   "addedAtJst": "2026-08-24T11:34:45+09:00"
  }
+},
+{
+ "id": "auto-20260824-1335-turtle",
+ "cat": "プログラミング",
+ "title": "相対移動命令の座標トレース",
+ "prompt": "平面上のロボットが、現在の向きを基準に前進F、後退B、右回転R、左回転Lを実行する。次のrunが返す{x, y, direction, distance}はどれか。F(n)とB(n)はnだけ移動し、distanceには移動量の絶対値を加える。回転ではdistanceを変えない。",
+ "code": [
+  "○レコード: run(命令の配列: commands)",
+  "  x ← 0, y ← 0, dir ← 0, distance ← 0",
+  "  dx ← [0,1,0,-1], dy ← [1,0,-1,0]",
+  "  commandsの各cについて順に繰り返す",
+  "    if (cがR)",
+  "      dir ← (dir ＋ 1) mod 4",
+  "    elseif (cがL)",
+  "      dir ← (dir ＋ 3) mod 4",
+  "    elseif (cがF(n))",
+  "      x ← x ＋ dx[dir＋1] × n",
+  "      y ← y ＋ dy[dir＋1] × n",
+  "      distance ← distance ＋ n",
+  "    else",
+  "      x ← x － dx[dir＋1] × n",
+  "      y ← y － dy[dir＋1] × n",
+  "      distance ← distance ＋ n",
+  "    endif",
+  "  endfor",
+  "  return {x, y, [N,E,S,W][dir＋1], distance}"
+ ],
+ "given": "commands = [F(2), R, F(3), L, B(1), L, F(2), R, B(2)]\ndir=0,1,2,3はそれぞれN,E,S,Wを表す。",
+ "vars": [
+  "処理した命令",
+  "位置(x,y)",
+  "dir / 向き",
+  "distance",
+  "更新の要点"
+ ],
+ "choices": [
+  "{x:1, y:-1, direction:N, distance:10}",
+  "{x:1, y:1, direction:N, distance:10}",
+  "{x:-1, y:1, direction:W, distance:10}",
+  "{x:1, y:-1, direction:E, distance:10}",
+  "{x:1, y:-1, direction:N, distance:8}",
+  "{x:5, y:1, direction:N, distance:10}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 10,
+   "note": "北向きでF(2)を実行し、yを2増やす。",
+   "v": [
+    "F(2)",
+    "(0,2)",
+    "0 / N",
+    "2",
+    "北へ2"
+   ]
+  },
+  {
+   "line": 6,
+   "note": "Rで東向きになり、F(3)でxを3増やす。",
+   "v": [
+    "R → F(3)",
+    "(3,2)",
+    "1 / E",
+    "5",
+    "右回転後に東へ3"
+   ]
+  },
+  {
+   "line": 8,
+   "note": "Lで北向きへ戻る。",
+   "v": [
+    "L",
+    "(3,2)",
+    "0 / N",
+    "5",
+    "左回転"
+   ]
+  },
+  {
+   "line": 14,
+   "note": "北向きでB(1)を実行するので、北方向ベクトルを引き、yは1になる。",
+   "v": [
+    "B(1)",
+    "(3,1)",
+    "0 / N",
+    "6",
+    "南へ1"
+   ]
+  },
+  {
+   "line": 8,
+   "note": "Lで西向きになり、F(2)でxを2減らす。",
+   "v": [
+    "L → F(2)",
+    "(1,1)",
+    "3 / W",
+    "8",
+    "西へ2"
+   ]
+  },
+  {
+   "line": 6,
+   "note": "Rで北向きへ戻る。",
+   "v": [
+    "R",
+    "(1,1)",
+    "0 / N",
+    "8",
+    "右回転"
+   ]
+  },
+  {
+   "line": 14,
+   "note": "北向きでB(2)を実行するのでyを2減らす。最終位置は(1,-1)となる。",
+   "v": [
+    "B(2)",
+    "(1,-1)",
+    "0 / N",
+    "10",
+    "南へ2"
+   ]
+  }
+ ],
+ "explain": "<p>前半で北へ2、東へ3、後退によって南へ1進みます。その後、西へ2進んで位置は(1,1)です。</p><p>最後に北向きでB(2)を実行するため(1,-1)となり、移動距離の合計は2+3+1+2+2=10です。よって<b>{x:1,y:-1,direction:N,distance:10}</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-24",
+  "addedAtJst": "2026-08-24T13:35:45+09:00"
+ }
 }
 ];
