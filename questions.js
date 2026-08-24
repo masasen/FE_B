@@ -8725,5 +8725,114 @@ const QUESTIONS = [
   "dateJst": "2026-08-25",
   "addedAtJst": "2026-08-25T01:37:46+09:00"
  }
+},
+{
+ "id": "auto-20260825-0338-dlist",
+ "cat": "データ構造",
+ "title": "双方向連結リストのノード移動",
+ "prompt": "双方向連結リストを配列prevとnextで表す。moveAfter(x,y)はノードxを現在位置から外し、ノードyの直後へ移動する。moveAfter(2,4)を実行した後、headからnextをたどって得られるキーの並びはどれか。xとyは異なり、xはheadでもtailでもなく、yの直後は存在する。",
+ "code": [
+  "○moveAfter(整数型: x, y)",
+  "  a ← prev[x]",
+  "  b ← next[x]",
+  "  next[a] ← b",
+  "  prev[b] ← a",
+  "  c ← next[y]",
+  "  next[y] ← x",
+  "  prev[x] ← y",
+  "  next[x] ← c",
+  "  prev[c] ← x"
+ ],
+ "given": "node = 1  2  3  4  5\nkey  = A  B  C  D  E\nprev = {未定義, 1, 2, 3, 4}\nnext = {2, 3, 4, 5, 未定義}\nhead = 1, tail = 5\n初期順序は A→B→C→D→E。",
+ "vars": [
+  "処理",
+  "a/b/c",
+  "更新したリンク",
+  "headからの並び",
+  "確認点"
+ ],
+ "choices": [
+  "A→C→D→B→E",
+  "A→C→B→D→E",
+  "A→D→B→C→E",
+  "A→C→D→E→B",
+  "B→A→C→D→E",
+  "A→B→D→C→E"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 3,
+   "note": "x=2の前後を保存する。a=prev[2]=1、b=next[2]=3。",
+   "v": [
+    "退避",
+    "a=1,b=3",
+    "なし",
+    "A→B→C→D→E",
+    "Bの前後はA,C"
+   ]
+  },
+  {
+   "line": 5,
+   "note": "next[1]=3、prev[3]=1としてBを元の位置から外す。",
+   "v": [
+    "切離し",
+    "a=1,b=3",
+    "next[1]=3, prev[3]=1",
+    "A→C→D→E",
+    "AとCが相互接続"
+   ]
+  },
+  {
+   "line": 6,
+   "note": "挿入先y=4の次を保存する。c=next[4]=5。",
+   "v": [
+    "挿入先退避",
+    "c=5",
+    "なし",
+    "A→C→D→E",
+    "Dの次はE"
+   ]
+  },
+  {
+   "line": 8,
+   "note": "next[4]=2、prev[2]=4としてDの直後にBを接続する。",
+   "v": [
+    "前半接続",
+    "y=4,x=2",
+    "next[4]=2, prev[2]=4",
+    "A→C→D→B",
+    "DとBが相互接続"
+   ]
+  },
+  {
+   "line": 10,
+   "note": "next[2]=5、prev[5]=2としてBの後ろにEを接続する。",
+   "v": [
+    "後半接続",
+    "x=2,c=5",
+    "next[2]=5, prev[5]=2",
+    "A→C→D→B→E",
+    "BとEが相互接続"
+   ]
+  },
+  {
+   "line": 10,
+   "note": "head=1からnextをたどると1,3,4,2,5となり、キーはA,C,D,B,Eである。",
+   "v": [
+    "終了",
+    "—",
+    "1→3→4→2→5",
+    "A→C→D→B→E",
+    "prevも逆向きに整合"
+   ]
+  }
+ ],
+ "explain": "<p>まずBを外すとAとCが直接つながり、並びはA→C→D→Eになります。次にDとEの間へBを差し込みます。</p><p>双方向リストでは各接続についてnextとprevの<b>両方</b>を更新する必要があります。最終的なノード番号は1→3→4→2→5、キーは<b>A→C→D→B→E</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-25",
+  "addedAtJst": "2026-08-25T03:38:17+09:00"
+ }
 }
 ];
