@@ -8413,5 +8413,103 @@ const QUESTIONS = [
   "dateJst": "2026-08-24",
   "addedAtJst": "2026-08-24T19:37:16+09:00"
  }
+},
+{
+ "id": "auto-20260824-2137-prim",
+ "cat": "アルゴリズム",
+ "title": "Prim法で選ぶ最小全域木",
+ "prompt": "重み付き無向グラフの最小全域木をPrim法で求める。頂点Aから開始し、訪問済み集合と未訪問集合を結ぶ辺のうち重み最小の辺を毎回選ぶ。次のprimが返す{edges, total}はどれか。選択候補の最小重みは毎回一意に決まる。",
+ "code": [
+  "○レコード: prim(グラフ: G, 頂点: start)",
+  "  visited ← {start}, edges ← [], total ← 0",
+  "  while (visitedの要素数 ＜ Gの頂点数)",
+  "    candidates ← 一端だけがvisitedに含まれる全ての辺",
+  "    e ← candidatesのうち重みが最小の辺",
+  "    edgesの末尾にeを追加する",
+  "    eの未訪問側の頂点をvisitedへ追加する",
+  "    total ← total ＋ eの重み",
+  "  endwhile",
+  "  return {edges, total}"
+ ],
+ "given": "頂点 = {A,B,C,D,E}\n辺 = {A-B:4, A-C:2, B-C:1, B-D:5, B-E:7, C-D:8, C-E:10, D-E:2}\nstart = A\n辺名は選択時の訪問済み側→未訪問側の向きで表す。",
+ "vars": [
+  "回",
+  "visited（選択前）",
+  "最小候補辺",
+  "visited（選択後）",
+  "edges / total"
+ ],
+ "choices": [
+  "{edges:[A→C:2,C→B:1,B→D:5,D→E:2], total:10}",
+  "{edges:[A→C:2,C→B:1,B→E:7,E→D:2], total:12}",
+  "{edges:[A→B:4,B→C:1,B→D:5,D→E:2], total:12}",
+  "{edges:[A→C:2,C→B:1,C→D:8,D→E:2], total:13}",
+  "{edges:[A→C:2,C→B:1,B→D:5,B→E:7], total:15}",
+  "{edges:[A→C:2,C→B:1,D→E:2,B→D:5], total:10}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 5,
+   "note": "visited={A}から外へ出る辺はA-B:4とA-C:2。最小のA→C:2を選ぶ。",
+   "v": [
+    "1",
+    "{A}",
+    "A→C:2",
+    "{A,C}",
+    "[A→C:2] / 2"
+   ]
+  },
+  {
+   "line": 5,
+   "note": "Cが加わるとC-B:1が候補になり、A-B:4より小さいためC→B:1を選ぶ。",
+   "v": [
+    "2",
+    "{A,C}",
+    "C→B:1",
+    "{A,B,C}",
+    "[A→C:2,C→B:1] / 3"
+   ]
+  },
+  {
+   "line": 5,
+   "note": "未訪問のD,Eへ伸びる候補はB-D:5、B-E:7、C-D:8、C-E:10。最小のB→D:5を選ぶ。",
+   "v": [
+    "3",
+    "{A,B,C}",
+    "B→D:5",
+    "{A,B,C,D}",
+    "[A→C:2,C→B:1,B→D:5] / 8"
+   ]
+  },
+  {
+   "line": 5,
+   "note": "Dが加わるとD-E:2が候補となり、B-E:7やC-E:10より小さいためD→E:2を選ぶ。",
+   "v": [
+    "4",
+    "{A,B,C,D}",
+    "D→E:2",
+    "{A,B,C,D,E}",
+    "[A→C:2,C→B:1,B→D:5,D→E:2] / 10"
+   ]
+  },
+  {
+   "line": 10,
+   "note": "全頂点が訪問済みになり、4辺の重み合計は2+1+5+2=10である。",
+   "v": [
+    "終了",
+    "{A,B,C,D,E}",
+    "—",
+    "{A,B,C,D,E}",
+    "[A→C:2,C→B:1,B→D:5,D→E:2] / 10"
+   ]
+  }
+ ],
+ "explain": "<p>Aからは重み2のA-Cを選び、次にC-B:1を選びます。A,B,Cから未訪問側へ出る最小辺はB-D:5です。</p><p>Dが訪問済みになるとD-E:2が最小候補になるため、最終結果は<b>[A→C:2,C→B:1,B→D:5,D→E:2]、total=10</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-24",
+  "addedAtJst": "2026-08-24T21:37:16+09:00"
+ }
 }
 ];
