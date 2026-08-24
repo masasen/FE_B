@@ -8511,5 +8511,120 @@ const QUESTIONS = [
   "dateJst": "2026-08-24",
   "addedAtJst": "2026-08-24T21:37:16+09:00"
  }
+},
+{
+ "id": "auto-20260824-2337-rleslice",
+ "cat": "プログラミング",
+ "title": "ランレングス列の部分復号",
+ "prompt": "同じ文字の連続を、配列countsとvaluesで表したランレングス列がある。次の関数sliceRunsは、復号後の文字列のstart文字目からlength文字を取り出す。sliceRuns(counts, values, 4, 5)の戻り値はどれか。文字位置と配列の要素番号は1から始まる。",
+ "code": [
+  "○文字列: sliceRuns(整数型の配列: counts, 文字型の配列: values, 整数型: start, length)",
+  "  整数型: i, j, pos",
+  "  文字列: out",
+  "  pos ← 0, out ← \"\"",
+  "  for (i を 1 から countsの要素数 まで 1 ずつ増やす)",
+  "    for (j を 1 から counts[i] まで 1 ずつ増やす)",
+  "      pos ← pos ＋ 1",
+  "      if (pos ≧ start and outの文字数 ＜ length)",
+  "        outの末尾に values[i] を追加する",
+  "      endif",
+  "    endfor",
+  "    if (outの文字数 ＝ length)",
+  "      return out",
+  "    endif",
+  "  endfor",
+  "  return out"
+ ],
+ "given": "counts = {3, 2, 4, 1}\nvalues = {'A', 'B', 'C', 'D'}\nstart = 4, length = 5\n全体を復号すると位置1〜10に A,A,A,B,B,C,C,C,C,D が並ぶ。",
+ "vars": [
+  "処理区間",
+  "posの範囲",
+  "values[i]",
+  "追加後のout",
+  "判定"
+ ],
+ "choices": [
+  "\"ABBCC\"",
+  "\"BBCCC\"",
+  "\"BBCCCC\"",
+  "\"BCCCD\"",
+  "\"CCCCC\"",
+  "\"AAABB\""
+ ],
+ "answer": 1,
+ "steps": [
+  {
+   "line": 6,
+   "note": "i=1ではAを3回処理する。posは1〜3でstart=4未満なので追加しない。",
+   "v": [
+    "i=1, j=1〜3",
+    "1〜3",
+    "A",
+    "\"\"",
+    "全て範囲外"
+   ]
+  },
+  {
+   "line": 9,
+   "note": "i=2,j=1でpos=4となり、開始位置に達したのでBを追加する。",
+   "v": [
+    "i=2, j=1",
+    "4",
+    "B",
+    "\"B\"",
+    "追加"
+   ]
+  },
+  {
+   "line": 9,
+   "note": "i=2,j=2でpos=5。Bをもう1文字追加する。",
+   "v": [
+    "i=2, j=2",
+    "5",
+    "B",
+    "\"BB\"",
+    "追加"
+   ]
+  },
+  {
+   "line": 9,
+   "note": "i=3の先頭3回ではpos=6〜8となり、Cを3文字追加してoutの長さが5になる。",
+   "v": [
+    "i=3, j=1〜3",
+    "6〜8",
+    "C",
+    "\"BBCCC\"",
+    "3文字追加"
+   ]
+  },
+  {
+   "line": 8,
+   "note": "i=3,j=4ではpos=9だが、outの文字数は既にlength=5なので追加しない。",
+   "v": [
+    "i=3, j=4",
+    "9",
+    "C",
+    "\"BBCCC\"",
+    "長さ上限"
+   ]
+  },
+  {
+   "line": 13,
+   "note": "内側のループ後にoutの文字数が5と一致するため、\"BBCCC\"を返す。",
+   "v": [
+    "return",
+    "—",
+    "—",
+    "\"BBCCC\"",
+    "終了"
+   ]
+  }
+ ],
+ "explain": "<p>位置1〜3のAは開始位置より前なので読み飛ばします。位置4,5のBを追加した後、位置6〜8のCを追加すると5文字になります。</p><p>内側のループはその連続区間の末尾まで進むため位置9も処理しますが、<b>outの文字数 ＜ length</b>が偽なので4個目のCは追加されません。戻り値は<b>\"BBCCC\"</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-24",
+  "addedAtJst": "2026-08-24T23:37:46+09:00"
+ }
 }
 ];
