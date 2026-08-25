@@ -9975,5 +9975,97 @@ const QUESTIONS = [
   "dateJst": "2026-08-25",
   "addedAtJst": "2026-08-25T23:09:33+09:00"
  }
+},
+{
+ "id": "auto-20260826-0111-certchain",
+ "cat": "セキュリティ",
+ "title": "証明書チェーンの検証順序",
+ "prompt": "サーバ証明書からルート証明書までのチェーンを順に検証する。次のverifyChainを実行したときの戻り値はどれか。条件は上から順に評価し、returnした時点で終了する。",
+ "code": [
+  "○文字列: verifyChain(証明書の配列: chain, 整数型: now)",
+  "  for (i を 1 から chainの要素数 まで 1ずつ増やす)",
+  "    c ← chain[i]",
+  "    if (now ＜ c.notBefore or now ＞ c.notAfter)",
+  "      return \"期限切れ:\" ＋ c.subject",
+  "    endif",
+  "    if (i ＜ chainの要素数 and c.issuer ≠ chain[i＋1].subject)",
+  "      return \"発行者不一致:\" ＋ c.subject",
+  "    endif",
+  "  endfor",
+  "  root ← chain[chainの要素数]",
+  "  if (root.subject が trustedRoots に含まれない)",
+  "    return \"未信頼ルート\"",
+  "  endif",
+  "  return \"検証成功\""
+ ],
+ "given": "now=500, trustedRoots={RootR}\nchain[1]={subject:Server, issuer:CA1, notBefore:100, notAfter:900}\nchain[2]={subject:CA1, issuer:RootR, notBefore:0, notAfter:450}\nchain[3]={subject:RootR, issuer:RootR, notBefore:0, notAfter:1000}",
+ "vars": [
+  "i/subject",
+  "有効期間",
+  "issuerと次subject",
+  "判定",
+  "次の処理"
+ ],
+ "choices": [
+  "検証成功",
+  "期限切れ:Server",
+  "期限切れ:CA1",
+  "発行者不一致:Server",
+  "発行者不一致:CA1",
+  "未信頼ルート"
+ ],
+ "answer": 2,
+ "steps": [
+  {
+   "line": 4,
+   "note": "Serverは100≦500≦900なので有効期間内。",
+   "v": [
+    "1/Server",
+    "有効",
+    "CA1=CA1",
+    "継続",
+    "発行者確認"
+   ]
+  },
+  {
+   "line": 7,
+   "note": "Serverのissuer CA1は次の証明書のsubject CA1と一致する。",
+   "v": [
+    "1/Server",
+    "有効",
+    "一致",
+    "継続",
+    "i=2"
+   ]
+  },
+  {
+   "line": 5,
+   "note": "CA1はnotAfter=450であり、now=500はこれを超える。",
+   "v": [
+    "2/CA1",
+    "期限切れ",
+    "未評価",
+    "期限切れ:CA1",
+    "return"
+   ]
+  },
+  {
+   "line": 5,
+   "note": "returnしたためCA1の発行者照合、RootRの検証、信頼済みルート確認は実行しない。",
+   "v": [
+    "終了",
+    "—",
+    "—",
+    "期限切れ:CA1",
+    "処理終了"
+   ]
+  }
+ ],
+ "explain": "<p>チェーンのつながりだけでなく、途中のCA証明書も有効期間を満たす必要があります。Serverは有効ですが、CA1はnow=500に対してnotAfter=450なので期限切れです。</p><p>条件は順番に評価されるため、ここで<b>期限切れ:CA1</b>を返し、ルートの信頼確認までは進みません。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-26",
+  "addedAtJst": "2026-08-26T01:11:03+09:00"
+ }
 }
 ];
