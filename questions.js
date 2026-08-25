@@ -9074,5 +9074,110 @@ const QUESTIONS = [
   "dateJst": "2026-08-25",
   "addedAtJst": "2026-08-25T07:40:02+09:00"
  }
+},
+{
+ "id": "auto-20260825-0941-sparseset",
+ "cat": "データ構造",
+ "title": "疎集合の末尾交換削除",
+ "prompt": "疎集合では、有効な要素をdense[1]〜dense[size]に格納し、sparse[x]にxのdense内の位置を保持する。次のremoveをx=2、続いてx=7に対して実行した後の状態はどれか。削除対象は必ず集合に含まれる。",
+ "code": [
+  "○remove(整数型: x)",
+  "  i ← sparse[x]",
+  "  last ← dense[size]",
+  "  dense[i] ← last",
+  "  sparse[last] ← i",
+  "  size ← size － 1"
+ ],
+ "given": "dense = {4, 2, 7, 5, 未定義, …}\nsize = 4\nsparse[2]=2, sparse[4]=1, sparse[5]=4, sparse[7]=3\n有効部分だけを集合として扱い、denseのsizeより後ろの値は無視する。",
+ "vars": [
+  "操作",
+  "i",
+  "last",
+  "denseの有効部分",
+  "size / sparse更新"
+ ],
+ "choices": [
+  "dense={4,5}, size=2, sparse[5]=2",
+  "dense={4,7}, size=2, sparse[7]=2",
+  "dense={4,5}, size=2, sparse[5]=4",
+  "dense={4,7,5}, size=2, sparse[5]=2",
+  "dense={5,4}, size=2, sparse[5]=1",
+  "dense={4,5,7}, size=3, sparse[5]=2"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 2,
+   "note": "remove(2)ではsparse[2]=2なので、削除位置iは2。",
+   "v": [
+    "remove(2)",
+    "2",
+    "—",
+    "{4,2,7,5}",
+    "size=4"
+   ]
+  },
+  {
+   "line": 5,
+   "note": "末尾要素dense[4]=5を位置2へ移し、sparse[5]を2へ更新する。",
+   "v": [
+    "末尾交換",
+    "2",
+    "5",
+    "{4,5,7,5}",
+    "sparse[5]=2"
+   ]
+  },
+  {
+   "line": 6,
+   "note": "sizeを3へ減らすと有効部分は{4,5,7}。4番目に残る5は無視する。",
+   "v": [
+    "削除完了",
+    "2",
+    "5",
+    "{4,5,7}",
+    "size=3"
+   ]
+  },
+  {
+   "line": 3,
+   "note": "remove(7)ではsparse[7]=3で、現在の末尾dense[3]も7である。",
+   "v": [
+    "remove(7)",
+    "3",
+    "7",
+    "{4,5,7}",
+    "size=3"
+   ]
+  },
+  {
+   "line": 5,
+   "note": "末尾要素7を同じ位置3へ書き戻し、sparse[7]=3となる。",
+   "v": [
+    "末尾交換",
+    "3",
+    "7",
+    "{4,5,7}",
+    "sparse[7]=3"
+   ]
+  },
+  {
+   "line": 6,
+   "note": "sizeを2へ減らす。最終的な有効部分は{4,5}で、sparse[5]=2は維持される。",
+   "v": [
+    "削除完了",
+    "3",
+    "7",
+    "{4,5}",
+    "size=2 / sparse[5]=2"
+   ]
+  }
+ ],
+ "explain": "<p>疎集合の削除は、削除位置へ末尾要素を移して有効長sizeを1減らします。配列の途中を詰める必要がないため定数時間です。</p><p>2を削除すると末尾の5が位置2へ移り、sparse[5]=2になります。次の7はその時点の末尾なので自分自身との交換になり、sizeだけが減ります。最終状態は<b>dense={4,5}, size=2, sparse[5]=2</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-25",
+  "addedAtJst": "2026-08-25T09:41:32+09:00"
+ }
 }
 ];
