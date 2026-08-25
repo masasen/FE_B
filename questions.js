@@ -10067,5 +10067,129 @@ const QUESTIONS = [
   "dateJst": "2026-08-26",
   "addedAtJst": "2026-08-26T01:11:03+09:00"
  }
+},
+{
+ "id": "auto-20260826-0312-threadtree",
+ "cat": "データ構造",
+ "title": "右スレッド二分木の中間順走査",
+ "prompt": "右子を持たないノードのrightには、中間順走査で次に訪れるノードへのスレッドを格納する。次のinorderをroot=Aで実行した戻り値はどれか。",
+ "code": [
+  "○文字列: inorder(ノード: root)",
+  "  p ← leftmost(root), out ← \"\"",
+  "  while (p ≠ 未定義)",
+  "    outの末尾にp.keyを追加する",
+  "    if (p.rightIsThread)",
+  "      p ← p.right",
+  "    else",
+  "      p ← leftmost(p.right)",
+  "    endif",
+  "  endwhile",
+  "  return out",
+  "○ノード: leftmost(ノード: p)",
+  "  while (p ≠ 未定義 and p.left ≠ 未定義) p ← p.left",
+  "  return p"
+ ],
+ "given": "通常の子: A.left=B, A.right=C, B.left=D, B.right=E, C.right=F\nC.left, D.left, E.left, F.left は未定義\n右スレッド: D.right=B, E.right=A, F.right=未定義\nrightIsThreadはD,E,Fでtrue、A,B,Cでfalse。",
+ "vars": [
+  "訪問p",
+  "out",
+  "rightIsThread",
+  "次pの求め方",
+  "次p"
+ ],
+ "choices": [
+  "DBEACF",
+  "ABDECF",
+  "DBEAFC",
+  "DEBAFC",
+  "FCAEBD",
+  "DBECFA"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 2,
+   "note": "AからleftをたどるとA→B→Dなので最初はD。",
+   "v": [
+    "開始",
+    "\"\"",
+    "—",
+    "leftmost(A)",
+    "D"
+   ]
+  },
+  {
+   "line": 6,
+   "note": "Dを追加。DのrightはスレッドなのでBへ。",
+   "v": [
+    "D",
+    "\"D\"",
+    "true",
+    "thread",
+    "B"
+   ]
+  },
+  {
+   "line": 8,
+   "note": "Bを追加。右子EのleftmostはE。",
+   "v": [
+    "B",
+    "\"DB\"",
+    "false",
+    "leftmost(E)",
+    "E"
+   ]
+  },
+  {
+   "line": 6,
+   "note": "Eを追加。スレッドはAを指す。",
+   "v": [
+    "E",
+    "\"DBE\"",
+    "true",
+    "thread",
+    "A"
+   ]
+  },
+  {
+   "line": 8,
+   "note": "Aを追加。右子CのleftmostはC。",
+   "v": [
+    "A",
+    "\"DBEA\"",
+    "false",
+    "leftmost(C)",
+    "C"
+   ]
+  },
+  {
+   "line": 8,
+   "note": "Cを追加。右子FのleftmostはF。",
+   "v": [
+    "C",
+    "\"DBEAC\"",
+    "false",
+    "leftmost(F)",
+    "F"
+   ]
+  },
+  {
+   "line": 6,
+   "note": "Fを追加。スレッド先は未定義なので終了。",
+   "v": [
+    "F",
+    "\"DBEACF\"",
+    "true",
+    "thread",
+    "未定義"
+   ]
+  }
+ ],
+ "explain": "<p>中間順は左部分木→自分→右部分木です。右スレッドは、右子がないときの次ノードを直接示します。</p><p>D→B→E→A→C→Fと進むため、戻り値は<b>\"DBEACF\"</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-26",
+  "addedAtJst": "2026-08-26T03:12:33+09:00"
+ }
 }
 ];
