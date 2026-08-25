@@ -9850,5 +9850,130 @@ const QUESTIONS = [
   "dateJst": "2026-08-25",
   "addedAtJst": "2026-08-25T21:09:34+09:00"
  }
+},
+{
+ "id": "auto-20260825-2309-escsplit",
+ "cat": "プログラミング",
+ "title": "エスケープ付き区切り文字の解析",
+ "prompt": "カンマ区切り文字列では、バックスラッシュの直後の1文字をデータとして扱う。次のsplitEscaped(text)の戻り値はどれか。入力中の\\\\は二つの連続したバックスラッシュを表す。",
+ "code": [
+  "○文字列の配列: splitEscaped(文字列: text)",
+  "  fields ← 空の配列, current ← \"\", escaped ← false",
+  "  textの各文字chについて",
+  "    if (escaped)",
+  "      currentの末尾にchを追加し、escaped ← false",
+  "    else if (ch ＝ バックスラッシュ)",
+  "      escaped ← true",
+  "    else if (ch ＝ \",\")",
+  "      fieldsの末尾にcurrentを追加し、current ← \"\"",
+  "    else",
+  "      currentの末尾にchを追加する",
+  "    endif",
+  "  endfor",
+  "  fieldsの末尾にcurrentを追加する",
+  "  return fields"
+ ],
+ "given": "textの文字列 = a b \\ , c d , e f \\ \\ , g\n文字を詰めて書くと ab\\,cd,ef\\\\,g である。",
+ "vars": [
+  "読んだ部分",
+  "ch",
+  "escaped",
+  "current",
+  "fields"
+ ],
+ "choices": [
+  "{\"ab\",\"cd\",\"ef\",\"g\"}",
+  "{\"ab,cd\",\"ef\\\\\",\"g\"}",
+  "{\"ab,cd\",\"ef\",\"g\"}",
+  "{\"ab\\\\\",\"cd\",\"ef\\\\\",\"g\"}",
+  "{\"ab,cd\",\"ef\\\\,g\"}",
+  "{\"ab\",\"cd,ef\",\"g\"}"
+ ],
+ "answer": 1,
+ "steps": [
+  {
+   "line": 10,
+   "note": "a,bを通常文字としてcurrentへ追加する。",
+   "v": [
+    "ab",
+    "a,b",
+    "false",
+    "ab",
+    "{}"
+   ]
+  },
+  {
+   "line": 7,
+   "note": "最初のバックスラッシュでescaped=true。直後のカンマは区切りではなくcurrentへ追加する。",
+   "v": [
+    "ab\\,",
+    "\\ ,",
+    "false→true→false",
+    "ab,",
+    "{}"
+   ]
+  },
+  {
+   "line": 9,
+   "note": "c,dを追加後、次の通常カンマで第1フィールドab,cdを確定する。",
+   "v": [
+    "ab\\,cd,",
+    "c,d,",
+    "false",
+    "",
+    "{ab,cd}"
+   ]
+  },
+  {
+   "line": 7,
+   "note": "e,fの後の1個目のバックスラッシュでescaped=true。",
+   "v": [
+    "ef\\",
+    "\\",
+    "true",
+    "ef",
+    "{ab,cd}"
+   ]
+  },
+  {
+   "line": 5,
+   "note": "2個目のバックスラッシュをデータとしてcurrentへ追加し、escaped=falseへ戻す。",
+   "v": [
+    "ef\\\\",
+    "\\",
+    "false",
+    "ef\\",
+    "{ab,cd}"
+   ]
+  },
+  {
+   "line": 9,
+   "note": "続くカンマは通常の区切りなので、第2フィールドef\\を確定する。",
+   "v": [
+    "ef\\\\,",
+    ",",
+    "false",
+    "",
+    "{ab,cd,ef\\}"
+   ]
+  },
+  {
+   "line": 14,
+   "note": "gを追加し、走査後に第3フィールドとして追加する。",
+   "v": [
+    "g",
+    "g",
+    "false",
+    "g",
+    "{ab,cd,ef\\,g}"
+   ]
+  }
+ ],
+ "explain": "<p>escaped=trueのときは、次の文字がカンマでもバックスラッシュでもそのままデータへ入れます。したがって最初の\\,はフィールド内のカンマです。</p><p>連続する\\\\では1個目が2個目をエスケープするので、currentにはバックスラッシュ1文字が残ります。その次のカンマは区切りとなり、結果は<b>{\"ab,cd\",\"ef\\\\\",\"g\"}</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-25",
+  "addedAtJst": "2026-08-25T23:09:33+09:00"
+ }
 }
 ];
