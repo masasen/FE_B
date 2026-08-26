@@ -11177,5 +11177,87 @@ const QUESTIONS = [
   "dateJst": "2026-08-26",
   "addedAtJst": "2026-08-26T21:22:26+09:00"
  }
+},
+{
+ "id": "auto-20260827-0122-samesite",
+ "cat": "セキュリティ",
+ "title": "SameSite=Lax Cookieの送信判定",
+ "prompt": "WebサイトがCookie「SID」を Secure; SameSite=Lax; Domain=app.example の属性で設定した。ブラウザが次の要求1〜5を順に行うとき、SIDの送信判定列はどれか。要求先のパスはCookieのPath条件を満たし、Cookieは有効期限内とする。\n1. app.example上のページから https://app.example/dashboard への同一サイト内GET\n2. evil.example上のページに埋め込まれた画像から https://app.example/pixel へのGET\n3. evil.example上のリンクをクリックしたトップレベル画面遷移で https://app.example/home へのGET\n4. evil.example上のフォームからトップレベル画面遷移で https://app.example/update へのPOST\n5. evil.example上のリンクをクリックしたトップレベル画面遷移で http://app.example/home へのGET",
+ "code": null,
+ "given": null,
+ "vars": [
+  "要求",
+  "サイト関係・方式",
+  "SameSite=Lax",
+  "Secure",
+  "最終判定"
+ ],
+ "choices": [
+  "{送信,不送信,送信,不送信,不送信}",
+  "{送信,送信,送信,不送信,不送信}",
+  "{送信,不送信,不送信,不送信,不送信}",
+  "{送信,不送信,送信,送信,不送信}",
+  "{送信,不送信,送信,不送信,送信}",
+  "{不送信,不送信,送信,不送信,不送信}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "note": "要求1は同一サイト内のHTTPS要求なので、Lax条件とSecure条件をともに満たす。",
+   "v": [
+    "1",
+    "同一サイト・GET・HTTPS",
+    "許可",
+    "許可",
+    "送信"
+   ]
+  },
+  {
+   "note": "要求2はクロスサイトのサブリソース要求であり、トップレベル画面遷移ではないのでLaxが送信を抑止する。",
+   "v": [
+    "2",
+    "クロスサイト画像・GET・HTTPS",
+    "不許可",
+    "許可",
+    "不送信"
+   ]
+  },
+  {
+   "note": "要求3はクロスサイトでも、利用者操作によるトップレベルの安全なGET画面遷移なのでLaxで送信できる。",
+   "v": [
+    "3",
+    "トップレベル・GET・HTTPS",
+    "許可",
+    "許可",
+    "送信"
+   ]
+  },
+  {
+   "note": "要求4はトップレベル画面遷移でもPOSTであり、安全なGETではないのでLaxが送信を抑止する。",
+   "v": [
+    "4",
+    "トップレベル・POST・HTTPS",
+    "不許可",
+    "許可",
+    "不送信"
+   ]
+  },
+  {
+   "note": "要求5はLaxの画面遷移条件を満たすが、HTTP要求なのでSecure属性によって送信されない。",
+   "v": [
+    "5",
+    "トップレベル・GET・HTTP",
+    "許可",
+    "不許可",
+    "不送信"
+   ]
+  }
+ ],
+ "explain": "<p>SameSite=Laxは、同一サイト要求に加え、クロスサイトでも<b>トップレベルの安全なGET画面遷移</b>ではCookieを送信できます。一方、画像などのサブリソース要求やクロスサイトPOSTでは送信しません。</p><p>要求5はLaxだけ見れば送信対象ですが、Secure属性のCookieはHTTPSでだけ送信されます。したがって判定列は<b>{送信,不送信,送信,不送信,不送信}</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-27",
+  "addedAtJst": "2026-08-27T01:22:56+09:00"
+ }
 }
 ];
