@@ -10524,5 +10524,104 @@ const QUESTIONS = [
   "dateJst": "2026-08-26",
   "addedAtJst": "2026-08-26T09:18:25+09:00"
  }
+},
+{
+ "id": "auto-20260826-1119-dllmove",
+ "cat": "データ構造",
+ "title": "二重連結リストの節点移動",
+ "prompt": "二重連結リストA-B-C-D-Eで、moveBefore(C,E)を実行する。nextとprevを更新した後、先頭からnextで読んだ列と末尾からprevで読んだ列の組はどれか。未定義は⊥とする。",
+ "code": [
+  "○手続: moveBefore(節点: x, y)",
+  "  prev[next[x]] ← prev[x]",
+  "  next[prev[x]] ← next[x]",
+  "  prev[x] ← prev[y]",
+  "  next[x] ← y",
+  "  next[prev[y]] ← x",
+  "  prev[y] ← x"
+ ],
+ "given": "初期状態: next={A:B,B:C,C:D,D:E,E:⊥}, prev={A:⊥,B:A,C:B,D:C,E:D}。x=C, y=E",
+ "vars": [
+  "行",
+  "更新したリンク",
+  "nextでの並び",
+  "prevでの並び"
+ ],
+ "choices": [
+  "{forward:ABDCE, backward:ECDBA}",
+  "{forward:ABCDE, backward:EDCBA}",
+  "{forward:ABCED, backward:DECBA}",
+  "{forward:ADBCE, backward:ECBDA}",
+  "{forward:ABDCE, backward:EDCBA}",
+  "{forward:ABDEC, backward:CEDBA}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 2,
+   "note": "Cの次のDについて、prev[D]をCからBへ変える。",
+   "v": [
+    "2",
+    "prev[D]=B",
+    "A-B-C-D-E",
+    "E-D-B-A"
+   ]
+  },
+  {
+   "line": 3,
+   "note": "Cの前のBについて、next[B]をCからDへ変える。これでCを列から外す。",
+   "v": [
+    "3",
+    "next[B]=D",
+    "A-B-D-E",
+    "E-D-B-A"
+   ]
+  },
+  {
+   "line": 4,
+   "note": "Cの新しい直前を、Eの直前であるDにする。",
+   "v": [
+    "4",
+    "prev[C]=D",
+    "A-B-D-E",
+    "E-D-B-A"
+   ]
+  },
+  {
+   "line": 5,
+   "note": "Cの新しい直後をEにする。",
+   "v": [
+    "5",
+    "next[C]=E",
+    "A-B-D-E",
+    "E-D-B-A"
+   ]
+  },
+  {
+   "line": 6,
+   "note": "Eの直前だったDのnextをCへ向ける。",
+   "v": [
+    "6",
+    "next[D]=C",
+    "A-B-D-C-E",
+    "E-D-B-A"
+   ]
+  },
+  {
+   "line": 7,
+   "note": "EのprevをCへ向けて挿入を完了する。",
+   "v": [
+    "7",
+    "prev[E]=C",
+    "A-B-D-C-E",
+    "E-C-D-B-A"
+   ]
+  }
+ ],
+ "explain": "<p>最初の2行でCをBとDの間から外し、残り4行でCをDとEの間へ挿入します。</p><p>完成後はnext方向が<b>ABDCE</b>、prev方向が<b>ECDBA</b>です。二重連結リストでは片方向だけでなく、逆向きのリンクも対になるよう更新する必要があります。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-26",
+  "addedAtJst": "2026-08-26T11:19:25+09:00"
+ }
 }
 ];
