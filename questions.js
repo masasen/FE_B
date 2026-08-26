@@ -10833,5 +10833,97 @@ const QUESTIONS = [
   "dateJst": "2026-08-26",
   "addedAtJst": "2026-08-26T15:21:55+09:00"
  }
+},
+{
+ "id": "auto-20260826-1721-quickselect",
+ "cat": "アルゴリズム",
+ "title": "クイックセレクトの区間更新",
+ "prompt": "次のquickSelectは、partitionでpivot以下を左側へ集め、pivotの確定位置pとkを比較して探索区間を狭める。quickSelect(A,3)の戻り値はどれか。要素番号は1から始まり、kは小さい方から数えた順位である。",
+ "code": [
+  "○レコード: quickSelect(整数型の配列: A, 整数型: k)",
+  "  low←1, high←Aの要素数, count←0",
+  "  while (low＜high)",
+  "    p←partition(A,low,high), count←count＋1",
+  "    if (k＜p) high←p－1",
+  "    else if (p＜k) low←p＋1",
+  "    else return {value:A[p], A:A, count:count}",
+  "  endwhile",
+  "  return {value:A[low], A:A, count:count}",
+  "partitionはA[high]をpivotとし、pivot以下の要素を左へ移した後、pivotを確定位置へ置いてその位置を返す"
+ ],
+ "given": "A={7,2,9,4,1,6}, k=3",
+ "vars": [
+  "回",
+  "low,high",
+  "pivot",
+  "partition後A",
+  "p",
+  "次の区間"
+ ],
+ "choices": [
+  "{value:4, A:{1,2,4,6,9,7}, count:3}",
+  "{value:4, A:{2,4,1,6,9,7}, count:1}",
+  "{value:2, A:{1,2,4,6,9,7}, count:3}",
+  "{value:4, A:{1,4,2,6,9,7}, count:2}",
+  "{value:6, A:{2,4,1,6,9,7}, count:1}",
+  "{value:4, A:{1,2,4,7,9,6}, count:3}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 4,
+   "note": "pivot=6。2,4,1を左へ集め、pivotは位置4に確定する。k=3<pなのでhighを3にする。",
+   "v": [
+    "1",
+    "1,6",
+    "6",
+    "{2,4,1,6,9,7}",
+    "4",
+    "1..3"
+   ]
+  },
+  {
+   "line": 4,
+   "note": "区間1..3のpivot=1。1より小さい要素はなく、pivotを位置1へ移す。p=1<kなのでlowを2にする。",
+   "v": [
+    "2",
+    "1,3",
+    "1",
+    "{1,4,2,6,9,7}",
+    "1",
+    "2..3"
+   ]
+  },
+  {
+   "line": 4,
+   "note": "区間2..3のpivot=2。4はpivotより大きく、pivotを位置2へ移す。p=2<kなのでlowを3にする。",
+   "v": [
+    "3",
+    "2,3",
+    "2",
+    "{1,2,4,6,9,7}",
+    "2",
+    "3..3"
+   ]
+  },
+  {
+   "line": 9,
+   "note": "low=high=3となり、A[3]=4を返す。partitionの実行回数は3。",
+   "v": [
+    "終了",
+    "3,3",
+    "—",
+    "{1,2,4,6,9,7}",
+    "3",
+    "return"
+   ]
+  }
+ ],
+ "explain": "<p>partition後のpivot位置とkだけを比べ、kを含まない側は探索対象から外します。配列全体を完全に整列する必要はありません。</p><p>pivot位置は4、1、2と変化し、最後に探索区間が位置3だけになります。よって戻り値は<b>{value:4, A:{1,2,4,6,9,7}, count:3}</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-26",
+  "addedAtJst": "2026-08-26T17:21:25+09:00"
+ }
 }
 ];
