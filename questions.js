@@ -11863,5 +11863,101 @@ const QUESTIONS = [
   "dateJst": "2026-08-27",
   "addedAtJst": "2026-08-27T23:26:58+09:00"
  }
+},
+{
+ "id": "auto-20260828-0127-signedpath",
+ "cat": "セキュリティ",
+ "title": "署名付きURLの正規化パス検証",
+ "prompt": "次のverifyは、署名付きURLを検証する。パスは署名計算と認可判定の前に、%XXを1回だけ復号し、.と..を解決して正規化する。now=1000のとき、4件の要求を順に検証した結果はどれか。HMACの比較は定数時間で行うものとする。",
+ "code": [
+  "○レコード: verify(文字列: rawPath, 整数型: exp, 文字列: sig)",
+  "  path←normalize(rawPath)",
+  "  if (path＝INVALID) return DENY_PATH",
+  "  if (exp＜now) return DENY_EXPIRED",
+  "  expected←HMAC_SHA256(key, path＋\"|\"＋exp)",
+  "  if (constantTimeEqual(expected,sig)＝false) return DENY_SIGNATURE",
+  "  if (pathが\"/private/\"で始まる) return ALLOW_PRIVATE",
+  "  return ALLOW_PUBLIC"
+ ],
+ "given": "now=1000。normalizeは%XXを1回復号後、空要素と.を除き、..で直前要素を除く。ルートより上へ出る..はINVALID。HMAC値は次の通り：HMAC(\"/private/a.txt|1100\")=S1、HMAC(\"/public/x.txt|1100\")=S2、HMAC(\"/private/x.txt|900\")=S3。要求は順に①(\"/public/../private/a.txt\",1100,S1) ②(\"/private/%2e%2e/public/x.txt\",1100,S1) ③(\"/private/x.txt\",900,S3) ④(\"/../../private/a.txt\",1100,S1)。",
+ "vars": [
+  "要求",
+  "正規化path",
+  "期限判定",
+  "署名判定",
+  "結果"
+ ],
+ "choices": [
+  "{ALLOW_PRIVATE,DENY_SIGNATURE,DENY_EXPIRED,DENY_PATH}",
+  "{DENY_SIGNATURE,ALLOW_PUBLIC,DENY_EXPIRED,DENY_PATH}",
+  "{ALLOW_PRIVATE,ALLOW_PUBLIC,DENY_EXPIRED,DENY_PATH}",
+  "{ALLOW_PRIVATE,DENY_SIGNATURE,ALLOW_PRIVATE,DENY_PATH}",
+  "{ALLOW_PUBLIC,DENY_SIGNATURE,DENY_EXPIRED,ALLOW_PRIVATE}",
+  "{ALLOW_PRIVATE,DENY_SIGNATURE,DENY_SIGNATURE,DENY_PATH}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 7,
+   "note": "①はpublicの次の..でpublicを除き、/private/a.txtになる。期限内で、その正規化パスに対するS1が一致するので私用領域へのアクセスを許可する。",
+   "v": [
+    "①",
+    "/private/a.txt",
+    "1100≧1000",
+    "S1=S1",
+    "ALLOW_PRIVATE"
+   ]
+  },
+  {
+   "line": 6,
+   "note": "②の%2e%2eは1回の復号で..となり、privateを除くので/public/x.txtになる。期待値はS2だが提示署名はS1なので拒否する。",
+   "v": [
+    "②",
+    "/public/x.txt",
+    "1100≧1000",
+    "S2≠S1",
+    "DENY_SIGNATURE"
+   ]
+  },
+  {
+   "line": 4,
+   "note": "③はパスと署名が対応していても、exp=900はnow=1000より小さい。署名計算へ進む前に期限切れとして拒否する。",
+   "v": [
+    "③",
+    "/private/x.txt",
+    "900＜1000",
+    "未判定",
+    "DENY_EXPIRED"
+   ]
+  },
+  {
+   "line": 3,
+   "note": "④は先頭から..でルートより上へ出ようとするためINVALIDになる。期限や署名を調べずパス不正として拒否する。",
+   "v": [
+    "④",
+    "INVALID",
+    "未判定",
+    "未判定",
+    "DENY_PATH"
+   ]
+  },
+  {
+   "line": 8,
+   "note": "4件の結果を要求順に並べる。",
+   "v": [
+    "終了",
+    "—",
+    "—",
+    "—",
+    "{ALLOW_PRIVATE,DENY_SIGNATURE,DENY_EXPIRED,DENY_PATH}"
+   ]
+  }
+ ],
+ "explain": "<p>署名の対象と認可判定には、必ず同じ<b>正規化済みパス</b>を使います。①は正規化後の私用パスに対する正しい署名です。②は見た目がprivateで始まっても正規化後はpublicとなり、S1は一致しません。</p><p>また、③は期限切れ、④はルートを越える..なので、それぞれ署名の一致に関係なく拒否されます。結果は<b>{ALLOW_PRIVATE,DENY_SIGNATURE,DENY_EXPIRED,DENY_PATH}</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-28",
+  "addedAtJst": "2026-08-28T01:27:28+09:00"
+ }
 }
 ];
