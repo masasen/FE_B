@@ -12079,5 +12079,113 @@ const QUESTIONS = [
   "dateJst": "2026-08-28",
   "addedAtJst": "2026-08-28T03:28:58+09:00"
  }
+},
+{
+ "id": "auto-20260828-0529-inverted",
+ "cat": "データ構造",
+ "title": "転置インデックスの更新とAND検索",
+ "prompt": "次の処理は、各語からその語を含む文書番号の集合を引ける転置インデックスを作る。文書2の語集合を更新した後、redとblueの両方を含む文書を検索する。最終状態と検索結果はどれか。集合内の文書番号は昇順で表す。",
+ "code": [
+  "○手続: addDoc(整数型: d, 文字列の集合: terms)",
+  "  termsの各termについて index[term]にdを追加",
+  "○手続: removeDoc(整数型: d, 文字列の集合: terms)",
+  "  termsの各termについて index[term]からdを削除",
+  "○手続: updateDoc(整数型: d, 文字列の集合: oldTerms, newTerms)",
+  "  removeDoc(d,oldTerms)",
+  "  addDoc(d,newTerms)",
+  "○整数型の集合: andQuery(文字列: a, b)",
+  "  return index[a]とindex[b]の共通部分"
+ ],
+ "given": "indexは空。順に addDoc(1,{red,blue})、addDoc(2,{blue,green})、addDoc(3,{red,green})、updateDoc(2,{blue,green},{red,blue})、andQuery(red,blue) を実行する。集合への追加は、既に同じ文書番号があれば重複させない。",
+ "vars": [
+  "操作",
+  "index[red]",
+  "index[blue]",
+  "index[green]",
+  "検索結果"
+ ],
+ "choices": [
+  "{red:{1,2,3}, blue:{1,2}, green:{3}, result:{1,2}}",
+  "{red:{1,2,3}, blue:{1,2,2}, green:{3}, result:{1,2}}",
+  "{red:{1,2,3}, blue:{1,2}, green:{2,3}, result:{1,2}}",
+  "{red:{1,3}, blue:{1,2}, green:{3}, result:{1}}",
+  "{red:{1,2,3}, blue:{1,2}, green:{3}, result:{1,2,3}}",
+  "{red:{1,2}, blue:{1,2,3}, green:{3}, result:{1,2}}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 2,
+   "note": "文書1の二語を登録する。redとblueの転置リストに文書番号1が入る。",
+   "v": [
+    "addDoc(1)",
+    "{1}",
+    "{1}",
+    "{}",
+    "未実行"
+   ]
+  },
+  {
+   "line": 2,
+   "note": "文書2を登録するとblueに2が加わり、greenが新しく作られる。",
+   "v": [
+    "addDoc(2)",
+    "{1}",
+    "{1,2}",
+    "{2}",
+    "未実行"
+   ]
+  },
+  {
+   "line": 2,
+   "note": "文書3はredとgreenを含むので、それぞれのリストに3を追加する。",
+   "v": [
+    "addDoc(3)",
+    "{1,3}",
+    "{1,2}",
+    "{2,3}",
+    "未実行"
+   ]
+  },
+  {
+   "line": 6,
+   "note": "更新では最初に文書2の旧語blue,greenを削除する。blueは{1}、greenは{3}になる。",
+   "v": [
+    "removeDoc(2)",
+    "{1,3}",
+    "{1}",
+    "{3}",
+    "未実行"
+   ]
+  },
+  {
+   "line": 7,
+   "note": "新しい語red,blueへ文書2を追加する。redは{1,2,3}、blueは{1,2}となる。",
+   "v": [
+    "addDoc(2)",
+    "{1,2,3}",
+    "{1,2}",
+    "{3}",
+    "未実行"
+   ]
+  },
+  {
+   "line": 9,
+   "note": "redの集合{1,2,3}とblueの集合{1,2}の共通部分を取ると{1,2}。",
+   "v": [
+    "andQuery",
+    "{1,2,3}",
+    "{1,2}",
+    "{3}",
+    "{1,2}"
+   ]
+  }
+ ],
+ "explain": "<p>転置インデックスでは、語ごとにその語を含む文書番号を保持します。文書更新時は旧内容の登録を先に除き、新内容を追加します。</p><p>文書2はgreenを含まなくなりredを含むようになるため、最終的にredは<b>{1,2,3}</b>、blueは<b>{1,2}</b>、greenは<b>{3}</b>です。redとblueの共通部分は<b>{1,2}</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-28",
+  "addedAtJst": "2026-08-28T05:29:28+09:00"
+ }
 }
 ];
