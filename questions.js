@@ -11559,5 +11559,104 @@ const QUESTIONS = [
   "dateJst": "2026-08-27",
   "addedAtJst": "2026-08-27T13:25:27+09:00"
  }
+},
+{
+ "id": "auto-20260827-1925-chunklines",
+ "cat": "プログラミング",
+ "title": "分割受信データの行再構成",
+ "prompt": "次のcollectLinesは、複数のチャンクに分かれて届く文字列を連結し、区切り文字|までを1行として順に取り出す。連続する||の間は空行として記録し、最後に区切りがない部分はbufferへ残す。collectLines(chunks)の戻り値はどれか。",
+ "code": [
+  "○レコード: collectLines(文字列の配列: chunks)",
+  "  buffer←\"\", lines←空の配列",
+  "  chunksの各chunkについて",
+  "    buffer←buffer＋chunk",
+  "    while (bufferに\"|\"が含まれる)",
+  "      p←buffer内で最初の\"|\"の位置",
+  "      lines末尾にbufferの先頭からpの直前までを追加",
+  "      buffer←pの直後から末尾まで",
+  "    endwhile",
+  "  endfor",
+  "  return {lines:lines, buffer:buffer}"
+ ],
+ "given": "chunks={\"AB|C\",\"D||E\",\"F|G\"}",
+ "vars": [
+  "chunk",
+  "連結直後buffer",
+  "取り出した行",
+  "lines",
+  "処理後buffer"
+ ],
+ "choices": [
+  "{lines:{\"AB\",\"CD\",\"\",\"EF\"}, buffer:\"G\"}",
+  "{lines:{\"AB\",\"C\",\"D\",\"EF\"}, buffer:\"G\"}",
+  "{lines:{\"AB\",\"CD\",\"EF\"}, buffer:\"G\"}",
+  "{lines:{\"AB\",\"CD\",\"\",\"E\"}, buffer:\"FG\"}",
+  "{lines:{\"AB\",\"CD\",\"\",\"EF\",\"G\"}, buffer:\"\"}",
+  "{lines:{\"AB\",\"CDE\",\"F\"}, buffer:\"G\"}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 8,
+   "note": "最初のチャンクからABを取り出す。区切り後のCは未完成なのでbufferに残す。",
+   "v": [
+    "\"AB|C\"",
+    "\"AB|C\"",
+    "\"AB\"",
+    "{\"AB\"}",
+    "\"C\""
+   ]
+  },
+  {
+   "line": 8,
+   "note": "次のチャンクを連結するとCD||E。最初の区切りまでのCDを取り出す。",
+   "v": [
+    "\"D||E\"",
+    "\"CD||E\"",
+    "\"CD\"",
+    "{\"AB\",\"CD\"}",
+    "\"|E\""
+   ]
+  },
+  {
+   "line": 8,
+   "note": "残ったbufferは|で始まるため、区切り前は空文字列。これを空行として追加する。",
+   "v": [
+    "同じチャンク",
+    "\"|E\"",
+    "\"\"",
+    "{\"AB\",\"CD\",\"\"}",
+    "\"E\""
+   ]
+  },
+  {
+   "line": 8,
+   "note": "最後のチャンクを連結してEF|Gとなり、EFを取り出す。",
+   "v": [
+    "\"F|G\"",
+    "\"EF|G\"",
+    "\"EF\"",
+    "{\"AB\",\"CD\",\"\",\"EF\"}",
+    "\"G\""
+   ]
+  },
+  {
+   "line": 11,
+   "note": "Gの後ろには区切りがないので行へ追加せずbufferに残して返す。",
+   "v": [
+    "終了",
+    "\"G\"",
+    "なし",
+    "{\"AB\",\"CD\",\"\",\"EF\"}",
+    "\"G\""
+   ]
+  }
+ ],
+ "explain": "<p>チャンクの境界は行の境界とは限りません。各チャンクをbufferへ連結してから、含まれる区切りを<b>全て</b>処理します。</p><p>D||Eの二つの区切りの間は空行になり、末尾のGは未完の行として残ります。戻り値は<b>{lines:{\"AB\",\"CD\",\"\",\"EF\"}, buffer:\"G\"}</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-27",
+  "addedAtJst": "2026-08-27T19:25:58+09:00"
+ }
 }
 ];
