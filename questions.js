@@ -12187,5 +12187,107 @@ const QUESTIONS = [
   "dateJst": "2026-08-28",
   "addedAtJst": "2026-08-28T05:29:28+09:00"
  }
+},
+{
+ "id": "auto-20260828-0730-horspool",
+ "cat": "アルゴリズム",
+ "title": "Horspool法の照合位置と比較回数",
+ "prompt": "次のhorspoolは、パターン末尾を合わせた位置endから右向きに照合位置を移し、各位置では末尾から文字を比較する。horspool(\"XBCDABCD\",\"ABCD\")の戻り値はどれか。文字位置は1から始まる。",
+ "code": [
+  "○レコード: horspool(文字列: T, 文字列: P)",
+  "  m←Pの文字数, 全文字cについてshift[c]←m",
+  "  for (jを1からm－1まで) shift[P[j]]←m－j",
+  "  end←m, ends←空の配列, comparisons←0",
+  "  while (end≦Tの文字数)",
+  "    ends末尾にendを追加, k←0",
+  "    while (k＜m and P[m－k]＝T[end－k])",
+  "      comparisons←comparisons＋1, k←k＋1",
+  "    endwhile",
+  "    if (k＝m) return {index:end－m＋1,ends:ends,comparisons:comparisons}",
+  "    comparisons←comparisons＋1",
+  "    end←end＋shift[T[end]]",
+  "  endwhile",
+  "  return {index:0,ends:ends,comparisons:comparisons}"
+ ],
+ "given": "T=\"XBCDABCD\", P=\"ABCD\"。前処理でshift[A]=3, shift[B]=2, shift[C]=1となり、それ以外の文字（末尾文字Dを含む）のshiftは4である。",
+ "vars": [
+  "end",
+  "右からの一致",
+  "不一致比較",
+  "移動量",
+  "ends / comparisons"
+ ],
+ "choices": [
+  "{index:5, ends:{4,8}, comparisons:8}",
+  "{index:5, ends:{4,5,8}, comparisons:9}",
+  "{index:1, ends:{4}, comparisons:4}",
+  "{index:5, ends:{4,8}, comparisons:5}",
+  "{index:0, ends:{4,8}, comparisons:8}",
+  "{index:5, ends:{4,8}, comparisons:7}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 8,
+   "note": "最初はend=4。末尾からD,C,Bの3文字が一致し、それぞれ比較回数を増やす。",
+   "v": [
+    "4",
+    "D,C,B",
+    "未実行",
+    "未実行",
+    "{4} / 3"
+   ]
+  },
+  {
+   "line": 11,
+   "note": "4文字目の比較ではP[1]=AとT[1]=Xが不一致なので、比較回数は4になる。",
+   "v": [
+    "4",
+    "3文字",
+    "A≠X",
+    "未実行",
+    "{4} / 4"
+   ]
+  },
+  {
+   "line": 12,
+   "note": "移動量は不一致位置のXではなく、現在の照合末尾T[end]=Dから決める。shift[D]=4なのでendを8へ進める。",
+   "v": [
+    "4",
+    "—",
+    "—",
+    "4",
+    "{4} / 4"
+   ]
+  },
+  {
+   "line": 8,
+   "note": "end=8では末尾からD,C,B,Aの4文字が全て一致する。比較回数は4増えて8になる。",
+   "v": [
+    "8",
+    "D,C,B,A",
+    "なし",
+    "なし",
+    "{4,8} / 8"
+   ]
+  },
+  {
+   "line": 10,
+   "note": "k=mとなったので、開始位置8－4＋1=5と照合末尾列、比較回数を返す。",
+   "v": [
+    "8",
+    "完全一致",
+    "なし",
+    "—",
+    "{4,8} / 8"
+   ]
+  }
+ ],
+ "explain": "<p>最初の照合では末尾側のBCDまで一致しますが、先頭でAとXが不一致です。Horspool法の移動量は、照合窓の末尾文字<b>T[end]</b>を使って決めます。</p><p>末尾文字Dの移動量は4なので、次のendは8です。そこでABCDが完全一致し、開始位置は<b>5</b>、end列は<b>{4,8}</b>、比較回数は<b>8</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-28",
+  "addedAtJst": "2026-08-28T07:30:30+09:00"
+ }
 }
 ];
