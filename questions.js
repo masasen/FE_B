@@ -11463,5 +11463,101 @@ const QUESTIONS = [
   "dateJst": "2026-08-27",
   "addedAtJst": "2026-08-27T07:23:27+09:00"
  }
+},
+{
+ "id": "auto-20260827-1325-rotatedsearch",
+ "cat": "アルゴリズム",
+ "title": "回転済み配列の二分探索",
+ "prompt": "昇順配列を途中で回転した配列Aからtargetを探す。次のsearchRotated(A,3)の戻り値はどれか。要素番号は1から始まり、midsには各反復で調べたmidを順に追加する。",
+ "code": [
+  "○レコード: searchRotated(整数型の配列: A, 整数型: target)",
+  "  low←1, high←Aの要素数, mids←空の配列",
+  "  while (low≦high)",
+  "    mid←(low＋high)÷2の商, mids末尾にmidを追加",
+  "    if (A[mid]＝target) return {index:mid,mids:mids}",
+  "    if (A[low]≦A[mid])",
+  "      if (A[low]≦target and target＜A[mid]) high←mid－1",
+  "      else low←mid＋1",
+  "    else",
+  "      if (A[mid]＜target and target≦A[high]) low←mid＋1",
+  "      else high←mid－1",
+  "    endif",
+  "  endwhile",
+  "  return {index:0,mids:mids}"
+ ],
+ "given": "A={15,18,2,3,6,12}, target=3",
+ "vars": [
+  "low,high",
+  "mid",
+  "A[mid]",
+  "整列している側",
+  "次の範囲",
+  "mids"
+ ],
+ "choices": [
+  "{index:4, mids:{3,5,4}}",
+  "{index:4, mids:{3,4}}",
+  "{index:3, mids:{3}}",
+  "{index:4, mids:{3,2,4}}",
+  "{index:0, mids:{3,5,6}}",
+  "{index:5, mids:{3,5}}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 4,
+   "note": "low=1,high=6なのでmid=3。A[3]=2はtargetではない。左端15より小さいため右側3..12が整列済み。target=3はその範囲内なのでlow=4へ。",
+   "v": [
+    "1,6",
+    "3",
+    "2",
+    "右側",
+    "4..6",
+    "{3}"
+   ]
+  },
+  {
+   "line": 4,
+   "note": "low=4,high=6でmid=5。A[4]=3≦A[5]=6なので左側3..6が整列済み。target=3は左側に含まれるためhigh=4へ。",
+   "v": [
+    "4,6",
+    "5",
+    "6",
+    "左側",
+    "4..4",
+    "{3,5}"
+   ]
+  },
+  {
+   "line": 5,
+   "note": "low=high=4でmid=4。A[4]=3がtargetと一致する。",
+   "v": [
+    "4,4",
+    "4",
+    "3",
+    "—",
+    "return",
+    "{3,5,4}"
+   ]
+  },
+  {
+   "line": 5,
+   "note": "見つかった位置4とmid列を返す。",
+   "v": [
+    "終了",
+    "—",
+    "—",
+    "—",
+    "index=4",
+    "{3,5,4}"
+   ]
+  }
+ ],
+ "explain": "<p>通常の二分探索と違い、midの左右のうち<b>どちらが昇順のままか</b>を先に判定します。その整列区間にtargetが含まれるかで次の半分を選びます。</p><p>調べるmidは3→5→4で、位置4の値3に一致します。したがって<b>{index:4, mids:{3,5,4}}</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-27",
+  "addedAtJst": "2026-08-27T13:25:27+09:00"
+ }
 }
 ];
