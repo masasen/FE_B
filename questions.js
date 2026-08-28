@@ -12374,5 +12374,106 @@ const QUESTIONS = [
   "dateJst": "2026-08-28",
   "addedAtJst": "2026-08-28T09:32:01+09:00"
  }
+},
+{
+ "id": "auto-20260828-1134-bellmanford",
+ "cat": "アルゴリズム",
+ "title": "Bellman-Ford法の早期終了",
+ "prompt": "次のbellmanFordは、辺を指定順に走査して距離を緩和し、1回の走査で更新がなければ早期終了する。負の重みを含むグラフでbellmanFord(A)を実行した戻り値はどれか。負閉路はない。",
+ "code": [
+  "○レコード: bellmanFord(頂点型: start)",
+  "  全頂点vについてdist[v]←∞, dist[start]←0",
+  "  passes←0, relaxations←0",
+  "  for (kを1から頂点数－1まで)",
+  "    updated←false, passes←passes＋1",
+  "    辺(u,v,w)を指定順に調べる",
+  "      if (dist[u]＋w＜dist[v])",
+  "        dist[v]←dist[u]＋w, updated←true",
+  "        relaxations←relaxations＋1",
+  "      endif",
+  "    if (updated＝false) break",
+  "  endfor",
+  "  return {dist,passes,relaxations}"
+ ],
+ "given": "頂点はA,B,C,D。辺は順に (A,B,4),(A,C,5),(B,C,-2),(C,D,3),(B,D,6)。∞からの加算は∞とする。",
+ "vars": [
+  "走査",
+  "処理した辺",
+  "更新",
+  "dist{A,B,C,D}",
+  "passes / relaxations"
+ ],
+ "choices": [
+  "{dist:{0,4,2,5}, passes:2, relaxations:4}",
+  "{dist:{0,4,5,8}, passes:2, relaxations:3}",
+  "{dist:{0,4,2,5}, passes:1, relaxations:4}",
+  "{dist:{0,4,2,5}, passes:3, relaxations:4}",
+  "{dist:{0,4,-2,1}, passes:2, relaxations:4}",
+  "{dist:{0,4,2,10}, passes:2, relaxations:3}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 8,
+   "note": "1回目の先頭辺A→Bで0+4<∞となり、Bを4へ更新する。",
+   "v": [
+    "1回目",
+    "A→B(4)",
+    "B:∞→4",
+    "{0,4,∞,∞}",
+    "1 / 1"
+   ]
+  },
+  {
+   "line": 8,
+   "note": "続くA→CでCは5になる。その後B→Cの負辺で4-2=2となり、Cを5から2へ再更新する。",
+   "v": [
+    "1回目",
+    "A→C, B→C",
+    "C:∞→5→2",
+    "{0,4,2,∞}",
+    "1 / 3"
+   ]
+  },
+  {
+   "line": 8,
+   "note": "C→Dで2+3=5となりDを更新する。B→Dの候補10は5より大きいので更新しない。",
+   "v": [
+    "1回目",
+    "C→D, B→D",
+    "D:∞→5",
+    "{0,4,2,5}",
+    "1 / 4"
+   ]
+  },
+  {
+   "line": 10,
+   "note": "2回目は全5辺を調べても、どの候補も現在距離より小さくならない。updatedはfalseのまま。",
+   "v": [
+    "2回目",
+    "全辺",
+    "なし",
+    "{0,4,2,5}",
+    "2 / 4"
+   ]
+  },
+  {
+   "line": 11,
+   "note": "更新がないので3回目を行わず早期終了し、距離、走査回数2、更新回数4を返す。",
+   "v": [
+    "終了",
+    "—",
+    "break",
+    "{0,4,2,5}",
+    "2 / 4"
+   ]
+  }
+ ],
+ "explain": "<p>同じ走査内でも、先に更新されたBの距離を後続のB→Cで利用できます。そのためCは5から<b>2</b>へ、続いてDは<b>5</b>へ更新されます。</p><p>2回目は更新が一つもなく早期終了します。戻り値は<b>{dist:{0,4,2,5}, passes:2, relaxations:4}</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-28",
+  "addedAtJst": "2026-08-28T11:34:00+09:00"
+ }
 }
 ];
