@@ -12289,5 +12289,90 @@ const QUESTIONS = [
   "dateJst": "2026-08-28",
   "addedAtJst": "2026-08-28T07:30:30+09:00"
  }
+},
+{
+ "id": "auto-20260828-0932-piecetable",
+ "cat": "データ構造",
+ "title": "ピーステーブルによる文字列編集",
+ "prompt": "次の編集構造は、元文字列originalと追記専用文字列addを変更せず、参照する断片piecesの並びで現在の文書を表す。指定した編集を順に行った後の文書とpiecesはどれか。文字位置は1から始まり、insert(pos,s)は現在のpos番目の文字の直前へ挿入する。",
+ "code": [
+  "○手続: insert(整数型: pos, 文字列: s)",
+  "  sをaddの末尾へ追記し、その範囲を表す新しいA断片を作る",
+  "  posを含む断片を必要なら左右に分割し、その間へA断片を挿入する",
+  "○手続: delete(整数型: pos, 整数型: len)",
+  "  文書位置posからlen文字を覆うよう断片を境界で分割する",
+  "  対象範囲を参照する断片をpiecesから除く",
+  "○文字列: materialize()",
+  "  piecesを左から順にoriginal又はaddから読み出して連結する"
+ ],
+ "given": "original=\"ABCDE\", add=\"\", pieces={(O,1,5)}から開始する。順に insert(3,\"xy\")、delete(2,4)、insert(2,\"Z\") を実行する。断片(source,start,length)のsourceはOがoriginal、Aがaddを表す。隣接断片の自動結合は行わない。",
+ "vars": [
+  "操作",
+  "add",
+  "pieces",
+  "文書",
+  "要点"
+ ],
+ "choices": [
+  "{text:\"AZDE\", pieces:{(O,1,1),(A,3,1),(O,4,2)}}",
+  "{text:\"AZCDE\", pieces:{(O,1,1),(A,3,1),(O,3,3)}}",
+  "{text:\"AZDE\", pieces:{(O,1,1),(A,1,1),(O,4,2)}}",
+  "{text:\"ADEZ\", pieces:{(O,1,1),(O,4,2),(A,3,1)}}",
+  "{text:\"AZDE\", pieces:{(O,1,1),(A,3,1),(O,5,1)}}",
+  "{text:\"ABZDE\", pieces:{(O,1,2),(A,3,1),(O,4,2)}}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 3,
+   "note": "位置3のCの直前へxyを挿入する。元断片をABとCDEに分け、addの1文字目から2文字を指すA断片を間に置く。",
+   "v": [
+    "insert(3,\"xy\")",
+    "\"xy\"",
+    "{(O,1,2),(A,1,2),(O,3,3)}",
+    "\"ABxyCDE\"",
+    "Cの直前へ挿入"
+   ]
+  },
+  {
+   "line": 5,
+   "note": "削除範囲は現在の位置2から4文字、すなわちBxyC。境界を分割すると、残すのはoriginalのAとDEを指す部分になる。",
+   "v": [
+    "delete(2,4)",
+    "\"xy\"",
+    "{(O,1,1),(O,4,2)}",
+    "\"ADE\"",
+    "B,xy,Cを除去"
+   ]
+  },
+  {
+   "line": 2,
+   "note": "Zは追記専用addの末尾へ追加され、addはxyZになる。新しい断片はaddの3文字目を1文字参照する。",
+   "v": [
+    "insert(2,\"Z\")",
+    "\"xyZ\"",
+    "{(O,1,1),(A,3,1),(O,4,2)}",
+    "\"AZDE\"",
+    "Dの直前へ挿入"
+   ]
+  },
+  {
+   "line": 8,
+   "note": "各断片を順に読むと、OのA、AのZ、OのDEが連結される。削除済みのxyはaddには残るがpiecesから参照されない。",
+   "v": [
+    "materialize",
+    "\"xyZ\"",
+    "{(O,1,1),(A,3,1),(O,4,2)}",
+    "\"AZDE\"",
+    "参照断片だけを連結"
+   ]
+  }
+ ],
+ "explain": "<p>ピーステーブルでは、削除してもoriginalやaddの実データは消さず、<b>piecesの参照</b>だけを変更します。最初の挿入後はAB|xy|CDE、4文字削除後はA|DEです。</p><p>次のZはaddの3文字目へ追記され、その断片をAとDEの間へ置きます。したがって文書は<b>AZDE</b>、piecesは<b>{(O,1,1),(A,3,1),(O,4,2)}</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-28",
+  "addedAtJst": "2026-08-28T09:32:01+09:00"
+ }
 }
 ];
