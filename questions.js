@@ -12475,5 +12475,103 @@ const QUESTIONS = [
   "dateJst": "2026-08-28",
   "addedAtJst": "2026-08-28T11:34:00+09:00"
  }
+},
+{
+ "id": "auto-20260828-1334-treap",
+ "cat": "データ構造",
+ "title": "Treapの挿入と回転",
+ "prompt": "次のinsertは、キーについて二分探索木、priorityについて値が小さいほど上位の最小ヒープとなるTreapへ節点を挿入する。空木へ指定順に挿入した後の根、先行順、回転列はどれか。",
+ "code": [
+  "○節点型: insert(節点型: node, 整数型: key, priority)",
+  "  if (node＝null) return 新しい節点(key,priority)",
+  "  if (key＜node.key)",
+  "    node.left←insert(node.left,key,priority)",
+  "    if (node.left.priority＜node.priority) node←rotateRight(node)",
+  "  else",
+  "    node.right←insert(node.right,key,priority)",
+  "    if (node.right.priority＜node.priority) node←rotateLeft(node)",
+  "  endif",
+  "  return node"
+ ],
+ "given": "(key,priority)を順に (40,30),(20,20),(60,25),(10,10) と挿入する。rotateRight(x)はxの左子を部分木の根へ、rotateLeft(x)はxの右子を部分木の根へ上げる。回転列は実行順に方向(回転前の根キー)で表す。",
+ "vars": [
+  "挿入",
+  "挿入直後の位置",
+  "ヒープ違反",
+  "回転",
+  "部分木の先行順"
+ ],
+ "choices": [
+  "{root:10, preorder:{10,20,60,40}, rotations:{R(40),L(40),R(20)}}",
+  "{root:20, preorder:{20,10,60,40}, rotations:{R(40),L(40)}}",
+  "{root:10, preorder:{10,20,40,60}, rotations:{R(40),R(20)}}",
+  "{root:10, preorder:{10,60,20,40}, rotations:{L(40),R(20)}}",
+  "{root:40, preorder:{40,20,10,60}, rotations:{}}",
+  "{root:10, preorder:{10,20,60,40}, rotations:{L(40),R(40),R(20)}}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 2,
+   "note": "最初の40は空木の根になる。比較対象の親がないので回転しない。",
+   "v": [
+    "(40,30)",
+    "根",
+    "なし",
+    "なし",
+    "{40}"
+   ]
+  },
+  {
+   "line": 5,
+   "note": "20は40の左へ入る。priority 20は親の30より小さいため、40で右回転して20を根へ上げる。",
+   "v": [
+    "(20,20)",
+    "40の左",
+    "20<30",
+    "R(40)",
+    "{20,40}"
+   ]
+  },
+  {
+   "line": 8,
+   "note": "60は20の右、さらに40の右へ入る。priority 25は40の30より小さいので40で左回転するが、20の20よりは大きいためそこで止まる。",
+   "v": [
+    "(60,25)",
+    "40の右",
+    "25<30",
+    "L(40)",
+    "{20,60,40}"
+   ]
+  },
+  {
+   "line": 5,
+   "note": "10は20の左へ入る。priority 10は20より小さいので20で右回転し、木全体の根になる。",
+   "v": [
+    "(10,10)",
+    "20の左",
+    "10<20",
+    "R(20)",
+    "{10,20,60,40}"
+   ]
+  },
+  {
+   "line": 10,
+   "note": "キーの中間順は10,20,40,60を保ち、priorityは親が子以下になっている。根と先行順、回転列を返す。",
+   "v": [
+    "終了",
+    "—",
+    "なし",
+    "{R(40),L(40),R(20)}",
+    "{10,20,60,40}"
+   ]
+  }
+ ],
+ "explain": "<p>Treapは、挿入位置をキーの大小で決めた後、priorityのヒープ条件が破れた箇所を回転で直します。</p><p>20の挿入でR(40)、60でL(40)、10でR(20)を行います。最終的な根は<b>10</b>、先行順は<b>{10,20,60,40}</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-28",
+  "addedAtJst": "2026-08-28T13:34:30+09:00"
+ }
 }
 ];
