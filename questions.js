@@ -13117,5 +13117,102 @@ const QUESTIONS = [
   "dateJst": "2026-08-28",
   "addedAtJst": "2026-08-28T23:37:01+09:00"
  }
+},
+{
+ "id": "auto-20260829-0338-pkce",
+ "cat": "セキュリティ",
+ "title": "PKCE認可コード交換の検証順序",
+ "prompt": "次のexchangeは、PKCEを用いた認可コード交換を検証する。同じ認可コードKに対する4件の要求を順に処理した結果はどれか。失敗した要求ではコードを使用済みにしない。",
+ "code": [
+  "○結果型: exchange(文字列: code, client, redirect, verifier)",
+  "  rec←認可コード表[code]",
+  "  if (recがない or rec.used=true) return DENY_CODE",
+  "  if (client≠rec.client) return DENY_CLIENT",
+  "  if (redirect≠rec.redirect) return DENY_REDIRECT",
+  "  actual←BASE64URL(SHA256(verifier))",
+  "  if (actual≠rec.challenge) return DENY_VERIFIER",
+  "  rec.used←true",
+  "  return ISSUE_TOKEN"
+ ],
+ "given": "コードKの記録は{client:c1, redirect:\"app://cb\", challenge:Cgood, used:false}。HASH(\"v-good\")=Cgood、HASH(\"v-bad\")=Cbadとする（HASHは疑似コード6行目の処理）。要求は順に①(K,c1,\"app://cb\",\"v-bad\") ②(K,c1,\"app://other\",\"v-good\") ③(K,c1,\"app://cb\",\"v-good\") ④(K,c1,\"app://cb\",\"v-good\")。",
+ "vars": [
+  "要求",
+  "code状態",
+  "redirect判定",
+  "verifier判定",
+  "結果"
+ ],
+ "choices": [
+  "{DENY_VERIFIER,DENY_REDIRECT,ISSUE_TOKEN,DENY_CODE}",
+  "{DENY_VERIFIER,DENY_REDIRECT,ISSUE_TOKEN,ISSUE_TOKEN}",
+  "{DENY_CODE,DENY_REDIRECT,ISSUE_TOKEN,DENY_VERIFIER}",
+  "{DENY_VERIFIER,ISSUE_TOKEN,DENY_CODE,DENY_CODE}",
+  "{DENY_REDIRECT,DENY_VERIFIER,ISSUE_TOKEN,DENY_CODE}",
+  "{DENY_VERIFIER,DENY_REDIRECT,DENY_CODE,ISSUE_TOKEN}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 7,
+   "note": "①はコードが未使用でredirectも一致するが、v-badから得るCbadが保存済みCgoodと異なる。verifier不一致で拒否し、Kは未使用のまま。",
+   "v": [
+    "①",
+    "未使用",
+    "一致",
+    "Cbad≠Cgood",
+    "DENY_VERIFIER"
+   ]
+  },
+  {
+   "line": 5,
+   "note": "②はKがまだ未使用だが、redirectがapp://otherで記録と異なる。verifier計算前に拒否し、Kは未使用のまま。",
+   "v": [
+    "②",
+    "未使用",
+    "不一致",
+    "未判定",
+    "DENY_REDIRECT"
+   ]
+  },
+  {
+   "line": 9,
+   "note": "③はclient、redirect、verifierが全て一致する。Kを使用済みにしてトークンを発行する。",
+   "v": [
+    "③",
+    "未使用→使用済み",
+    "一致",
+    "Cgood=Cgood",
+    "ISSUE_TOKEN"
+   ]
+  },
+  {
+   "line": 3,
+   "note": "④は内容が正しくても、同じKは③で使用済みになっている。最初のコード検査で再利用を拒否する。",
+   "v": [
+    "④",
+    "使用済み",
+    "未判定",
+    "未判定",
+    "DENY_CODE"
+   ]
+  },
+  {
+   "line": 9,
+   "note": "成功は③だけであり、処理順の結果を並べる。",
+   "v": [
+    "終了",
+    "Kは使用済み",
+    "—",
+    "—",
+    "{DENY_VERIFIER,DENY_REDIRECT,ISSUE_TOKEN,DENY_CODE}"
+   ]
+  }
+ ],
+ "explain": "<p>PKCEでは、保存されたcode_challengeと、提示されたcode_verifierから再計算した値を比較します。検証失敗だけではコードを消費しません。</p><p>③だけが全条件を満たしてコードKを使用済みにします。そのため④は正しいverifierでも再利用できず、結果は<b>{DENY_VERIFIER,DENY_REDIRECT,ISSUE_TOKEN,DENY_CODE}</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-29",
+  "addedAtJst": "2026-08-29T03:38:31+09:00"
+ }
 }
 ];
