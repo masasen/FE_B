@@ -12573,5 +12573,114 @@ const QUESTIONS = [
   "dateJst": "2026-08-28",
   "addedAtJst": "2026-08-28T13:34:30+09:00"
  }
+},
+{
+ "id": "auto-20260828-1534-reservoir",
+ "cat": "アルゴリズム",
+ "title": "リザーバサンプリングの置換追跡",
+ "prompt": "次のreservoirは、長さが事前に分からない入力列からk個の標本を保持する。乱数列が指定されているとき、reservoir(data,3)の戻り値はどれか。配列位置は1から始まる。",
+ "code": [
+  "○レコード: reservoir(データ型の配列: data, 整数型: k)",
+  "  sample←data[1..k], replaced←空の配列",
+  "  for (iをk＋1からdataの要素数まで)",
+  "    r←1以上i以下の一様乱数",
+  "    if (r≦k)",
+  "      sample[r]←data[i]",
+  "      replaced末尾にrを追加",
+  "    endif",
+  "  endfor",
+  "  return {sample,replaced}"
+ ],
+ "given": "data={A,B,C,D,E,F,G}, k=3。i=4,5,6,7で得るrは順に{2,5,1,3}とする。",
+ "vars": [
+  "i / data[i]",
+  "r",
+  "判定",
+  "sample",
+  "replaced"
+ ],
+ "choices": [
+  "{sample:{F,D,G}, replaced:{2,1,3}}",
+  "{sample:{F,E,G}, replaced:{2,5,1,3}}",
+  "{sample:{F,D,C}, replaced:{2,1}}",
+  "{sample:{A,D,G}, replaced:{2,3}}",
+  "{sample:{F,D,G}, replaced:{2,5,1,3}}",
+  "{sample:{G,D,F}, replaced:{2,1,3}}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 2,
+   "note": "最初のk=3要素をそのまま標本へ入れる。",
+   "v": [
+    "初期化",
+    "—",
+    "—",
+    "{A,B,C}",
+    "{}"
+   ]
+  },
+  {
+   "line": 7,
+   "note": "i=4ではr=2がk以下なので、sample[2]のBをDへ置き換え、2を記録する。",
+   "v": [
+    "4 / D",
+    "2",
+    "置換",
+    "{A,D,C}",
+    "{2}"
+   ]
+  },
+  {
+   "line": 8,
+   "note": "i=5ではr=5がkより大きいので、Eは標本へ入れず何も変更しない。",
+   "v": [
+    "5 / E",
+    "5",
+    "見送り",
+    "{A,D,C}",
+    "{2}"
+   ]
+  },
+  {
+   "line": 7,
+   "note": "i=6ではr=1なので、sample[1]のAをFへ置換する。",
+   "v": [
+    "6 / F",
+    "1",
+    "置換",
+    "{F,D,C}",
+    "{2,1}"
+   ]
+  },
+  {
+   "line": 7,
+   "note": "i=7ではr=3なので、sample[3]のCをGへ置換する。",
+   "v": [
+    "7 / G",
+    "3",
+    "置換",
+    "{F,D,G}",
+    "{2,1,3}"
+   ]
+  },
+  {
+   "line": 10,
+   "note": "最終標本と、実際に置換した位置だけを並べたreplacedを返す。",
+   "v": [
+    "return",
+    "—",
+    "—",
+    "{F,D,G}",
+    "{2,1,3}"
+   ]
+  }
+ ],
+ "explain": "<p>各iで、rが標本サイズk以下のときだけ標本のr番目を現在要素へ置き換えます。r=5のEは採用されません。</p><p>D,F,Gが順に位置2,1,3へ入り、最終結果は<b>{sample:{F,D,G}, replaced:{2,1,3}}</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-28",
+  "addedAtJst": "2026-08-28T15:34:30+09:00"
+ }
 }
 ];
