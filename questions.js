@@ -12796,5 +12796,105 @@ const QUESTIONS = [
   "dateJst": "2026-08-28",
   "addedAtJst": "2026-08-28T17:35:30+09:00"
  }
+},
+{
+ "id": "auto-20260828-1935-merkle",
+ "cat": "データ構造",
+ "title": "Merkle木の包含証明の再計算",
+ "prompt": "次のverifyProofは、二分Merkle木で葉から根までのハッシュを再計算し、期待するrootと一致するか確認する。3番目の葉Cに対する証明を検証した戻り値はどれか。葉番号は1から始まる。",
+ "code": [
+  "○レコード: verifyProof(文字列: leaf, 整数型: index, 文字列の配列: proof, 文字列: root)",
+  "  cur←H(leaf), values←{cur}, dirs←空の配列",
+  "  proofの各siblingについて",
+  "    if (indexが奇数)",
+  "      cur←H(cur＋sibling), dirs末尾にRを追加",
+  "    else",
+  "      cur←H(sibling＋cur), dirs末尾にLを追加",
+  "    endif",
+  "    values末尾にcurを追加",
+  "    index←(index＋1)÷2の商",
+  "  endfor",
+  "  return {ok:(cur＝root),values:values,dirs:dirs}"
+ ],
+ "given": "葉は左からA,B,C,D。H(C)=hC。3番目の葉Cのproof={hD,X}で、hDは右隣Dの葉ハッシュ、Xは左部分木(A,B)のハッシュ。H(hC＋hD)=Y、H(X＋Y)=Rで、期待するroot=Rとする。＋は順序を保った連結。",
+ "vars": [
+  "段階",
+  "indexの偶奇",
+  "連結順",
+  "cur",
+  "values / dirs"
+ ],
+ "choices": [
+  "{ok:true, values:{hC,Y,R}, dirs:{R,L}}",
+  "{ok:true, values:{hC,Y,R}, dirs:{L,R}}",
+  "{ok:false, values:{hC,Y,H(Y+X)}, dirs:{R,R}}",
+  "{ok:true, values:{hC,X,R}, dirs:{R,L}}",
+  "{ok:false, values:{hC,Y,R}, dirs:{L,R}}",
+  "{ok:true, values:{hC,R}, dirs:{R}}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 2,
+   "note": "葉Cをハッシュしてcur=hCとし、葉番号index=3から開始する。",
+   "v": [
+    "初期化",
+    "3は奇数",
+    "未実行",
+    "hC",
+    "{hC} / {}"
+   ]
+  },
+  {
+   "line": 5,
+   "note": "index=3は奇数なので現在節点は左、証明のhDは右兄弟。順序をhC+hDとしてハッシュする。",
+   "v": [
+    "第1階層",
+    "奇数",
+    "hC+hD",
+    "Y",
+    "{hC,Y} / {R}"
+   ]
+  },
+  {
+   "line": 9,
+   "note": "親の番号は(3+1)÷2=2となる。次の階層では現在節点Yが右側にある。",
+   "v": [
+    "親へ移動",
+    "index←2",
+    "—",
+    "Y",
+    "{hC,Y} / {R}"
+   ]
+  },
+  {
+   "line": 7,
+   "note": "index=2は偶数なので証明のXが左兄弟。X+Yの順でハッシュし、cur=Rを得る。",
+   "v": [
+    "第2階層",
+    "偶数",
+    "X+Y",
+    "R",
+    "{hC,Y,R} / {R,L}"
+   ]
+  },
+  {
+   "line": 11,
+   "note": "再計算したcurが期待するroot=Rと一致するのでokはtrue。",
+   "v": [
+    "return",
+    "—",
+    "—",
+    "R",
+    "{hC,Y,R} / {R,L}"
+   ]
+  }
+ ],
+ "explain": "<p>Merkle証明ではハッシュ値だけでなく、兄弟が左右どちらにあるかによって<b>連結順</b>が変わります。葉3では右兄弟hD、次の階層では左兄弟Xを使います。</p><p>計算はhC→Y→Rとなり期待rootと一致するため、結果は<b>{ok:true, values:{hC,Y,R}, dirs:{R,L}}</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-28",
+  "addedAtJst": "2026-08-28T19:35:31+09:00"
+ }
 }
 ];
