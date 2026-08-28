@@ -12896,5 +12896,118 @@ const QUESTIONS = [
   "dateJst": "2026-08-28",
   "addedAtJst": "2026-08-28T19:35:31+09:00"
  }
+},
+{
+ "id": "auto-20260828-2135-expsearch",
+ "cat": "アルゴリズム",
+ "title": "指数探索による探索範囲の決定",
+ "prompt": "次のexponentialSearchは、昇順配列で調べる範囲を2倍ずつ広げ、その後に二分探索する。exponentialSearch(A,70)の戻り値はどれか。配列位置は1から始まる。",
+ "code": [
+  "○レコード: exponentialSearch(整数型の配列: A, 整数型: target)",
+  "  n←Aの要素数, bound←1, exp←空の配列",
+  "  while (bound≦n)",
+  "    exp末尾にboundを追加",
+  "    if (A[bound]≧target) break",
+  "    bound←bound×2",
+  "  endwhile",
+  "  low←bound÷2の商, high←min(bound,n), mids←空の配列",
+  "  while (low≦high)",
+  "    mid←(low＋high)÷2の商, mids末尾にmidを追加",
+  "    if (A[mid]＝target) return {index:mid,range:{bound÷2,high},exp:exp,mids:mids}",
+  "    if (A[mid]＜target) low←mid＋1 else high←mid－1",
+  "  endwhile",
+  "  return {index:0,range:{bound÷2,min(bound,n)},exp:exp,mids:mids}"
+ ],
+ "given": "A={2,4,8,16,32,64,128,256}, target=70。min(x,y)は小さい方を返す。",
+ "vars": [
+  "段階",
+  "位置又は範囲",
+  "値",
+  "判定",
+  "exp / mids"
+ ],
+ "choices": [
+  "{index:0, range:{4,8}, exp:{1,2,4,8}, mids:{6,7}}",
+  "{index:7, range:{4,8}, exp:{1,2,4,8}, mids:{6,7}}",
+  "{index:0, range:{4,8}, exp:{1,2,4}, mids:{6,7}}",
+  "{index:0, range:{2,4}, exp:{1,2,4}, mids:{3,4}}",
+  "{index:6, range:{4,8}, exp:{1,2,4,8}, mids:{6}}",
+  "{index:0, range:{4,8}, exp:{1,2,4,8}, mids:{5,7,6}}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 6,
+   "note": "bound=1でA[1]=2<70なので、位置1を記録してboundを2へ倍増する。",
+   "v": [
+    "範囲拡大",
+    "1",
+    "2",
+    "継続",
+    "{1} / {}"
+   ]
+  },
+  {
+   "line": 6,
+   "note": "位置2の4、位置4の16も70未満なので、boundは順に4、8へ広がる。",
+   "v": [
+    "範囲拡大",
+    "2→4",
+    "4→16",
+    "どちらも継続",
+    "{1,2,4} / {}"
+   ]
+  },
+  {
+   "line": 5,
+   "note": "位置8の256は70以上なので拡大を止める。二分探索範囲はbound/2=4から8になる。",
+   "v": [
+    "拡大停止",
+    "8 / {4,8}",
+    "256",
+    "256≧70",
+    "{1,2,4,8} / {}"
+   ]
+  },
+  {
+   "line": 12,
+   "note": "範囲4..8のmidは6。A[6]=64<70なので、次のlowを7へ進める。",
+   "v": [
+    "二分探索",
+    "mid=6",
+    "64",
+    "low←7",
+    "{1,2,4,8} / {6}"
+   ]
+  },
+  {
+   "line": 12,
+   "note": "範囲7..8のmidは7。A[7]=128>70なのでhighを6へ下げる。",
+   "v": [
+    "二分探索",
+    "mid=7",
+    "128",
+    "high←6",
+    "{1,2,4,8} / {6,7}"
+   ]
+  },
+  {
+   "line": 14,
+   "note": "low=7がhigh=6を越えたため、targetは存在しないとしてindex=0を返す。",
+   "v": [
+    "終了",
+    "low=7,high=6",
+    "—",
+    "未発見",
+    "{1,2,4,8} / {6,7}"
+   ]
+  }
+ ],
+ "explain": "<p>指数探索では、まず位置1,2,4,8を調べてtargetを含み得る範囲を<b>4..8</b>に絞ります。</p><p>二分探索では位置6の64と位置7の128を調べ、70はその間にあるものの配列には存在しません。結果は<b>{index:0, range:{4,8}, exp:{1,2,4,8}, mids:{6,7}}</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-28",
+  "addedAtJst": "2026-08-28T21:35:30+09:00"
+ }
 }
 ];
