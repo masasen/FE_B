@@ -13214,5 +13214,115 @@ const QUESTIONS = [
   "dateJst": "2026-08-29",
   "addedAtJst": "2026-08-29T03:38:31+09:00"
  }
+},
+{
+ "id": "auto-20260829-0940-kdnearest",
+ "cat": "データ構造",
+ "title": "KD木の最近傍探索と枝刈り",
+ "prompt": "次のnearestは、2次元KD木で目標点に最も近い点を探す。分割面までの距離の二乗が現在の最良距離より小さいときだけ反対側の部分木も調べる。target=(6,2)の戻り値はどれか。",
+ "code": [
+  "○手続: search(節点型: node, 点型: target)",
+  "  if (node＝null) return",
+  "  visited末尾にnode.pointを追加",
+  "  d←node.pointとtargetの距離の二乗",
+  "  if (d＜bestDist) best←node.point, bestDist←d",
+  "  axis←nodeの分割軸",
+  "  target[axis]＜node.point[axis]ならnear←left, far←right",
+  "  そうでなければnear←right, far←left",
+  "  search(near,target)",
+  "  diff←target[axis]－node.point[axis]",
+  "  if (diff×diff＜bestDist) search(far,target)"
+ ],
+ "given": "木は root P=(5,4)[x]。P.left=Q=(2,3)[y]、Q.right=S=(4,7)[x]。P.right=R=(8,7)[y]、R.left=T=(7,2)[x]。その他の子はnull。[x],[y]は分割軸。開始時bestDist=∞、visited={}。同距離では先に見つけた点を維持する。",
+ "vars": [
+  "節点",
+  "距離二乗d",
+  "near",
+  "分割面距離二乗",
+  "best / visited"
+ ],
+ "choices": [
+  "{best:(7,2), bestDist:1, visited:{(5,4),(8,7),(7,2)}}",
+  "{best:(7,2), bestDist:1, visited:{(5,4),(8,7),(7,2),(2,3),(4,7)}}",
+  "{best:(5,4), bestDist:5, visited:{(5,4),(8,7),(7,2)}}",
+  "{best:(7,2), bestDist:2, visited:{(5,4),(8,7),(7,2)}}",
+  "{best:(2,3), bestDist:17, visited:{(5,4),(2,3)}}",
+  "{best:(7,2), bestDist:1, visited:{(5,4),(2,3),(4,7),(8,7),(7,2)}}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 5,
+   "note": "根P=(5,4)の距離二乗は(6-5)^2+(2-4)^2=5。bestをPへ更新する。x座標6は5以上なのでnearは右のR。",
+   "v": [
+    "P=(5,4)",
+    "5",
+    "R",
+    "未判定",
+    "P / {P}"
+   ]
+  },
+  {
+   "line": 9,
+   "note": "R=(8,7)の距離二乗は29でbestを更新しない。y座標2<7なのでnearは左のT。",
+   "v": [
+    "R=(8,7)",
+    "29",
+    "T",
+    "未判定",
+    "P / {P,R}"
+   ]
+  },
+  {
+   "line": 5,
+   "note": "T=(7,2)の距離二乗は1で、bestをTへ更新する。x座標6<7なのでnearは左だがnull。",
+   "v": [
+    "T=(7,2)",
+    "1",
+    "null",
+    "1",
+    "T / {P,R,T}"
+   ]
+  },
+  {
+   "line": 11,
+   "note": "Tの分割面までの距離二乗は(6-7)^2=1。条件は1<bestDist(1)ではないので反対側も調べない。",
+   "v": [
+    "Tから復帰",
+    "—",
+    "—",
+    "1≮1",
+    "T / {P,R,T}"
+   ]
+  },
+  {
+   "line": 11,
+   "note": "Rではy差の二乗25、Pではx差の二乗1。どちらもbestDist=1未満ではないため、各far部分木を枝刈りする。",
+   "v": [
+    "R→Pへ復帰",
+    "—",
+    "—",
+    "25≮1, 1≮1",
+    "T / {P,R,T}"
+   ]
+  },
+  {
+   "line": 11,
+   "note": "Pのfarである左部分木Q,Sは訪問されず、最近点Tと距離二乗1、訪問列を返す。",
+   "v": [
+    "終了",
+    "—",
+    "—",
+    "左部分木を枝刈り",
+    "T / {P,R,T}"
+   ]
+  }
+ ],
+ "explain": "<p>最初に右側を探索するとT=(7,2)が距離二乗<b>1</b>で見つかります。根Pの分割面までの距離二乗も1ですが、反対側を調べる条件は厳密な<b>&lt;</b>です。</p><p>したがって左部分木は枝刈りされ、訪問列は<b>{(5,4),(8,7),(7,2)}</b>、最近点は<b>(7,2)</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-29",
+  "addedAtJst": "2026-08-29T09:40:32+09:00"
+ }
 }
 ];
