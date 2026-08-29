@@ -13434,5 +13434,107 @@ const QUESTIONS = [
   "dateJst": "2026-08-29",
   "addedAtJst": "2026-08-29T11:41:02+09:00"
  }
+},
+{
+ "id": "auto-20260829-1342-jumpsearch",
+ "cat": "アルゴリズム",
+ "title": "ジャンプ探索のブロック決定",
+ "prompt": "次のjumpSearchは、昇順配列を一定幅で飛びながらtargetを含み得るブロックを決め、そのブロック内を線形探索する。jumpSearch(A,26)の戻り値はどれか。配列位置は1から始まる。",
+ "code": [
+  "○レコード: jumpSearch(整数型の配列: A, 整数型: target)",
+  "  n←Aの要素数, step←√nの整数部分, prev←0, bound←step",
+  "  blockEnds←空の配列, linear←空の配列",
+  "  while (true)",
+  "    blockEnds末尾にboundを追加",
+  "    if (A[bound]≧target or bound＝n) break",
+  "    prev←bound, bound←min(bound＋step,n)",
+  "  endwhile",
+  "  for (iをprev＋1からboundまで)",
+  "    linear末尾にiを追加",
+  "    if (A[i]＝target) return {index:i,blockEnds:blockEnds,linear:linear}",
+  "    if (A[i]＞target) break",
+  "  endfor",
+  "  return {index:0,blockEnds:blockEnds,linear:linear}"
+ ],
+ "given": "A={2,5,8,12,16,20,23,26,30,35}, target=26。√10の整数部分は3。",
+ "vars": [
+  "段階",
+  "prev..bound",
+  "調べる位置",
+  "値",
+  "blockEnds / linear"
+ ],
+ "choices": [
+  "{index:8, blockEnds:{3,6,9}, linear:{7,8}}",
+  "{index:8, blockEnds:{3,6}, linear:{7,8}}",
+  "{index:9, blockEnds:{3,6,9}, linear:{9}}",
+  "{index:8, blockEnds:{3,6,9}, linear:{6,7,8}}",
+  "{index:0, blockEnds:{3,6,9}, linear:{7,8,9}}",
+  "{index:8, blockEnds:{3,6,9,10}, linear:{7,8}}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 7,
+   "note": "step=3なので最初のboundは3。A[3]=8<26のため、prev=3、bound=6へ進める。",
+   "v": [
+    "ジャンプ1",
+    "0..3",
+    "3",
+    "8",
+    "{3} / {}"
+   ]
+  },
+  {
+   "line": 7,
+   "note": "位置6の値20も26未満なので、prev=6、bound=9へ進める。",
+   "v": [
+    "ジャンプ2",
+    "3..6",
+    "6",
+    "20",
+    "{3,6} / {}"
+   ]
+  },
+  {
+   "line": 6,
+   "note": "位置9の値30は26以上。targetが存在するなら位置7から9のブロック内なのでジャンプを止める。",
+   "v": [
+    "ジャンプ3",
+    "6..9",
+    "9",
+    "30",
+    "{3,6,9} / {}"
+   ]
+  },
+  {
+   "line": 12,
+   "note": "線形探索はprev+1=7から開始する。A[7]=23は26未満なので次へ進む。",
+   "v": [
+    "線形1",
+    "7..9",
+    "7",
+    "23",
+    "{3,6,9} / {7}"
+   ]
+  },
+  {
+   "line": 11,
+   "note": "位置8の値が26と一致するので、その位置と調査履歴を返す。",
+   "v": [
+    "線形2",
+    "7..9",
+    "8",
+    "26",
+    "{3,6,9} / {7,8}"
+   ]
+  }
+ ],
+ "explain": "<p>幅3で位置3,6,9を調べると、target=26は値20と30の間のブロックにあると分かります。</p><p>その後、位置7,8を線形に調べて位置8で一致します。結果は<b>{index:8, blockEnds:{3,6,9}, linear:{7,8}}</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-29",
+  "addedAtJst": "2026-08-29T13:42:02+09:00"
+ }
 }
 ];
