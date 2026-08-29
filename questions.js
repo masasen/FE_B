@@ -13758,5 +13758,104 @@ const QUESTIONS = [
   "dateJst": "2026-08-29",
   "addedAtJst": "2026-08-29T17:44:03+09:00"
  }
+},
+{
+ "id": "auto-20260829-1944-backoff",
+ "cat": "プログラミング",
+ "title": "上限付き指数バックオフの再試行",
+ "prompt": "次のretryは、処理に失敗したとき待機時間を指数的に増やして再試行する。ただし待機時間には上限がある。指定された実行結果列でretryを動かした戻り値はどれか。",
+ "code": [
+  "○レコード: retry(整数型: maxAttempts, base, cap)",
+  "  attempt←1, elapsed←0, waits←空の配列, outcomes←空の配列",
+  "  while (attempt≦maxAttempts)",
+  "    result←call(attempt), outcomes末尾にresultを追加",
+  "    if (result＝OK) return {success:true,attempts:attempt,waits:waits,elapsed:elapsed,outcomes:outcomes}",
+  "    if (attempt＝maxAttempts) break",
+  "    delay←min(base×2の(attempt－1)乗,cap)",
+  "    waits末尾にdelayを追加, elapsed←elapsed＋delay",
+  "    attempt←attempt＋1",
+  "  endwhile",
+  "  return {success:false,attempts:attempt,waits:waits,elapsed:elapsed,outcomes:outcomes}"
+ ],
+ "given": "maxAttempts=5, base=2秒, cap=5秒。call(1..4)の結果は順にFAIL,FAIL,FAIL,OKであり、OK後はcallしない。待機そのもの以外の処理時間は0秒とする。",
+ "vars": [
+  "attempt",
+  "result",
+  "計算delay",
+  "waits",
+  "elapsed / outcomes"
+ ],
+ "choices": [
+  "{success:true, attempts:4, waits:{2,4,5}, elapsed:11, outcomes:{FAIL,FAIL,FAIL,OK}}",
+  "{success:true, attempts:4, waits:{2,4,8}, elapsed:14, outcomes:{FAIL,FAIL,FAIL,OK}}",
+  "{success:true, attempts:3, waits:{2,4}, elapsed:6, outcomes:{FAIL,FAIL,OK}}",
+  "{success:true, attempts:4, waits:{2,4,5,5}, elapsed:16, outcomes:{FAIL,FAIL,FAIL,OK}}",
+  "{success:false, attempts:5, waits:{2,4,5,5}, elapsed:16, outcomes:{FAIL,FAIL,FAIL,OK}}",
+  "{success:true, attempts:4, waits:{1,2,4}, elapsed:7, outcomes:{FAIL,FAIL,FAIL,OK}}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 7,
+   "note": "attempt=1はFAIL。delay=min(2×2^0,5)=2秒を記録して待機する。",
+   "v": [
+    "1",
+    "FAIL",
+    "min(2,5)=2",
+    "{2}",
+    "2 / {FAIL}"
+   ]
+  },
+  {
+   "line": 7,
+   "note": "attempt=2もFAIL。delay=min(2×2^1,5)=4秒で、累積待機は6秒。",
+   "v": [
+    "2",
+    "FAIL",
+    "min(4,5)=4",
+    "{2,4}",
+    "6 / {FAIL,FAIL}"
+   ]
+  },
+  {
+   "line": 7,
+   "note": "attempt=3もFAIL。本来は2×2^2=8秒だがcap=5なので5秒だけ待機する。",
+   "v": [
+    "3",
+    "FAIL",
+    "min(8,5)=5",
+    "{2,4,5}",
+    "11 / {FAIL,FAIL,FAIL}"
+   ]
+  },
+  {
+   "line": 5,
+   "note": "attempt=4はOK。成功判定は待機計算より前なので、4回目の後には待機を追加しない。",
+   "v": [
+    "4",
+    "OK",
+    "計算しない",
+    "{2,4,5}",
+    "11 / {FAIL,FAIL,FAIL,OK}"
+   ]
+  },
+  {
+   "line": 5,
+   "note": "成功した4回目で直ちに戻り、5回目のcallは実行しない。",
+   "v": [
+    "return",
+    "OK",
+    "—",
+    "{2,4,5}",
+    "11 / 4結果"
+   ]
+  }
+ ],
+ "explain": "<p>失敗後の待機は2,4,8…と増えますが、上限5秒により3回目の待機は5秒になります。</p><p>4回目で成功した後は待機しないので、累積は<b>2+4+5=11秒</b>。結果は<b>{success:true, attempts:4, waits:{2,4,5}, elapsed:11}</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-29",
+  "addedAtJst": "2026-08-29T19:44:33+09:00"
+ }
 }
 ];
