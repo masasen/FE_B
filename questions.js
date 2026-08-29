@@ -14074,5 +14074,101 @@ const QUESTIONS = [
   "dateJst": "2026-08-29",
   "addedAtJst": "2026-08-29T23:48:03+09:00"
  }
+},
+{
+ "id": "auto-20260830-0149-totpreplay",
+ "cat": "セキュリティ",
+ "title": "TOTP許容窓とコード再利用防止",
+ "prompt": "次のverifyは、現在の時間ステップの前後1ステップをTOTPの許容窓とし、以前に受理した時間ステップ以前のコードを再利用できないようにする。同じ利用者Uに対する5件の要求を順に処理した結果はどれか。",
+ "code": [
+  "○レコード: verify(文字列: user, code, 整数型: nowStep)",
+  "  last←lastAccepted[user]",
+  "  dを{-1,0,1}の順に繰り返す",
+  "    s←nowStep＋d",
+  "    if (s＞last and TOTP(secret[user],s)＝code)",
+  "      lastAccepted[user]←s",
+  "      return ACCEPT(s)",
+  "  return DENY"
+ ],
+ "given": "初期状態はlastAccepted[U]=100。TOTP(secret[U],101)=A, TOTP(secret[U],102)=B, TOTP(secret[U],103)=C, TOTP(secret[U],104)=Dで、A〜Dは互いに異なる。要求は順に①verify(U,A,102) ②verify(U,A,102) ③verify(U,C,102) ④verify(U,B,102) ⑤verify(U,D,103)。",
+ "vars": [
+  "要求",
+  "開始時last",
+  "調べた有効なs",
+  "一致したs",
+  "結果 / 終了時last"
+ ],
+ "choices": [
+  "{ACCEPT(101),DENY,ACCEPT(103),DENY,ACCEPT(104)}",
+  "{ACCEPT(101),ACCEPT(101),ACCEPT(103),DENY,ACCEPT(104)}",
+  "{DENY,DENY,ACCEPT(103),ACCEPT(102),ACCEPT(104)}",
+  "{ACCEPT(101),DENY,DENY,DENY,ACCEPT(104)}",
+  "{ACCEPT(102),DENY,ACCEPT(103),DENY,ACCEPT(104)}",
+  "{ACCEPT(101),DENY,ACCEPT(103),DENY,DENY}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 7,
+   "note": "①はlast=100。許容窓の最初のs=101がlastより大きく、そのTOTPはAでcodeと一致する。101を記録して受理する。",
+   "v": [
+    "①",
+    "100",
+    "101",
+    "101",
+    "ACCEPT(101) / 101"
+   ]
+  },
+  {
+   "line": 8,
+   "note": "②はlast=101。s=101は再利用防止条件s>lastを満たさない。s=102,103のコードはB,CでAと一致せず、拒否する。",
+   "v": [
+    "②",
+    "101",
+    "102,103",
+    "なし",
+    "DENY / 101"
+   ]
+  },
+  {
+   "line": 7,
+   "note": "③はs=101を再利用候補として除外する。s=102のBは不一致だが、s=103のCが一致するので103を記録して受理する。",
+   "v": [
+    "③",
+    "101",
+    "102,103",
+    "103",
+    "ACCEPT(103) / 103"
+   ]
+  },
+  {
+   "line": 8,
+   "note": "④の窓はs=101,102,103だが、全て現在のlast=103以下である。Bがs=102の正しいコードでも再利用防止条件により拒否する。",
+   "v": [
+    "④",
+    "103",
+    "なし",
+    "なし",
+    "DENY / 103"
+   ]
+  },
+  {
+   "line": 7,
+   "note": "⑤の窓はs=102,103,104。102と103は除外され、s=104のDが一致するので104を記録して受理する。",
+   "v": [
+    "⑤",
+    "103",
+    "104",
+    "104",
+    "ACCEPT(104) / 104"
+   ]
+  }
+ ],
+ "explain": "<p>前後1ステップを許容しても、受理済みの時間ステップをlastAcceptedに記録し、s&gt;lastの候補だけを照合します。</p><p>このため①のAは受理されますが②では再利用できません。③で未来側の103を受理すると、④の102も古いコードとして拒否されます。結果は<b>{ACCEPT(101),DENY,ACCEPT(103),DENY,ACCEPT(104)}</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-30",
+  "addedAtJst": "2026-08-30T01:49:03+09:00"
+ }
 }
 ];
