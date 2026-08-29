@@ -13967,5 +13967,112 @@ const QUESTIONS = [
   "dateJst": "2026-08-29",
   "addedAtJst": "2026-08-29T21:46:03+09:00"
  }
+},
+{
+ "id": "auto-20260829-2348-bidirbfs",
+ "cat": "アルゴリズム",
+ "title": "双方向幅優先探索の交差判定",
+ "prompt": "次のshortestは、無向グラフ上で始点側と終点側から幅優先探索を行い、要素数が小さい側のfrontierを1層ずつ展開する。要素数が等しいときは始点側を選ぶ。各集合と隣接節点は昇順に処理する。shortest(1,9)の結果はどれか。",
+ "code": [
+  "○レコード: shortest(整数型: start, goal)",
+  "  FS←{start}, FT←{goal}, ds[start]←0, dt[goal]←0",
+  "  while (FSが空でない and FTが空でない)",
+  "    if (FSの要素数≦FTの要素数)",
+  "      side←S, F←FS",
+  "    else",
+  "      side←T, F←FT",
+  "    next←空集合",
+  "    Fの各uを昇順に処理する",
+  "      adj[u]の各vを昇順に処理する",
+  "        if (side=S and vがdsに未登録)",
+  "          ds[v]←ds[u]＋1",
+  "          if (vがdtに登録済み) return {distance:ds[v]＋dt[v], meet:v}",
+  "          nextにvを追加する",
+  "        else if (side=T and vがdtに未登録)",
+  "          dt[v]←dt[u]＋1",
+  "          if (vがdsに登録済み) return {distance:dt[v]＋ds[v], meet:v}",
+  "          nextにvを追加する",
+  "    if (side=S) FS←next else FT←next"
+ ],
+ "given": "adj[1]={2,3}, adj[2]={1,4,5}, adj[3]={1,6}, adj[4]={2,7}, adj[5]={2,7,8}, adj[6]={3,8}, adj[7]={4,5,9}, adj[8]={5,6,9}, adj[9]={7,8}。集合への重複追加はない。",
+ "vars": [
+  "反復",
+  "選択側",
+  "展開frontier",
+  "新規登録",
+  "判定又は更新後frontier"
+ ],
+ "choices": [
+  "{distance:4, meet:4, sides:{S,T,S,T}, FS:{4,5,6}, FT:{7,8}}",
+  "{distance:3, meet:4, sides:{S,T,S,T}, FS:{4,5,6}, FT:{7,8}}",
+  "{distance:4, meet:5, sides:{S,T,S,T}, FS:{4,5,6}, FT:{7,8}}",
+  "{distance:4, meet:7, sides:{S,T,T,S}, FS:{2,3}, FT:{4,5,6}}",
+  "{distance:5, meet:4, sides:{S,T,S,T}, FS:{4,5,6}, FT:{7,8}}",
+  "{distance:4, meet:4, sides:{S,S,T,T}, FS:{4,5,6}, FT:{7,8}}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 18,
+   "note": "初期状態ではFS={1}, FT={9}。要素数が等しいので始点側Sを選ぶ。1を展開し、ds[2]=ds[3]=1としてFS={2,3}にする。",
+   "v": [
+    "1",
+    "S",
+    "{1}",
+    "2,3",
+    "FS={2,3}"
+   ]
+  },
+  {
+   "line": 18,
+   "note": "FSの要素数2よりFTの要素数1が小さいので終点側Tを選ぶ。9を展開し、dt[7]=dt[8]=1としてFT={7,8}にする。",
+   "v": [
+    "2",
+    "T",
+    "{9}",
+    "7,8",
+    "FT={7,8}"
+   ]
+  },
+  {
+   "line": 18,
+   "note": "両frontierの要素数が2で等しいのでSを選ぶ。2から4,5を、3から6を登録し、ds[4]=ds[5]=ds[6]=2、FS={4,5,6}となる。",
+   "v": [
+    "3",
+    "S",
+    "{2,3}",
+    "4,5,6",
+    "FS={4,5,6}"
+   ]
+  },
+  {
+   "line": 15,
+   "note": "FSの要素数3よりFTの要素数2が小さいのでTを選ぶ。昇順で最初の7を展開し、最初の隣接節点4を調べる。dt[4]=dt[7]+1=2とした時点で4はdsに登録済みなので交差する。",
+   "v": [
+    "4",
+    "T",
+    "{7,8}",
+    "4",
+    "meet=4"
+   ]
+  },
+  {
+   "line": 15,
+   "note": "交差点4までの終点側距離dt[4]=2と始点側距離ds[4]=2を加え、距離4を返す。選択した側の列は{S,T,S,T}である。",
+   "v": [
+    "return",
+    "—",
+    "—",
+    "—",
+    "distance=4"
+   ]
+  }
+ ],
+ "explain": "<p>frontierの大きさは順に(1,1)→(2,1)→(2,2)→(3,2)なので、選択側はS,T,S,Tです。</p><p>4回目に終点側から7の隣接節点4へ進むと、4は始点側で距離2として既に訪問済みです。終点側の距離も2になるので、結果は<b>{distance:4, meet:4}</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-29",
+  "addedAtJst": "2026-08-29T23:48:03+09:00"
+ }
 }
 ];
