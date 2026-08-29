@@ -13324,5 +13324,115 @@ const QUESTIONS = [
   "dateJst": "2026-08-29",
   "addedAtJst": "2026-08-29T09:40:32+09:00"
  }
+},
+{
+ "id": "auto-20260829-1141-tlvparse",
+ "cat": "プログラミング",
+ "title": "TLV形式バイト列の走査",
+ "prompt": "次のparseTLVは、Type-Length-Value形式のバイト列を先頭から走査する。type=01では値を文字コードとしてtextへ、type=02では各値をsumへ加え、それ以外のtypeは記録して読み飛ばす。戻り値はどれか。",
+ "code": [
+  "○レコード: parseTLV(バイト配列: bytes)",
+  "  i←1, text←\"\", sum←0, skipped←空の配列, starts←空の配列",
+  "  while (i≦bytesの要素数)",
+  "    starts末尾にiを追加",
+  "    type←bytes[i], len←bytes[i＋1]",
+  "    if (type＝01(16)) bytes[i＋2..i＋1＋len]を文字としてtextへ追加",
+  "    else if (type＝02(16)) 同範囲の各値をsumへ加える",
+  "    else skipped末尾にtypeを追加",
+  "    i←i＋2＋len",
+  "  endwhile",
+  "  return {text,sum,skipped,starts}"
+ ],
+ "given": "bytes={01,02,41,42, 03,01,7F, 02,03,10,20,30}(16)。41(16),42(16)は文字A,B。sumは各バイト値を整数として加える。全レコードの長さは正しい。",
+ "vars": [
+  "開始i",
+  "type / len",
+  "value",
+  "処理",
+  "text / sum / skipped"
+ ],
+ "choices": [
+  "{text:\"AB\", sum:96, skipped:{03}, starts:{1,5,8}}",
+  "{text:\"AB\", sum:60, skipped:{03}, starts:{1,5,8}}",
+  "{text:\"AB\", sum:96, skipped:{7F}, starts:{1,5,8}}",
+  "{text:\"AB\", sum:127, skipped:{03}, starts:{1,5,8}}",
+  "{text:\"AB\", sum:96, skipped:{03}, starts:{1,4,7}}",
+  "{text:\"AB\", sum:96, skipped:{}, starts:{1,5,8}}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 5,
+   "note": "i=1でtype=01、len=2。値範囲は位置3,4の41,42になる。",
+   "v": [
+    "1",
+    "01 / 2",
+    "{41,42}",
+    "type01",
+    "\"\" / 0 / {}"
+   ]
+  },
+  {
+   "line": 6,
+   "note": "41,42を文字A,Bとしてtextへ追加し、iを1+2+2=5へ進める。",
+   "v": [
+    "1",
+    "01 / 2",
+    "{41,42}",
+    "\"AB\"を追加",
+    "\"AB\" / 0 / {}"
+   ]
+  },
+  {
+   "line": 8,
+   "note": "i=5は未知のtype=03、len=1。値7Fは解釈せずtypeの03をskippedへ記録し、i=8へ進む。",
+   "v": [
+    "5",
+    "03 / 1",
+    "{7F}",
+    "読み飛ばし",
+    "\"AB\" / 0 / {03}"
+   ]
+  },
+  {
+   "line": 7,
+   "note": "i=8はtype=02、len=3。値10,20,30(16)を整数16,32,48として加え、sum=96になる。",
+   "v": [
+    "8",
+    "02 / 3",
+    "{10,20,30}",
+    "16+32+48",
+    "\"AB\" / 96 / {03}"
+   ]
+  },
+  {
+   "line": 9,
+   "note": "iは8+2+3=13となり、要素数12を越える。各レコードの開始位置は1,5,8。",
+   "v": [
+    "終了",
+    "—",
+    "—",
+    "i←13",
+    "\"AB\" / 96 / {03}"
+   ]
+  },
+  {
+   "line": 11,
+   "note": "text、sum、未知type、開始位置列をまとめて返す。",
+   "v": [
+    "return",
+    "—",
+    "—",
+    "—",
+    "\"AB\" / 96 / {03}"
+   ]
+  }
+ ],
+ "explain": "<p>各レコードはtypeとlenの2バイトに続くlenバイトのvalueで構成されるため、次の開始位置は<b>i+2+len</b>です。</p><p>type03の値7Fは読み飛ばし、type02の10,20,30(16)は16+32+48=96。結果は<b>{text:\"AB\", sum:96, skipped:{03}, starts:{1,5,8}}</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-29",
+  "addedAtJst": "2026-08-29T11:41:02+09:00"
+ }
 }
 ];
