@@ -14170,5 +14170,118 @@ const QUESTIONS = [
   "dateJst": "2026-08-30",
   "addedAtJst": "2026-08-30T01:49:03+09:00"
  }
+},
+{
+ "id": "auto-20260830-0350-wildcarddp",
+ "cat": "アルゴリズム",
+ "title": "ワイルドカード照合のDP表更新",
+ "prompt": "次のmatchは、文字列textとパターンpatのワイルドカード照合を動的計画法で判定する。patの「*」は0文字以上、「?」は任意の1文字に一致する。match(\"abxc\",\"a*?c\")の結果はどれか。行と列は0から始まり、Tはtrue、Fはfalseを表す。",
+ "code": [
+  "○論理型: match(文字列: text, pat)",
+  "  n←textの長さ, m←patの長さ",
+  "  dp[0,0]←true",
+  "  jを1からmまで繰り返す",
+  "    if (pat[j]=\"*\") dp[0,j]←dp[0,j－1]",
+  "  iを1からnまで繰り返す",
+  "    jを1からmまで繰り返す",
+  "      if (pat[j]=\"*\")",
+  "        dp[i,j]←dp[i,j－1] or dp[i－1,j]",
+  "      else if (pat[j]=\"?\" or pat[j]=text[i])",
+  "        dp[i,j]←dp[i－1,j－1]",
+  "      else",
+  "        dp[i,j]←false",
+  "  return {matched:dp[n,m], trueCount:dp表内のtrueの個数}"
+ ],
+ "given": "text=\"abxc\", pat=\"a*?c\"。dp[i,j]はtextの先頭i文字とpatの先頭j文字が一致するかを表す。未設定のdp要素はfalseとする。",
+ "vars": [
+  "i / text先頭",
+  "行dp[i,0..4]",
+  "*列dp[i,2]",
+  "?列dp[i,3]",
+  "行末dp[i,4]"
+ ],
+ "choices": [
+  "{matched:T, trueCount:10, rows:{TFFFF,FTTFF,FFTTF,FFTTF,FFTTT}}",
+  "{matched:T, trueCount:9, rows:{TFFFF,FTTFF,FFTTF,FFTTF,FFFTT}}",
+  "{matched:F, trueCount:9, rows:{TFFFF,FTTFF,FFTTF,FFTTF,FFTTF}}",
+  "{matched:T, trueCount:11, rows:{TTFFF,FTTFF,FFTTF,FFTTF,FFTTT}}",
+  "{matched:F, trueCount:8, rows:{TFFFF,FTTFF,FFTFF,FFTFF,FFTFF}}",
+  "{matched:T, trueCount:10, rows:{TFFFF,FTTFF,FFTTF,FFTFF,FFTTT}}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 5,
+   "note": "空文字と空パターンだけが一致する。pat[1]はaなのでdp[0,1]はfalse、続く*もdp[0,1]を引き継いでfalse。0行目はTFFFF。",
+   "v": [
+    "0 / 空文字",
+    "TFFFF",
+    "F",
+    "F",
+    "F"
+   ]
+  },
+  {
+   "line": 11,
+   "note": "i=1の文字aはpat[1]のaと一致してdp[1,1]=T。*列は左のTを引き継ぐのでdp[1,2]=T。1行目はFTTFF。",
+   "v": [
+    "1 / a",
+    "FTTFF",
+    "T",
+    "F",
+    "F"
+   ]
+  },
+  {
+   "line": 11,
+   "note": "i=2では*が直前行のdp[1,2]=Tを引き継ぐ。?はdp[1,2]=Tを対角から受け取り、b一文字に一致する。2行目はFFTTF。",
+   "v": [
+    "2 / ab",
+    "FFTTF",
+    "T",
+    "T",
+    "F"
+   ]
+  },
+  {
+   "line": 11,
+   "note": "i=3でも*列はT。?列はdp[2,2]=Tから更新され、x一文字に一致する。末尾cはxと異なるので3行目はFFTTF。",
+   "v": [
+    "3 / abx",
+    "FFTTF",
+    "T",
+    "T",
+    "F"
+   ]
+  },
+  {
+   "line": 14,
+   "note": "i=4では*列と?列がT。pat[4]のcとtext[4]のcが一致し、dp[4,4]=dp[3,3]=T。4行目はFFTTT。",
+   "v": [
+    "4 / abxc",
+    "FFTTT",
+    "T",
+    "T",
+    "T"
+   ]
+  },
+  {
+   "line": 14,
+   "note": "各行のtrue数は順に1,2,2,2,3で合計10。右下dp[4,4]はtrueなので照合成功を返す。",
+   "v": [
+    "return",
+    "—",
+    "—",
+    "—",
+    "matched=T, trueCount=10"
+   ]
+  }
+ ],
+ "explain": "<p>「*」のセルは、左のセル（0文字に一致）と上のセル（さらに1文字を吸収）の論理和です。「?」又は同じ文字のセルは左上を引き継ぎます。</p><p>最終行はFFTTT、右下はTです。表全体のTは10個なので、結果は<b>{matched:T, trueCount:10}</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-30",
+  "addedAtJst": "2026-08-30T03:50:03+09:00"
+ }
 }
 ];
