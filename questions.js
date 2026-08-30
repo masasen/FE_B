@@ -14528,5 +14528,119 @@ const QUESTIONS = [
   "dateJst": "2026-08-30",
   "addedAtJst": "2026-08-30T07:52:34+09:00"
  }
+},
+{
+ "id": "auto-20260830-0953-splayaccess",
+ "cat": "データ構造",
+ "title": "Splay木のアクセス時回転",
+ "prompt": "次のsplayは、二分探索木でアクセスした節点xを根まで移動する。初期木でキー35にアクセスしてsplay(35)を実行した結果はどれか。L(k)はキーkの節点を根とする部分木の左回転、R(k)は右回転を表す。",
+ "code": [
+  "○手続: splay(節点: x)",
+  "  while (x.parent≠null)",
+  "    p←x.parent, g←p.parent",
+  "    if (g＝null)",
+  "      if (x＝p.left) rotateRight(p) else rotateLeft(p)",
+  "    else if ((x＝p.left)＝(p＝g.left))",
+  "      if (p＝g.left)",
+  "        rotateRight(g), rotateRight(p)",
+  "      else",
+  "        rotateLeft(g), rotateLeft(p)",
+  "    else",
+  "      if (x＝p.left)",
+  "        rotateRight(p), rotateLeft(g)",
+  "      else",
+  "        rotateLeft(p), rotateRight(g)"
+ ],
+ "given": "初期木はroot=40。40.left=20, 40.right=60, 20.left=10, 20.right=30, 30.right=35で、その他の子はnull。回転後も通常の二分探索木の親子リンクを保つ。preorderは根→左部分木→右部分木の順。",
+ "vars": [
+  "段階",
+  "x,p,g",
+  "判定",
+  "回転",
+  "回転後のxの親"
+ ],
+ "choices": [
+  "{rotations:{L(20),L(30),R(40)}, root:35, preorder:{35,30,20,10,40,60}}",
+  "{rotations:{L(30),L(20),R(40)}, root:35, preorder:{35,20,10,30,40,60}}",
+  "{rotations:{L(20),R(30),R(40)}, root:35, preorder:{35,30,20,10,40,60}}",
+  "{rotations:{L(20),L(30)}, root:40, preorder:{40,35,30,20,10,60}}",
+  "{rotations:{L(20),L(30),L(40)}, root:35, preorder:{35,30,20,10,60,40}}",
+  "{rotations:{R(40),L(20),L(30)}, root:35, preorder:{35,30,20,10,40,60}}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 3,
+   "note": "開始時はx=35, p=30, g=20。xもpもそれぞれ親の右の子なので同方向のZig-Zigとなる。",
+   "v": [
+    "1",
+    "35,30,20",
+    "右-右",
+    "Zig-Zig",
+    "30"
+   ]
+  },
+  {
+   "line": 10,
+   "note": "まずg=20で左回転する。30が40の左の子となり、20は30の左の子になる。x=35の親はまだ30。",
+   "v": [
+    "1a",
+    "35,30,20",
+    "右-右",
+    "L(20)",
+    "30"
+   ]
+  },
+  {
+   "line": 10,
+   "note": "続いてp=30で左回転する。35が40の左の子となり、その左に30、さらに30の左に20がつながる。",
+   "v": [
+    "1b",
+    "35,30,20",
+    "右-右",
+    "L(30)",
+    "40"
+   ]
+  },
+  {
+   "line": 3,
+   "note": "次の反復ではx=35, p=40で、gはnull。xはpの左の子なので1回のZigを行う。",
+   "v": [
+    "2",
+    "35,40,null",
+    "左の子",
+    "Zig",
+    "40"
+   ]
+  },
+  {
+   "line": 5,
+   "note": "40で右回転すると35が根になる。35.left=30, 35.right=40となり、40.right=60は保たれる。",
+   "v": [
+    "2a",
+    "35,40,null",
+    "左の子",
+    "R(40)",
+    "null"
+   ]
+  },
+  {
+   "line": 2,
+   "note": "xの親がnullになって終了する。preorderは35,30,20,10,40,60である。",
+   "v": [
+    "終了",
+    "35,null,null",
+    "終了",
+    "—",
+    "root=35"
+   ]
+  }
+ ],
+ "explain": "<p>35と30はどちらも親の右側なので、最初は右-右のZig-Zigです。20、30の順に左回転します。</p><p>その後35は40の左の子なので、40を右回転するZigで根へ移動します。回転列は<b>{L(20),L(30),R(40)}</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-30",
+  "addedAtJst": "2026-08-30T09:53:32+09:00"
+ }
 }
 ];
