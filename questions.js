@@ -14743,5 +14743,118 @@ const QUESTIONS = [
   "dateJst": "2026-08-30",
   "addedAtJst": "2026-08-30T11:53:32+09:00"
  }
+},
+{
+ "id": "auto-20260830-1353-intervalsweep",
+ "cat": "アルゴリズム",
+ "title": "イベント掃引による最大同時区間数",
+ "prompt": "次のmaxOverlapは、半開区間[start,end)の開始・終了イベントを時刻順に処理し、同時に有効な区間数の最大値を求める。同時刻ではENDをSTARTより先に処理する。与えられた区間群での結果はどれか。",
+ "code": [
+  "○レコード: maxOverlap(区間型の配列: ranges)",
+  "  events←空配列",
+  "  rangesの各rについてeventsにSTART(r.name,r.start)とEND(r.name,r.end)を追加する",
+  "  eventsを時刻の昇順、同時刻ではENDが先になるよう整列する",
+  "  cur←0, peak←0, firstAt←－1, order←空配列",
+  "  eventsの各eを順に繰り返す",
+  "    orderの末尾にeの種類と名前を追加する",
+  "    if (e.type＝END)",
+  "      cur←cur－1",
+  "    else",
+  "      cur←cur＋1",
+  "      if (cur＞peak)",
+  "        peak←cur, firstAt←e.time",
+  "  return {peak:peak,firstAt:firstAt,order:order}"
+ ],
+ "given": "ranges={A:[1,5), B:[2,6), C:[4,7), D:[5,8), E:[6,9)}。orderではSTARTをS、ENDをEと略し、例えばAの開始をSAと書く。",
+ "vars": [
+  "イベント",
+  "時刻",
+  "種類",
+  "処理後cur",
+  "peak / firstAt"
+ ],
+ "choices": [
+  "{peak:3, firstAt:4, order:{SA,SB,SC,EA,SD,EB,SE,EC,ED,EE}}",
+  "{peak:4, firstAt:5, order:{SA,SB,SC,SD,EA,SE,EB,EC,ED,EE}}",
+  "{peak:3, firstAt:4, order:{SA,SB,SC,SD,EA,SE,EB,EC,ED,EE}}",
+  "{peak:2, firstAt:2, order:{SA,SB,EA,SC,EB,SD,EC,SE,ED,EE}}",
+  "{peak:3, firstAt:5, order:{SA,SB,SC,EA,SD,EB,SE,EC,ED,EE}}",
+  "{peak:4, firstAt:6, order:{SA,SB,SC,EA,SD,SE,EB,EC,ED,EE}}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 13,
+   "note": "時刻1のSAでcur=1となり、新しいpeak=1、firstAt=1。時刻2のSBでcur=2となりpeak=2、firstAt=2。",
+   "v": [
+    "SA,SB",
+    "1,2",
+    "START,START",
+    "1→2",
+    "2 / 2"
+   ]
+  },
+  {
+   "line": 13,
+   "note": "時刻4のSCでcur=3となる。これが初めて3区間同時になる時刻なのでpeak=3、firstAt=4。",
+   "v": [
+    "SC",
+    "4",
+    "START",
+    "3",
+    "3 / 4"
+   ]
+  },
+  {
+   "line": 11,
+   "note": "時刻5では半開区間Aが先に終了する。EAでcur=2としてからSDで3へ戻るため、4にはならない。",
+   "v": [
+    "EA,SD",
+    "5,5",
+    "END,START",
+    "2→3",
+    "3 / 4"
+   ]
+  },
+  {
+   "line": 11,
+   "note": "時刻6もEBを先に処理してcur=2、その後SEで3へ戻る。同時刻の終了を先にすることでBとEを同時には数えない。",
+   "v": [
+    "EB,SE",
+    "6,6",
+    "END,START",
+    "2→3",
+    "3 / 4"
+   ]
+  },
+  {
+   "line": 9,
+   "note": "残りはEC,ED,EEの順に終了し、curは2,1,0となる。peakは3のまま。",
+   "v": [
+    "EC,ED,EE",
+    "7,8,9",
+    "END,END,END",
+    "2→1→0",
+    "3 / 4"
+   ]
+  },
+  {
+   "line": 14,
+   "note": "イベント順はSA,SB,SC,EA,SD,EB,SE,EC,ED,EE。最大同時区間数3を最初に記録した時刻は4。",
+   "v": [
+    "return",
+    "—",
+    "—",
+    "—",
+    "peak=3, firstAt=4"
+   ]
+  }
+ ],
+ "explain": "<p>半開区間では終了時刻と同じ時刻の開始は重なりません。そのため時刻5ではEAの後にSD、時刻6ではEBの後にSEを処理します。</p><p>curが初めて3になるのは時刻4のSCです。結果は<b>peak=3, firstAt=4</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-30",
+  "addedAtJst": "2026-08-30T13:53:32+09:00"
+ }
 }
 ];
