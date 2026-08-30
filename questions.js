@@ -14856,5 +14856,125 @@ const QUESTIONS = [
   "dateJst": "2026-08-30",
   "addedAtJst": "2026-08-30T13:53:32+09:00"
  }
+},
+{
+ "id": "auto-20260830-1555-reorderbuf",
+ "cat": "プログラミング",
+ "title": "順不同パケットの受信順序復元",
+ "prompt": "次のreceiveは、順不同に到着するパケットを連番順に出力する。6件を順に処理した後の状態はどれか。同じseqが既に出力済み、又はbufferに登録済みなら重複として捨てる。",
+ "code": [
+  "大域: expected←10, buffer←空の辞書, output←空文字列, discarded←空配列",
+  "○手続: receive(整数型: seq, 文字列: data)",
+  "  if (seq＜expected or bufferにseqが登録済み)",
+  "    discardedの末尾にseqを追加する",
+  "    return",
+  "  buffer[seq]←data",
+  "  while (bufferにexpectedが登録済み)",
+  "    outputの末尾にbuffer[expected]を連結する",
+  "    bufferからexpectedを削除する",
+  "    expected←expected＋1"
+ ],
+ "given": "到着順は①(12,\"C\") ②(10,\"A\") ③(13,\"D\") ④(11,\"B\") ⑤(11,\"X\") ⑥(14,\"E\")。bufferは{seq:data}の形式でキー昇順に表す。",
+ "vars": [
+  "到着",
+  "処理前expected",
+  "登録又は破棄",
+  "whileで出力",
+  "処理後 expected / buffer / output"
+ ],
+ "choices": [
+  "{expected:15, buffer:{}, output:\"ABCDE\", discarded:{11}}",
+  "{expected:15, buffer:{}, output:\"ACDBE\", discarded:{11}}",
+  "{expected:14, buffer:{14:E}, output:\"ABCD\", discarded:{11}}",
+  "{expected:15, buffer:{}, output:\"ABCDXE\", discarded:{}}",
+  "{expected:13, buffer:{13:D,14:E}, output:\"ABC\", discarded:{11}}",
+  "{expected:15, buffer:{11:X}, output:\"ABCDE\", discarded:{}}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 6,
+   "note": "①seq=12はexpected=10より大きいのでbufferへ登録する。10がないためwhileは動かない。",
+   "v": [
+    "① 12:C",
+    "10",
+    "buffer[12]=C",
+    "なし",
+    "10 / {12:C} / \"\""
+   ]
+  },
+  {
+   "line": 9,
+   "note": "②seq=10を登録するとexpected=10が存在するのでAを出力して削除し、expected=11にする。11はまだない。",
+   "v": [
+    "② 10:A",
+    "10",
+    "buffer[10]=A",
+    "A",
+    "11 / {12:C} / \"A\""
+   ]
+  },
+  {
+   "line": 6,
+   "note": "③seq=13を登録するがexpected=11がないため、12と13を保持したまま待つ。",
+   "v": [
+    "③ 13:D",
+    "11",
+    "buffer[13]=D",
+    "なし",
+    "11 / {12:C,13:D} / \"A\""
+   ]
+  },
+  {
+   "line": 10,
+   "note": "④seq=11を登録すると、11,12,13が連続して存在する。B,C,Dを順に出力して全て削除し、expected=14になる。",
+   "v": [
+    "④ 11:B",
+    "11",
+    "buffer[11]=B",
+    "BCD",
+    "14 / {} / \"ABCD\""
+   ]
+  },
+  {
+   "line": 5,
+   "note": "⑤seq=11は既に出力済みでseq<expectedなので重複として破棄し、discardedへ11を追加する。",
+   "v": [
+    "⑤ 11:X",
+    "14",
+    "破棄",
+    "なし",
+    "14 / {} / \"ABCD\""
+   ]
+  },
+  {
+   "line": 10,
+   "note": "⑥seq=14を登録すると直ちにEを出力できる。削除後expected=15となりbufferは空。",
+   "v": [
+    "⑥ 14:E",
+    "14",
+    "buffer[14]=E",
+    "E",
+    "15 / {} / \"ABCDE\""
+   ]
+  },
+  {
+   "line": 10,
+   "note": "最終的に連番10〜14のデータがABCDEとして出力され、重複したseq=11だけが破棄される。",
+   "v": [
+    "終了",
+    "—",
+    "—",
+    "—",
+    "15 / {} / \"ABCDE\", discarded={11}"
+   ]
+  }
+ ],
+ "explain": "<p>先に届いた12と13は、欠けている11が届くまでbufferに保持されます。11の到着時にwhileが3回動き、B,C,Dを連続して出力します。</p><p>その後の11はexpected=14より小さいため破棄されます。結果は<b>expected=15, output=\"ABCDE\", discarded={11}</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-30",
+  "addedAtJst": "2026-08-30T15:55:05+09:00"
+ }
 }
 ];
