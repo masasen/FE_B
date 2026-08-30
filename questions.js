@@ -15187,5 +15187,128 @@ const QUESTIONS = [
   "dateJst": "2026-08-30",
   "addedAtJst": "2026-08-30T19:56:35+09:00"
  }
+},
+{
+ "id": "auto-20260830-2157-leftistmeld",
+ "cat": "データ構造",
+ "title": "左istヒープのmeldと子交換",
+ "prompt": "次のmeldは二つの左istヒープを併合する。nullのnplを0、葉のnplを1とする。H1とH2をmeldした結果はどれか。preorderは根→左部分木→右部分木、swapsは12行目で子を交換した節点キーの順である。",
+ "code": [
+  "○節点型: meld(節点型: a,b)",
+  "  if (a＝null) return b",
+  "  if (b＝null) return a",
+  "  if (a.key＞b.key) aとbを交換する",
+  "  a.right←meld(a.right,b)",
+  "  normalize(a)",
+  "  return a",
+  "○手続: normalize(節点型: x)",
+  "  ln←if x.left＝null then 0 else x.left.npl",
+  "  rn←if x.right＝null then 0 else x.right.npl",
+  "  if (ln＜rn)",
+  "    x.leftとx.rightを交換し、swapsの末尾にx.keyを追加する",
+  "  x.npl←1＋(if x.right＝null then 0 else x.right.npl)"
+ ],
+ "given": "H1はroot=2, 2.left=7, 2.right=9。H2はroot=3, 3.left=5, 3.right=8。7,9,5,8は葉で、初期nplは各葉が1、根2と3が2。キーは全て異なる。",
+ "vars": [
+  "再帰段階",
+  "選ばれた根",
+  "rightへ入る部分木",
+  "normalize前の子",
+  "normalize後 / npl"
+ ],
+ "choices": [
+  "{root:2, preorder:{2,3,5,8,9,7}, swaps:{8,2}, npl:{2:2,3:2,5:1,7:1,8:1,9:1}}",
+  "{root:2, preorder:{2,7,3,5,8,9}, swaps:{8}, npl:{2:3,3:2,5:1,7:1,8:1,9:1}}",
+  "{root:3, preorder:{3,2,7,9,5,8}, swaps:{}, npl:{2:2,3:2,5:1,7:1,8:1,9:1}}",
+  "{root:2, preorder:{2,3,5,8,9,7}, swaps:{3,2}, npl:{2:2,3:1,5:1,7:1,8:1,9:1}}",
+  "{root:2, preorder:{2,3,8,9,5,7}, swaps:{8,3,2}, npl:{2:2,3:2,5:1,7:1,8:1,9:1}}",
+  "{root:2, preorder:{2,3,5,8,9,7}, swaps:{8,2}, npl:{2:3,3:2,5:1,7:1,8:2,9:1}}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 5,
+   "note": "最初は2<3なので根2を残し、2.rightの9と根3をmeldする。",
+   "v": [
+    "1",
+    "2",
+    "meld(9,3)",
+    "left=7,right=未確定",
+    "保留"
+   ]
+  },
+  {
+   "line": 5,
+   "note": "meld(9,3)ではキー順にaとbを交換して根3を選び、3.rightの8と9をmeldする。",
+   "v": [
+    "2",
+    "3",
+    "meld(8,9)",
+    "left=5,right=未確定",
+    "保留"
+   ]
+  },
+  {
+   "line": 5,
+   "note": "meld(8,9)は根8を選び、nullと9のmeld結果9を8.rightに置く。",
+   "v": [
+    "3",
+    "8",
+    "9",
+    "left=null,right=9",
+    "normalizeへ"
+   ]
+  },
+  {
+   "line": 13,
+   "note": "節点8ではln=0,rn=1なので子を交換する。left=9,right=nullとなりswaps={8}, npl[8]=1。",
+   "v": [
+    "normalize 8",
+    "8",
+    "—",
+    "null / 9",
+    "9 / null, npl=1"
+   ]
+  },
+  {
+   "line": 13,
+   "note": "節点3はleft=5,right=8で両方のnplが1。交換せずnpl[3]=1+npl[8]=2。",
+   "v": [
+    "normalize 3",
+    "3",
+    "—",
+    "5 / 8",
+    "5 / 8, npl=2"
+   ]
+  },
+  {
+   "line": 13,
+   "note": "節点2はleft=7(npl1),right=3(npl2)なので交換する。left=3,right=7となりswaps={8,2}, npl[2]=2。",
+   "v": [
+    "normalize 2",
+    "2",
+    "—",
+    "7 / 3",
+    "3 / 7, npl=2"
+   ]
+  },
+  {
+   "line": 7,
+   "note": "最終木のpreorderは2,3,5,8,9,7。根は2で、子交換は8、2の順。",
+   "v": [
+    "return",
+    "2",
+    "—",
+    "—",
+    "preorder={2,3,5,8,9,7}"
+   ]
+  }
+ ],
+ "explain": "<p>meldは小さいキーを根に残して右部分木だけを再帰併合し、その後にnpl(left)≧npl(right)となるよう子を交換します。</p><p>節点8と節点2で交換が起こり、最終preorderは<b>{2,3,5,8,9,7}</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-30",
+  "addedAtJst": "2026-08-30T21:57:35+09:00"
+ }
 }
 ];
