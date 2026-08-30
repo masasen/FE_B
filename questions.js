@@ -15088,5 +15088,104 @@ const QUESTIONS = [
   "dateJst": "2026-08-30",
   "addedAtJst": "2026-08-30T17:56:05+09:00"
  }
+},
+{
+ "id": "auto-20260830-1956-shortcircuit",
+ "cat": "プログラミング",
+ "title": "短絡評価と関数呼出し順",
+ "prompt": "次の論理式では、andは左辺がfalseなら右辺を評価せず、orは左辺がtrueなら右辺を評価しない。mainを実行した結果はどれか。checkが実際に呼ばれた引数だけがlogへ追加される。",
+ "code": [
+  "大域: calls←0, log←空配列",
+  "○論理型: check(整数型: x)",
+  "  calls←calls＋1",
+  "  logの末尾にxを追加する",
+  "  return x＞0",
+  "○レコード: main()",
+  "  r1←check(－1) and check(2)",
+  "  r2←check(3) or check(4)",
+  "  r3←(check(0) or check(5)) and check(－2)",
+  "  r4←check(6) and (check(－3) or check(7))",
+  "  return {r:{r1,r2,r3,r4},calls:calls,log:log}"
+ ],
+ "given": "論理値はT又はFで表す。各代入式は左から右へ評価し、checkの返り値は引数が正ならT、それ以外ならF。",
+ "vars": [
+  "式",
+  "評価したcheck",
+  "途中の論理値",
+  "短絡で省略",
+  "式の結果 / 累計calls"
+ ],
+ "choices": [
+  "{r:{F,T,F,T}, calls:8, log:{-1,3,0,5,-2,6,-3,7}}",
+  "{r:{F,T,F,T}, calls:10, log:{-1,2,3,4,0,5,-2,6,-3,7}}",
+  "{r:{F,T,F,T}, calls:7, log:{-1,3,0,5,6,-3,7}}",
+  "{r:{F,T,T,T}, calls:8, log:{-1,3,0,5,-2,6,-3,7}}",
+  "{r:{F,T,F,F}, calls:7, log:{-1,3,0,5,-2,6,-3}}",
+  "{r:{T,T,F,T}, calls:8, log:{-1,3,0,5,-2,6,-3,7}}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 7,
+   "note": "r1はcheck(-1)=F。andの左辺がFなのでcheck(2)は呼ばれず、r1=F。",
+   "v": [
+    "r1",
+    "check(-1)",
+    "F",
+    "check(2)",
+    "F / 1"
+   ]
+  },
+  {
+   "line": 8,
+   "note": "r2はcheck(3)=T。orの左辺がTなのでcheck(4)は呼ばれず、r2=T。",
+   "v": [
+    "r2",
+    "check(3)",
+    "T",
+    "check(4)",
+    "T / 2"
+   ]
+  },
+  {
+   "line": 9,
+   "note": "r3の括弧内はcheck(0)=Fなのでcheck(5)も評価し、Tとなる。andの左辺がTなのでcheck(-2)を評価してF、r3=F。",
+   "v": [
+    "r3",
+    "check(0),check(5),check(-2)",
+    "(F or T) and F",
+    "なし",
+    "F / 5"
+   ]
+  },
+  {
+   "line": 10,
+   "note": "r4はcheck(6)=Tなので右の括弧へ進む。check(-3)=Fのためcheck(7)も評価し、括弧はT、r4=T。",
+   "v": [
+    "r4",
+    "check(6),check(-3),check(7)",
+    "T and (F or T)",
+    "なし",
+    "T / 8"
+   ]
+  },
+  {
+   "line": 11,
+   "note": "呼出し順は-1,3,0,5,-2,6,-3,7の8回。短絡で2と4は呼ばれない。",
+   "v": [
+    "return",
+    "—",
+    "{F,T,F,T}",
+    "2,4",
+    "calls=8"
+   ]
+  }
+ ],
+ "explain": "<p>r1ではandの右辺、r2ではorの右辺が短絡されます。r3とr4の括弧内では最初のor項がFなので、次のcheckも実行されます。</p><p>したがって実行された引数は<b>{-1,3,0,5,-2,6,-3,7}</b>で、callsは8です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-30",
+  "addedAtJst": "2026-08-30T19:56:35+09:00"
+ }
 }
 ];
