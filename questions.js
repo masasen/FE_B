@@ -15531,5 +15531,141 @@ const QUESTIONS = [
   "dateJst": "2026-08-31",
   "addedAtJst": "2026-08-31T01:58:35+09:00"
  }
+},
+{
+ "id": "auto-20260831-0358-semaphore",
+ "cat": "プログラミング",
+ "title": "計数セマフォの待ち行列と直接引渡し",
+ "prompt": "次の計数セマフォはpermitがなければタスクをFIFO待ち行列へ入れ、release時に待ちタスクがあればpermitを増やさず直接引き渡す。イベント列を処理した後の状態はどれか。",
+ "code": [
+  "大域: permits←2, waitQ←空キュー, holders←空集合, grants←空配列",
+  "○手続: acquire(文字列: task)",
+  "  if (permits＞0)",
+  "    permits←permits－1, holdersにtaskを追加する",
+  "    grantsの末尾にtaskを追加する",
+  "  else",
+  "    waitQの末尾にtaskを追加する",
+  "○手続: release(文字列: task)",
+  "  holdersからtaskを削除する",
+  "  if (waitQが空でない)",
+  "    next←waitQの先頭を削除する",
+  "    holdersにnextを追加する",
+  "    grantsの末尾にnextを追加する",
+  "  else",
+  "    permits←permits＋1"
+ ],
+ "given": "イベントはacquire(A), acquire(B), acquire(C), release(A), acquire(D), release(B), release(C), acquire(E), release(D)の順。各releaseのtaskはその時点でholdersに含まれる。",
+ "vars": [
+  "イベント",
+  "処理前permits",
+  "待ち行列変化",
+  "holders変化",
+  "処理後 permits / waitQ"
+ ],
+ "choices": [
+  "{permits:1, waitQ:{}, holders:{E}, grants:{A,B,C,D,E}}",
+  "{permits:3, waitQ:{}, holders:{E}, grants:{A,B,C,D,E}}",
+  "{permits:1, waitQ:{D}, holders:{E}, grants:{A,B,C,E}}",
+  "{permits:0, waitQ:{}, holders:{D,E}, grants:{A,B,C,D,E}}",
+  "{permits:1, waitQ:{}, holders:{E}, grants:{A,B,D,C,E}}",
+  "{permits:2, waitQ:{}, holders:{}, grants:{A,B,C,D,E}}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 5,
+   "note": "AとBは二つのpermitを順に取得する。permitsは2→1→0、holders={A,B}、grants={A,B}。",
+   "v": [
+    "acquire A,B",
+    "2",
+    "変化なし",
+    "A,Bを追加",
+    "0 / {}"
+   ]
+  },
+  {
+   "line": 7,
+   "note": "Cのacquire時はpermits=0なので、CをwaitQへ入れる。holdersは変わらない。",
+   "v": [
+    "acquire C",
+    "0",
+    "{}→{C}",
+    "変化なし",
+    "0 / {C}"
+   ]
+  },
+  {
+   "line": 13,
+   "note": "AをreleaseするとCを待ち行列から取り出して直接引き渡す。permitsは0のままでholders={B,C}。",
+   "v": [
+    "release A",
+    "0",
+    "{C}→{}",
+    "Aを削除,Cを追加",
+    "0 / {}"
+   ]
+  },
+  {
+   "line": 7,
+   "note": "DのacquireもpermitがないのでwaitQ={D}となる。",
+   "v": [
+    "acquire D",
+    "0",
+    "{}→{D}",
+    "変化なし",
+    "0 / {D}"
+   ]
+  },
+  {
+   "line": 13,
+   "note": "BのreleaseでDへ直接引き渡し、holders={C,D}、permits=0。grantsはA,B,C,Dの順。",
+   "v": [
+    "release B",
+    "0",
+    "{D}→{}",
+    "Bを削除,Dを追加",
+    "0 / {}"
+   ]
+  },
+  {
+   "line": 15,
+   "note": "Cのrelease時はwaitQが空なのでpermitを1増やす。holders={D}。",
+   "v": [
+    "release C",
+    "0",
+    "変化なし",
+    "Cを削除",
+    "1 / {}"
+   ]
+  },
+  {
+   "line": 5,
+   "note": "Eがそのpermitを取得し、permits=0、holders={D,E}、grants={A,B,C,D,E}。",
+   "v": [
+    "acquire E",
+    "1",
+    "変化なし",
+    "Eを追加",
+    "0 / {}"
+   ]
+  },
+  {
+   "line": 15,
+   "note": "Dのrelease時もwaitQは空なのでpermits=1となり、holdersにはEだけが残る。",
+   "v": [
+    "release D",
+    "0",
+    "変化なし",
+    "Dを削除",
+    "1 / {}"
+   ]
+  }
+ ],
+ "explain": "<p>待ちタスクがあるreleaseではpermitを一度増やしてから減らすのではなく、待ち行列の先頭へ直接引き渡すためpermitsは0のままです。</p><p>最終的にEだけが保持し、<b>permits=1, grants={A,B,C,D,E}</b>となります。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-31",
+  "addedAtJst": "2026-08-31T03:58:36+09:00"
+ }
 }
 ];
