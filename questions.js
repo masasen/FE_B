@@ -14642,5 +14642,106 @@ const QUESTIONS = [
   "dateJst": "2026-08-30",
   "addedAtJst": "2026-08-30T09:53:32+09:00"
  }
+},
+{
+ "id": "auto-20260830-1153-alignedlayout",
+ "cat": "プログラミング",
+ "title": "アラインメント付きレコード配置",
+ "prompt": "次のlayoutは、各レコードを指定されたバイト境界にそろえて連続領域へ配置する。layoutを実行した結果はどれか。divは整数除算で、offsetは領域先頭からのバイト位置を表す。",
+ "code": [
+  "○整数型: alignUp(整数型: x, a)",
+  "  return ((x＋a－1) div a)×a",
+  "○レコード: layout(レコード型の配列: items)",
+  "  offset←0, totalPad←0",
+  "  starts←空配列, pads←空配列",
+  "  itemsの各itemを先頭から順に繰り返す",
+  "    start←alignUp(offset,item.align)",
+  "    pad←start－offset",
+  "    startsの末尾にstartを追加する",
+  "    padsの末尾にpadを追加する",
+  "    totalPad←totalPad＋pad",
+  "    offset←start＋item.size",
+  "  return {starts:starts,pads:pads,used:offset,totalPad:totalPad}"
+ ],
+ "given": "items={{size:3,align:1},{size:5,align:4},{size:2,align:2},{size:6,align:8}}。末尾には追加のパディングを入れない。",
+ "vars": [
+  "item",
+  "配置前offset",
+  "alignUp後start",
+  "pad",
+  "配置後offset"
+ ],
+ "choices": [
+  "{starts:{0,4,10,16}, pads:{0,1,1,4}, used:22, totalPad:6}",
+  "{starts:{0,3,8,10}, pads:{0,0,0,0}, used:16, totalPad:0}",
+  "{starts:{0,4,10,16}, pads:{0,1,1,4}, used:24, totalPad:8}",
+  "{starts:{0,4,12,16}, pads:{0,1,3,2}, used:22, totalPad:6}",
+  "{starts:{0,4,10,16}, pads:{0,1,1,6}, used:22, totalPad:8}",
+  "{starts:{0,4,9,16}, pads:{0,1,0,5}, used:22, totalPad:6}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 12,
+   "note": "item1はalign=1なのでstart=alignUp(0,1)=0。pad=0で、3バイト配置後のoffsetは3。",
+   "v": [
+    "1: size3 align1",
+    "0",
+    "0",
+    "0",
+    "3"
+   ]
+  },
+  {
+   "line": 12,
+   "note": "item2は4バイト境界にそろえる。alignUp(3,4)=4なので1バイト空け、5バイト配置後はoffset=9。",
+   "v": [
+    "2: size5 align4",
+    "3",
+    "4",
+    "1",
+    "9"
+   ]
+  },
+  {
+   "line": 12,
+   "note": "item3は2バイト境界にそろえる。alignUp(9,2)=10なのでpad=1、配置後はoffset=12。",
+   "v": [
+    "3: size2 align2",
+    "9",
+    "10",
+    "1",
+    "12"
+   ]
+  },
+  {
+   "line": 12,
+   "note": "item4は8バイト境界にそろえる。12以上で最初の8の倍数は16なのでpad=4、6バイト配置後はoffset=22。",
+   "v": [
+    "4: size6 align8",
+    "12",
+    "16",
+    "4",
+    "22"
+   ]
+  },
+  {
+   "line": 13,
+   "note": "開始位置は{0,4,10,16}。パディングの合計は0+1+1+4=6で、末尾調整をしないためusedは22。",
+   "v": [
+    "return",
+    "—",
+    "{0,4,10,16}",
+    "totalPad=6",
+    "used=22"
+   ]
+  }
+ ],
+ "explain": "<p>各startは現在のoffsetを、そのitemのalignの倍数まで切り上げて求めます。サイズ自体をalignの倍数へ切り上げるのではありません。</p><p>4件目の前でoffset=12からstart=16へ4バイト空けます。結果は<b>starts={0,4,10,16}, totalPad=6, used=22</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-30",
+  "addedAtJst": "2026-08-30T11:53:32+09:00"
+ }
 }
 ];
