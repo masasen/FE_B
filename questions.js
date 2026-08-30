@@ -15767,5 +15767,117 @@ const QUESTIONS = [
   "dateJst": "2026-08-31",
   "addedAtJst": "2026-08-31T05:59:06+09:00"
  }
+},
+{
+ "id": "auto-20260831-0759-binarytrie",
+ "cat": "データ構造",
+ "title": "二進Trieによる最大XOR探索",
+ "prompt": "次のmaxXorは、5ビット非負整数を格納した二進Trieから、xとのXORが最大になる値を探す。各ビットではxと反対の枝があれば優先する。valuesを挿入後にmaxXor(5)を実行した結果はどれか。",
+ "code": [
+  "○レコード: maxXor(整数型: x)",
+  "  node←root, value←0, score←0, decisions←空配列",
+  "  bを4から0まで1ずつ減らして繰り返す",
+  "    bit←(xをbビット右シフト) and 1",
+  "    wanted←1－bit",
+  "    if (node.child[wanted]≠null)",
+  "      chosen←wanted, decisionsの末尾にOPPを追加する",
+  "    else",
+  "      chosen←bit, decisionsの末尾にSAMEを追加する",
+  "    value←value＋chosen×2のb乗",
+  "    score←score＋(bit xor chosen)×2のb乗",
+  "    node←node.child[chosen]",
+  "  return {value:value,score:score,decisions:decisions}"
+ ],
+ "given": "values={3,10,5,25}を、それぞれ5ビット00011,01010,00101,11001としてTrieに挿入済み。x=5は00101。decisionsは上位ビットb=4から順に表す。",
+ "vars": [
+  "b",
+  "xのbit",
+  "存在する候補枝",
+  "chosen",
+  "decision / score累計"
+ ],
+ "choices": [
+  "{value:25, score:28, decisions:{OPP,OPP,OPP,SAME,SAME}}",
+  "{value:10, score:15, decisions:{SAME,OPP,OPP,OPP,OPP}}",
+  "{value:25, score:20, decisions:{OPP,OPP,SAME,SAME,SAME}}",
+  "{value:3, score:6, decisions:{SAME,SAME,OPP,OPP,SAME}}",
+  "{value:25, score:28, decisions:{OPP,OPP,OPP,OPP,OPP}}",
+  "{value:5, score:0, decisions:{SAME,SAME,SAME,SAME,SAME}}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 11,
+   "note": "b=4でxのbitは0。反対の1枝は値25だけが持つのでchosen=1、scoreに16を加える。以後の候補は25に絞られる。",
+   "v": [
+    "4",
+    "0",
+    "0,1",
+    "1",
+    "OPP / 16"
+   ]
+  },
+  {
+   "line": 11,
+   "note": "b=3でもxは0、候補25のbitは1なので反対枝を選び、scoreに8を加えて24。",
+   "v": [
+    "3",
+    "0",
+    "1",
+    "1",
+    "OPP / 24"
+   ]
+  },
+  {
+   "line": 11,
+   "note": "b=2でxは1、25のbitは0。反対枝0を選びscoreに4を加えて28。",
+   "v": [
+    "2",
+    "1",
+    "0",
+    "0",
+    "OPP / 28"
+   ]
+  },
+  {
+   "line": 11,
+   "note": "b=1でxは0だが、残る候補25のbitは0だけ。反対枝1がないため同じ0を選びscoreは28のまま。",
+   "v": [
+    "1",
+    "0",
+    "0",
+    "0",
+    "SAME / 28"
+   ]
+  },
+  {
+   "line": 11,
+   "note": "b=0でxは1、25のbitも1だけなので同じ1を選ぶ。構成したvalueは11001₂=25。",
+   "v": [
+    "0",
+    "1",
+    "1",
+    "1",
+    "SAME / 28"
+   ]
+  },
+  {
+   "line": 13,
+   "note": "00101 xor 11001 = 11100₂=28。decisionsは{OPP,OPP,OPP,SAME,SAME}。",
+   "v": [
+    "return",
+    "—",
+    "—",
+    "25",
+    "score=28"
+   ]
+  }
+ ],
+ "explain": "<p>上位ビットからXORを1にできる反対枝を優先すると、その時点で得られる数値を辞書順に最大化できます。</p><p>最上位で1枝を選んだ時点で候補は25となり、<b>5 xor 25=28</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-31",
+  "addedAtJst": "2026-08-31T07:59:55+09:00"
+ }
 }
 ];
