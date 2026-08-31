@@ -16190,4 +16190,112 @@ const QUESTIONS = [
   "addedAtJst": "2026-08-31T14:00:56+09:00"
  }
 }
+,
+{
+ "id": "auto-20260831-1600-marksweep",
+ "cat": "プログラミング",
+ "title": "マーク＆スイープの到達可能性判定",
+ "prompt": "次の簡略化したマーク＆スイープでは、根からポインタをたどって到達したオブジェクトをマークし、未マークを解放する。collect実行時のmarkedOrderとfreedはどれか。",
+ "code": [
+  "○手続: collect(文字列配列: roots, 対応表: next) → (文字列配列, 文字列配列)",
+  "  stack←空スタック, marked←空集合, markedOrder←空配列",
+  "  for rootsの要素rを先頭から順に調べる",
+  "    stackにrをpushする",
+  "  endfor",
+  "  while (stackが空でない)",
+  "    x←stackからpopする",
+  "    if (xがmarkedに含まれない)",
+  "      xをmarkedに追加し、markedOrderの末尾にxを追加する",
+  "      for next[x]の要素yを先頭から順に調べる",
+  "        if (yがmarkedに含まれない) stackにyをpushする",
+  "      endfor",
+  "    endif",
+  "  endwhile",
+  "  freed←空配列",
+  "  for objectsの各要素xをAからGの順に調べる",
+  "    if (xがmarkedに含まれない) freedの末尾にxを追加する",
+  "  endfor",
+  "  return (markedOrder, freed)"
+ ],
+ "given": "objects={A,B,C,D,E,F,G}, roots={A,F}とする。next[A]={B}, next[B]={C}, next[C]={B}, next[D]={E}, next[E]={D}, next[F]={G}, next[G]={}である。stackは後入れ先出しで、rootsとnextの走査順は記載どおりとする。",
+ "vars": [
+  "popしたx",
+  "処理前stack（左が底）",
+  "新しくマークしたか",
+  "push後stack",
+  "markedOrder"
+ ],
+ "choices": [
+  "markedOrder={F,G,A,B,C}, freed={D,E}",
+  "markedOrder={A,B,C,F,G}, freed={D,E}",
+  "markedOrder={F,G,A,B,C,D,E}, freed={}",
+  "markedOrder={F,G,A,B,C}, freed={B,C,D,E}",
+  "markedOrder={F,A,G,B,C}, freed={D,E}",
+  "markedOrder={F,G,A,B,C}, freed={A,D,E}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 4,
+   "note": "rootsをA,Fの順にpushするのでstackは{A,F}となる。後入れ先出しのため、最初にpopされるのはFである。",
+   "v": [
+    "初期化",
+    "{}",
+    "—",
+    "{A,F}",
+    "{}"
+   ]
+  },
+  {
+   "line": 10,
+   "note": "FをマークしてGをpushし、続いてGをpopしてマークする。Gには次の参照がないので、stackには最初から残っていたAだけが残る。",
+   "v": [
+    "F, 次にG",
+    "{A,F}",
+    "はい",
+    "{A}",
+    "{F,G}"
+   ]
+  },
+  {
+   "line": 10,
+   "note": "AをpopしてマークしBをpushする。BをpopしてマークしCをpushする。",
+   "v": [
+    "A, 次にB",
+    "{A}",
+    "はい",
+    "{C}",
+    "{F,G,A,B}"
+   ]
+  },
+  {
+   "line": 11,
+   "note": "Cをマークする。next[C]のBは既にmarkedなのでpushせず、BとCの循環参照でも処理は終了する。",
+   "v": [
+    "C",
+    "{C}",
+    "はい",
+    "{}",
+    "{F,G,A,B,C}"
+   ]
+  },
+  {
+   "line": 17,
+   "note": "AからGの順に未マークを調べるとDとEだけが該当する。DとEは互いを参照するが、どの根からも到達できないので解放される。",
+   "v": [
+    "sweep",
+    "{}",
+    "—",
+    "{}",
+    "{F,G,A,B,C}"
+   ]
+  }
+ ],
+ "explain": "<p>相互参照しているだけでは生存条件にならず、根から到達できるかどうかで決まります。DとEの循環は根から切り離されています。</p><p>LIFOのstackではF側を先にたどるため、<b>markedOrder={F,G,A,B,C}</b>、<b>freed={D,E}</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-31",
+  "addedAtJst": "2026-08-31T16:00:56+09:00"
+ }
+}
 ];
