@@ -16091,4 +16091,103 @@ const QUESTIONS = [
   "addedAtJst": "2026-08-31T12:00:25+09:00"
  }
 }
+,
+{
+ "id": "auto-20260831-1400-indexedheap",
+ "cat": "データ構造",
+ "title": "位置表付き最小ヒープの優先度更新",
+ "prompt": "次の位置表付き最小ヒープでは、heapに(識別子,優先度)を格納し、posから各識別子の現在位置を引ける。操作列を全て実行した後のheapとposはどれか。",
+ "code": [
+  "大域: heap←空配列, pos←空の対応表",
+  "○手続: swap(整数: i, 整数: j)",
+  "  heap[i]とheap[j]を交換する",
+  "  pos[heap[i].識別子]←i, pos[heap[j].識別子]←j",
+  "○手続: up(整数: i)",
+  "  while (i＞1 and heap[i].優先度＜heap[i div 2].優先度)",
+  "    swap(i, i div 2), i←i div 2",
+  "○手続: down(整数: i)",
+  "  while (iに子がある)",
+  "    j←左右の子のうち優先度が小さい方の位置（右の子がなければ左）",
+  "    if (heap[i].優先度≦heap[j].優先度) return",
+  "    swap(i,j), i←j",
+  "○手続: insert(文字列: id, 整数: p)",
+  "  heapの末尾に(id,p)を追加し、その位置をpos[id]に記録する",
+  "  up(heapの要素数)",
+  "○手続: decrease(文字列: id, 整数: p)",
+  "  i←pos[id], heap[i].優先度←p, up(i)",
+  "○手続: extractMin()",
+  "  min←heap[1], swap(1,heapの要素数), heapの末尾を削除する",
+  "  posからmin.識別子を削除し、heapが空でなければdown(1)",
+  "  return min"
+ ],
+ "given": "添字は1から始まる。insert(A,7), insert(B,4), insert(C,9), insert(D,6), decrease(C,3), extractMin(), decrease(A,2)の順に実行する。優先度は全て異なり、decreaseで指定する値は現在値より小さい。",
+ "vars": [
+  "操作",
+  "操作直後のheap（先頭が位置1）",
+  "pos[A]",
+  "pos[B]",
+  "pos[C] / pos[D]"
+ ],
+ "choices": [
+  "heap={(A,2),(D,6),(B,4)}, pos={A:1,B:3,D:2}",
+  "heap={(A,2),(B,4),(D,6)}, pos={A:1,B:2,D:3}",
+  "heap={(B,4),(A,2),(D,6)}, pos={A:2,B:1,D:3}",
+  "heap={(A,2),(D,6),(B,4)}, pos={A:1,B:2,D:3}",
+  "heap={(C,3),(A,2),(B,4),(D,6)}, pos={A:2,B:3,C:1,D:4}",
+  "heap={(A,2),(D,6),(B,4)}, pos={A:3,B:1,D:2}"
+ ],
+ "answer": 0,
+ "steps": [
+  {
+   "line": 15,
+   "note": "Aを入れた後、Bは優先度4なのでA(7)と交換する。C(9)はそのまま、D(6)は親A(7)と交換し、heapは{(B,4),(D,6),(C,9),(A,7)}となる。swapのたびposも更新される。",
+   "v": [
+    "4回のinsert",
+    "{(B,4),(D,6),(C,9),(A,7)}",
+    "4",
+    "1",
+    "3 / 2"
+   ]
+  },
+  {
+   "line": 17,
+   "note": "Cの位置はpos[C]=3。優先度を3にすると親B(4)より小さいので位置1まで上がり、heapは{(C,3),(D,6),(B,4),(A,7)}となる。",
+   "v": [
+    "decrease(C,3)",
+    "{(C,3),(D,6),(B,4),(A,7)}",
+    "4",
+    "3",
+    "1 / 2"
+   ]
+  },
+  {
+   "line": 20,
+   "note": "extractMinでCと末尾Aを交換してCを削除する。根A(7)の子はD(6)とB(4)なので、小さいBと交換し、heapは{(B,4),(D,6),(A,7)}となる。Cはposから削除される。",
+   "v": [
+    "extractMin()",
+    "{(B,4),(D,6),(A,7)}",
+    "3",
+    "1",
+    "削除 / 2"
+   ]
+  },
+  {
+   "line": 17,
+   "note": "pos[A]=3からAの優先度を2にし、親B(4)と交換して根へ上げる。最終heapは{(A,2),(D,6),(B,4)}、posはA:1, D:2, B:3である。",
+   "v": [
+    "decrease(A,2)",
+    "{(A,2),(D,6),(B,4)}",
+    "1",
+    "3",
+    "削除 / 2"
+   ]
+  }
+ ],
+ "explain": "<p>位置表は交換後の添字を必ず追従させます。Cを取り出した後はBが根となり、最後にAを位置3から根まで上げます。</p><p>したがって<b>heap={(A,2),(D,6),(B,4)}, pos={A:1,B:3,D:2}</b>です。</p>",
+ "automation": {
+  "kind": "scheduled",
+  "dateJst": "2026-08-31",
+  "addedAtJst": "2026-08-31T14:00:56+09:00"
+ }
+}
 ];
